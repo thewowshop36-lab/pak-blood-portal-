@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pakistan Blood Donor Network</title>
-    <!-- گوگل سرچ کنسول ویریفیکیشن ٹیگ -->
     <meta name="google-site-verification" content="Z7x9RTZEmPO-qEgee6EfJXOAwUNFXZT0yelA_jOqQpI" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -153,7 +152,7 @@
           const adminSecretPassword = "RABNAWAZ@786";
 
           const [newDonor, setNewDonor] = useState({
-            name: "", bloodgroup: "O+", province: Object.keys(pakistanLocations)[0], city: pakistanLocations[Object.keys(pakistanLocations)[0]][0], phone: ""
+            name: "", bloodGroup: "O+", province: Object.keys(pakistanLocations)[0], city: pakistanLocations[Object.keys(pakistanLocations)[0]][0], phone: ""
           });
 
           const [newReq, setNewReq] = useState({
@@ -204,7 +203,7 @@
           const currentCityDonors = donors.filter(d => {
             const matchProv = d.province === selectedProvince;
             const matchCity = d.city === selectedCity;
-            const dBlood = d.bloodgroup || d.bloodGroup || "O+";
+            const dBlood = d.bloodGroup || d.bloodgroup || "O+";
             const matchBlood = selectedBlood === "All / تمام" || dBlood === selectedBlood;
             return matchProv && matchCity && matchBlood;
           });
@@ -225,39 +224,22 @@
                     </div>
 
                     <div className="hidden md:flex items-center space-x-3 space-x-reverse">
-                      <button 
-                        onClick={() => setLang(lang === 'ur' ? 'en' : 'ur')}
-                        className="bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-bold px-3 py-2 rounded-xl border border-slate-700 transition"
-                      >
+                      <button onClick={() => setLang(lang === 'ur' ? 'en' : 'ur')} className="bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-bold px-3 py-2 rounded-xl border border-slate-700 transition">
                         {lang === 'ur' ? 'English 🌐' : 'اردو 🌐'}
                       </button>
-                      <button 
-                        onClick={() => setShowDonorModal(true)}
-                        className="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl font-bold text-xs shadow-lg shadow-rose-600/30 transition transform hover:-translate-y-0.5"
-                      >
+                      <button onClick={() => setShowDonorModal(true)} className="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl font-bold text-xs shadow-lg shadow-rose-600/30 transition transform hover:-translate-y-0.5">
                         {t.registerDonor}
                       </button>
-                      <button 
-                        onClick={() => setShowReqModal(true)}
-                        className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl font-bold text-xs shadow-lg shadow-amber-500/20 transition transform hover:-translate-y-0.5"
-                      >
+                      <button onClick={() => setShowReqModal(true)} className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl font-bold text-xs shadow-lg shadow-amber-500/20 transition transform hover:-translate-y-0.5">
                         {t.postRequest}
                       </button>
-                      <button 
-                        onClick={() => setActiveTab('admin')}
-                        className={`px-3 py-2 rounded-xl font-bold text-xs transition border ${
-                          activeTab === 'admin' ? 'bg-rose-500 text-white border-rose-400' : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
-                        }`}
-                      >
+                      <button onClick={() => setActiveTab('admin')} className={`px-3 py-2 rounded-xl font-bold text-xs transition border ${activeTab === 'admin' ? 'bg-rose-500 text-white border-rose-400' : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'}`}>
                         {t.adminPanel}
                       </button>
                     </div>
 
                     <div className="flex md:hidden items-center gap-2">
-                      <button 
-                        onClick={() => setLang(lang === 'ur' ? 'en' : 'ur')}
-                        className="bg-slate-800 text-rose-400 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-700"
-                      >
+                      <button onClick={() => setLang(lang === 'ur' ? 'en' : 'ur')} className="bg-slate-800 text-rose-400 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-700">
                         {lang === 'ur' ? 'EN' : 'اردو'}
                       </button>
                       <button className="text-white p-1" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -314,18 +296,11 @@
                       </div>
 
                       {(selectedProvince || selectedCity || activeTab === 'requests') && (
-                        <button 
-                          onClick={() => {
-                            if (selectedCity) {
-                              setSelectedCity(null);
-                            } else if (selectedProvince) {
-                              setSelectedProvince(null);
-                            } else if (activeTab === 'requests') {
-                              setActiveTab('directory');
-                            }
-                          }}
-                          className="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-500/30 transition flex items-center gap-1.5"
-                        >
+                        <button onClick={() => {
+                          if (selectedCity) setSelectedCity(null);
+                          else if (selectedProvince) setSelectedProvince(null);
+                          else if (activeTab === 'requests') setActiveTab('directory');
+                        }} className="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-500/30 transition flex items-center gap-1.5">
                           {t.backBtn}
                         </button>
                       )}
@@ -353,7 +328,7 @@
                               const totalCities = pakistanLocations[prov].length;
                               const provDonorsCount = donors.filter(d => d.province === prov).length;
                               return (
-                                <div key={prov} onClick={() => setSelectedProvince(prov)} className="bg-slate-900 hover:bg-slate-850 p-5 rounded-2xl border border-slate-800 hover:border-rose-500/50 cursor-pointer transition transform hover:-translate-y-1 shadow-lg flex items-center justify-between group">
+                                <div key={prov} onClick={() => setSelectedProvince(prov)} className="bg-slate-950 hover:bg-slate-900 p-5 rounded-2xl border border-slate-800 hover:border-rose-500/50 cursor-pointer transition transform hover:-translate-y-1 shadow-lg flex items-center justify-between group">
                                   <div>
                                     <h4 className="text-base font-bold text-white group-hover:text-rose-400 transition">{prov}</h4>
                                     <p className="text-xs text-slate-400 mt-1">Cities: {totalCities} | Donors: {provDonorsCount}</p>
@@ -372,7 +347,7 @@
                             {pakistanLocations[selectedProvince].map(city => {
                               const cityDonorsCount = donors.filter(d => d.province === selectedProvince && d.city === city).length;
                               return (
-                                <div key={city} onClick={() => setSelectedCity(city)} className="bg-slate-900 hover:bg-slate-850 p-4 rounded-xl border border-slate-800 hover:border-rose-500 cursor-pointer transition text-center shadow">
+                                <div key={city} onClick={() => setSelectedCity(city)} className="bg-slate-950 hover:bg-slate-900 p-4 rounded-xl border border-slate-800 hover:border-rose-500 cursor-pointer transition text-center shadow">
                                   <h4 className="font-bold text-sm text-slate-200 group-hover:text-white">{city}</h4>
                                   <span className="inline-block mt-2 text-[11px] bg-rose-500/10 text-rose-300 border border-rose-500/20 px-2.5 py-0.5 rounded-full font-semibold">
                                     Donors: {cityDonorsCount}
@@ -386,7 +361,7 @@
 
                       {selectedProvince && selectedCity && (
                         <div>
-                          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 bg-slate-900 p-4 rounded-2xl border border-slate-800">
+                          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 bg-slate-950 p-4 rounded-2xl border border-slate-800">
                             <div>
                               <h3 className="text-lg font-bold text-white">{selectedCity}</h3>
                               <p className="text-xs text-slate-400">Available Donors in this city</p>
@@ -400,18 +375,18 @@
                           </div>
 
                           {currentCityDonors.length === 0 ? (
-                            <div className="bg-slate-900 rounded-2xl p-12 text-center border border-slate-800">
+                            <div className="bg-slate-950 rounded-2xl p-12 text-center border border-slate-800">
                               <h4 className="text-base font-bold text-slate-300">No donors registered in {selectedCity} yet.</h4>
                               <button onClick={() => setShowDonorModal(true)} className="mt-4 bg-rose-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow hover:bg-rose-500 transition">Register as First Donor</button>
                             </div>
                           ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                               {currentCityDonors.map(donor => (
-                                <div key={donor.id} className="bg-slate-900 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between shadow-lg">
+                                <div key={donor.id} className="bg-slate-950 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between shadow-lg">
                                   <div className="flex justify-between items-start mb-4">
                                     <div className="flex items-center gap-3">
                                       <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center font-extrabold text-lg shadow-inner">
-                                        {donor.bloodgroup || donor.bloodGroup}
+                                        {donor.bloodGroup || donor.bloodgroup}
                                       </div>
                                       <div>
                                         <h4 className="font-bold text-base text-white">{donor.name}</h4>
@@ -445,13 +420,13 @@
                       </div>
 
                       {requests.length === 0 ? (
-                        <div className="bg-slate-900 rounded-2xl p-12 text-center border border-slate-800">
+                        <div className="bg-slate-950 rounded-2xl p-12 text-center border border-slate-800">
                           <h4 className="text-base font-bold text-slate-300">No emergency requests active right now.</h4>
                         </div>
                       ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                           {requests.map(req => (
-                            <div key={req.id} className="bg-slate-900 rounded-2xl border border-amber-500/30 p-5 flex flex-col justify-between shadow-lg">
+                            <div key={req.id} className="bg-slate-950 rounded-2xl border border-amber-500/30 p-5 flex flex-col justify-between shadow-lg">
                               <div>
                                 <div className="flex justify-between items-start mb-3">
                                   <div className="flex items-center gap-3">
@@ -482,7 +457,7 @@
                   )}
 
                   {activeTab === 'admin' && (
-                    <div className="max-w-3xl mx-auto bg-slate-900 rounded-2xl border border-slate-800 p-6 md:p-8 shadow-xl">
+                    <div className="max-w-3xl mx-auto bg-slate-950 rounded-2xl border border-slate-800 p-6 md:p-8 shadow-xl">
                       {!isAdminLoggedIn ? (
                         <div className="max-w-md mx-auto text-center py-6">
                           <h3 className="text-xl font-bold text-white mb-2">{t.adminLogin}</h3>
@@ -495,7 +470,7 @@
                               alert("Incorrect Password!"); 
                             } 
                           }} className="space-y-4">
-                            <input type="password" placeholder={t.passwordPlaceholder} value={adminPass} onChange={(e) => setAdminPass(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-center text-white outline-none focus:border-rose-500" />
+                            <input type="password" placeholder={t.passwordPlaceholder} value={adminPass} onChange={(e) => setAdminPass(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-center text-white outline-none focus:border-rose-500" />
                             <button type="submit" className="w-full bg-rose-600 hover:bg-rose-500 text-white py-3 rounded-xl font-bold text-xs shadow transition">{t.loginBtn}</button>
                           </form>
                         </div>
@@ -506,17 +481,17 @@
                               <h3 className="text-lg font-bold text-white">Admin Control Panel</h3>
                               <p className="text-xs text-rose-400">Authorized Management</p>
                             </div>
-                            <button onClick={() => { setIsAdminLoggedIn(false); setAdminPass(""); }} className="bg-slate-800 hover:bg-slate-700 text-rose-400 px-3 py-2 rounded-xl text-xs font-bold border border-slate-700">
+                            <button onClick={() => { setIsAdminLoggedIn(false); setAdminPass(""); }} className="bg-slate-900 hover:bg-slate-800 text-rose-400 px-3 py-2 rounded-xl text-xs font-bold border border-slate-700">
                               {t.logoutBtn}
                             </button>
                           </div>
                           <div className="mb-6">
                             <h4 className="font-bold text-sm text-slate-300 mb-3">Registered Donors ({donors.length})</h4>
-                            {donors.length === 0 ? <p className="text-xs text-slate-500 bg-slate-950 p-4 rounded-xl text-center">No donors found.</p> : (
+                            {donors.length === 0 ? <p className="text-xs text-slate-500 bg-slate-900 p-4 rounded-xl text-center">No donors found.</p> : (
                               <div className="space-y-2 max-h-48 overflow-y-auto">
                                 {donors.map(d => (
-                                  <div key={d.id} className="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs">
-                                    <span>{d.name} ({d.bloodgroup || d.bloodGroup}) - {d.city} - {d.phone}</span>
+                                  <div key={d.id} className="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs">
+                                    <span>{d.name} ({d.bloodGroup || d.bloodgroup}) - {d.city} - {d.phone}</span>
                                     <button onClick={() => handleDeleteDonor(d.id)} className="text-rose-400 hover:text-white px-2 py-1 rounded bg-rose-500/10">Delete</button>
                                   </div>
                                 ))}
@@ -530,40 +505,39 @@
                 </main>
               </div>
 
-              {/* رجسٹریشن ماڈل */}
               {showDonorModal && (
                 <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-                  <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 md:p-8 border border-slate-800 shadow-2xl relative">
+                  <div className="bg-slate-950 rounded-3xl max-w-lg w-full p-6 md:p-8 border border-slate-800 shadow-2xl relative">
                     <button onClick={() => setShowDonorModal(false)} className="absolute top-5 left-5 text-slate-400 hover:text-white text-xl">✕</button>
                     <h3 className="text-xl font-bold text-white mb-1">{t.registerDonor}</h3>
                     <p className="text-xs text-slate-400 mb-6">Enter your details to help patients in your city.</p>
                     <form onSubmit={handleRegisterDonor} className="space-y-4">
                       <div>
                         <label className="block text-xs font-semibold text-slate-300 mb-1.5">Full Name</label>
-                        <input type="text" required placeholder="e.g. Muhammad Ahmad" value={newDonor.name} onChange={(e) => setNewDonor({...newDonor, name: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-rose-500" />
+                        <input type="text" required placeholder="e.g. Muhammad Ahmad" value={newDonor.name} onChange={(e) => setNewDonor({...newDonor, name: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-rose-500" />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-xs font-semibold text-slate-300 mb-1.5">{t.bloodGroup}</label>
-                          <select value={newDonor.bloodgroup} onChange={(e) => setNewDonor({...newDonor, bloodgroup: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm font-bold text-rose-400 outline-none">
+                          <select value={newDonor.bloodGroup} onChange={(e) => setNewDonor({...newDonor, bloodGroup: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm font-bold text-rose-400 outline-none">
                             {bloodGroups.filter(b => b !== "All / تمام").map(bg => <option key={bg} value={bg}>{bg}</option>)}
                           </select>
                         </div>
                         <div>
                           <label className="block text-xs font-semibold text-slate-300 mb-1.5">Phone Number</label>
-                          <input type="text" required placeholder="03001234567" value={newDonor.phone} onChange={(e) => setNewDonor({...newDonor, phone: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-rose-500" />
+                          <input type="text" required placeholder="03001234567" value={newDonor.phone} onChange={(e) => setNewDonor({...newDonor, phone: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-rose-500" />
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-xs font-semibold text-slate-300 mb-1.5">Province</label>
-                          <select value={newDonor.province} onChange={(e) => { const prov = e.target.value; const cities = pakistanLocations[prov] || []; setNewDonor({...newDonor, province: prov, city: cities[0] || ""}); }} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
+                          <select value={newDonor.province} onChange={(e) => { const prov = e.target.value; const cities = pakistanLocations[prov] || []; setNewDonor({...newDonor, province: prov, city: cities[0] || ""}); }} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
                             {Object.keys(pakistanLocations).map(prov => <option key={prov} value={prov}>{prov}</option>)}
                           </select>
                         </div>
                         <div>
                           <label className="block text-xs font-semibold text-slate-300 mb-1.5">City</label>
-                          <select value={newDonor.city} onChange={(e) => setNewDonor({...newDonor, city: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
+                          <select value={newDonor.city} onChange={(e) => setNewDonor({...newDonor, city: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
                             {(pakistanLocations[newDonor.province] || []).map(city => <option key={city} value={city}>{city}</option>)}
                           </select>
                         </div>
@@ -574,47 +548,46 @@
                 </div>
               )}
 
-              {/* ریکویسٹ ماڈل */}
               {showReqModal && (
                 <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-                  <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 md:p-8 border border-slate-800 shadow-2xl relative">
+                  <div className="bg-slate-950 rounded-3xl max-w-lg w-full p-6 md:p-8 border border-slate-800 shadow-2xl relative">
                     <button onClick={() => setShowReqModal(false)} className="absolute top-5 left-5 text-slate-400 hover:text-white text-xl">✕</button>
                     <h3 className="text-xl font-bold text-white mb-1">{t.postRequest}</h3>
                     <p className="text-xs text-slate-400 mb-6">Broadcast emergency blood requirement.</p>
                     <form onSubmit={handlePostRequest} className="space-y-4">
                       <div>
                         <label className="block text-xs font-semibold text-slate-300 mb-1.5">Patient Name</label>
-                        <input type="text" required placeholder="Patient Name" value={newReq.patient_name} onChange={(e) => setNewReq({...newReq, patient_name: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
+                        <input type="text" required placeholder="Patient Name" value={newReq.patient_name} onChange={(e) => setNewReq({...newReq, patient_name: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-xs font-semibold text-slate-300 mb-1.5">Required Blood</label>
-                          <select value={newReq.blood_group} onChange={(e) => setNewReq({...newReq, blood_group: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm font-bold text-amber-400 outline-none">
+                          <select value={newReq.blood_group} onChange={(e) => setNewReq({...newReq, blood_group: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm font-bold text-amber-400 outline-none">
                             {bloodGroups.filter(b => b !== "All / تمام").map(bg => <option key={bg} value={bg}>{bg}</option>)}
                           </select>
                         </div>
                         <div>
                           <label className="block text-xs font-semibold text-slate-300 mb-1.5">Contact Number</label>
-                          <input type="text" required placeholder="03001234567" value={newReq.contact} onChange={(e) => setNewReq({...newReq, contact: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
+                          <input type="text" required placeholder="03001234567" value={newReq.contact} onChange={(e) => setNewReq({...newReq, contact: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-xs font-semibold text-slate-300 mb-1.5">Province</label>
-                          <select value={newReq.province} onChange={(e) => { const prov = e.target.value; const cities = pakistanLocations[prov] || []; setNewReq({...newReq, province: prov, city: cities[0] || ""}); }} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
+                          <select value={newReq.province} onChange={(e) => { const prov = e.target.value; const cities = pakistanLocations[prov] || []; setNewReq({...newReq, province: prov, city: cities[0] || ""}); }} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
                             {Object.keys(pakistanLocations).map(prov => <option key={prov} value={prov}>{prov}</option>)}
                           </select>
                         </div>
                         <div>
                           <label className="block text-xs font-semibold text-slate-300 mb-1.5">City</label>
-                          <select value={newReq.city} onChange={(e) => setNewReq({...newReq, city: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
+                          <select value={newReq.city} onChange={(e) => setNewReq({...newReq, city: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
                             {(pakistanLocations[newReq.province] || []).map(city => <option key={city} value={city}>{city}</option>)}
                           </select>
                         </div>
                       </div>
                       <div>
                         <label className="block text-xs font-semibold text-slate-300 mb-1.5">Hospital & Address</label>
-                        <input type="text" required placeholder="e.g. Nishtar Hospital, Multan" value={newReq.hospital} onChange={(e) => setNewReq({...newReq, hospital: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
+                        <input type="text" required placeholder="e.g. Nishtar Hospital, Multan" value={newReq.hospital} onChange={(e) => setNewReq({...newReq, hospital: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
                       </div>
                       <button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-amber-500/20 transition">Post Emergency Request</button>
                     </form>
@@ -622,7 +595,7 @@
                 </div>
               )}
 
-              <footer className="bg-slate-900 border-t border-slate-800 py-8 mt-12 text-center text-xs space-y-2 text-slate-400">
+              <footer className="bg-slate-950 border-t border-slate-800 py-8 mt-12 text-center text-xs space-y-2 text-slate-400">
                 <p>{t.footerText}</p>
               </footer>
             </div>
