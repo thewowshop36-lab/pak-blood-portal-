@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pakistan Blood Donor Portal</title>
+    <title>Pakistan Blood Donor Network</title>
+    <!-- گوگل سرچ کنسول ویریفیکیشن ٹیگ -->
+    <meta name="google-site-verification" content="google2e5299a870d4243b" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -116,24 +118,24 @@
           
           const [donors, setDonors] = useState(() => {
             try {
-              const saved = localStorage.getItem('pak_blood_donors_v10');
+              const saved = localStorage.getItem('pak_blood_donors_v11');
               return saved ? JSON.parse(saved) : [];
             } catch(e) { return []; }
           });
 
           const [requests, setRequests] = useState(() => {
             try {
-              const saved = localStorage.getItem('pak_blood_requests_v10');
+              const saved = localStorage.getItem('pak_blood_requests_v11');
               return saved ? JSON.parse(saved) : [];
             } catch(e) { return []; }
           });
 
           useEffect(() => {
-            localStorage.setItem('pak_blood_donors_v10', JSON.stringify(donors));
+            localStorage.setItem('pak_blood_donors_v11', JSON.stringify(donors));
           }, [donors]);
 
           useEffect(() => {
-            localStorage.setItem('pak_blood_requests_v10', JSON.stringify(requests));
+            localStorage.setItem('pak_blood_requests_v11', JSON.stringify(requests));
           }, [requests]);
 
           const [selectedProvince, setSelectedProvince] = useState(null);
