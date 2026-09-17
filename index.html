@@ -10,6 +10,8 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Supabase JavaScript Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', 'Noto Nastaliq Urdu', sans-serif; }
@@ -20,6 +22,11 @@
 
     <script type="text/babel">
         const { useState, useEffect } = React;
+
+        // Supabase کنکشن سیٹ اپ
+        const SUPABASE_URL = "https://mvqnekaobsyreegkouca.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_WuDQresEEX_duONM1RwKbg_zVYtxoV0";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const pakistanLocations = {
           "پنجاب / Punjab": [
@@ -116,27 +123,25 @@
           const t = translations[lang];
           const [activeTab, setActiveTab] = useState('directory'); 
           
-          const [donors, setDonors] = useState(() => {
-            try {
-              const saved = localStorage.getItem('pak_blood_donors_v12');
-              return saved ? JSON.parse(saved) : [];
-            } catch(e) { return []; }
-          });
+          const [donors, setDonors] = useState([]);
+          const [requests, setRequests] = useState([]);
 
-          const [requests, setRequests] = useState(() => {
-            try {
-              const saved = localStorage.getItem('pak_blood_requests_v12');
-              return saved ? JSON.parse(saved) : [];
-            } catch(e) { return []; }
-          });
-
+          // ڈیٹا بیس سے ڈیٹا لوڈ کرنا
           useEffect(() => {
-            localStorage.setItem('pak_blood_donors_v12', JSON.stringify(donors));
-          }, [donors]);
+            fetchData();
+          }, []);
 
-          useEffect(() => {
-            localStorage.setItem('pak_blood_requests_v12', JSON.stringify(requests));
-          }, [requests]);
+          const fetchData = async () => {
+            try {
+              const { data: donorData } = await supabase.from('donors').select('*');
+              if (donorData) setDonors(donorData);
+
+              const { data: reqData } = await supabase.from('requests').select('*');
+              if (reqData) setRequests(reqData);
+            } catch (err) {
+              console.error("Error fetching data:", err);
+            }
+          };
 
           const [selectedProvince, setSelectedProvince] = useState(null);
           const [selectedCity, setSelectedCity] = useState(null);
@@ -155,31 +160,48 @@
           });
 
           const [newReq, setNewReq] = useState({
-            patientName: "", bloodGroup: "O+", province: Object.keys(pakistanLocations)[0], city: pakistanLocations[Object.keys(pakistanLocations)[0]][0], hospital: "", contact: "", urgency: "Urgent / فوری"
+            patient_name: "", blood_group: "O+", province: Object.keys(pakistanLocations)[0], city: pakistanLocations[Object.keys(pakistanLocations)[0]][0], hospital: "", contact: "", urgency: "Urgent / فوری"
           });
 
-          const handleRegisterDonor = (e) => {
+          const handleRegisterDonor = async (e) => {
             e.preventDefault();
             if (!newDonor.name || !newDonor.phone) {
               alert(lang === 'ur' ? "براہ کرم نام اور فون نمبر درج کریں۔" : "Please enter name and phone.");
               return;
             }
-            const donorToAdd = { ...newDonor, id: Date.now() };
-            setDonors([donorToAdd, ...donors]);
-            setShowDonorModal(false);
-            alert(lang === 'ur' ? "آپ کامیابی سے رجسٹر ہو گئے ہیں!" : "Successfully registered as donor!");
+            
+            const { data, error } = await supabase.from('donors').insert([newDonor]).select();
+            if (error) {
+              alert("Error: " + error.message);
+            } else {
+              setDonors([...data, ...donors]);
+              setShowDonorModal(false);
+              alert(lang === 'ur' ? "آپ کامیابی سے رجسٹر ہو گئے ہیں!" : "Successfully registered as donor!");
+            }
           };
 
-          const handlePostRequest = (e) => {
+          const handlePostRequest = async (e) => {
             e.preventDefault();
-            if (!newReq.patientName || !newReq.contact || !newReq.hospital) {
+            if (!newReq.patient_name || !newReq.contact || !newReq.hospital) {
               alert(lang === 'ur' ? "براہ کرم تمام معلومات درج کریں۔" : "Please fill all required fields.");
               return;
             }
-            const reqToAdd = { ...newReq, id: Date.now() };
-            setRequests([reqToAdd, ...requests]);
-            setShowReqModal(false);
-            alert(lang === 'ur' ? "ہنگامی درخواست پوسٹ کر دی گئی ہے!" : "Emergency request posted successfully!");
+
+            const { data, error } = await supabase.from('requests').insert([newReq]).select();
+            if (error) {
+              alert("Error: " + error.message);
+            } else {
+              setRequests([...data, ...requests]);
+              setShowReqModal(false);
+              alert(lang === 'ur' ? "ہنگامی درخواست پوسٹ کر دی گئی ہے!" : "Emergency request posted successfully!");
+            }
+          };
+
+          const handleDeleteDonor = async (id) => {
+            const { error } = await supabase.from('donors').delete().eq('id', id);
+            if (!error) {
+              setDonors(donors.filter(d => d.id !== id));
+            }
           };
 
           const currentCityDonors = donors.filter(d => {
@@ -442,10 +464,10 @@
                                 <div className="flex justify-between items-start mb-3">
                                   <div className="flex items-center gap-3">
                                     <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center font-extrabold text-lg">
-                                      {req.bloodGroup}
+                                      {req.blood_group}
                                     </div>
                                     <div>
-                                      <h4 className="font-bold text-base text-white">{t.patient} {req.patientName}</h4>
+                                      <h4 className="font-bold text-base text-white">{t.patient} {req.patient_name}</h4>
                                       <p className="text-xs text-slate-400">🏥 {req.hospital}, {req.city}</p>
                                     </div>
                                   </div>
@@ -503,7 +525,7 @@
                                 {donors.map(d => (
                                   <div key={d.id} className="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs">
                                     <span>{d.name} ({d.bloodGroup}) - {d.city} - {d.phone}</span>
-                                    <button onClick={() => setDonors(donors.filter(x => x.id !== d.id))} className="text-rose-400 hover:text-white px-2 py-1 rounded bg-rose-500/10">Delete</button>
+                                    <button onClick={() => handleDeleteDonor(d.id)} className="text-rose-400 hover:text-white px-2 py-1 rounded bg-rose-500/10">Delete</button>
                                   </div>
                                 ))}
                               </div>
@@ -570,12 +592,12 @@
                     <form onSubmit={handlePostRequest} className="space-y-4">
                       <div>
                         <label className="block text-xs font-semibold text-slate-300 mb-1.5">Patient Name</label>
-                        <input type="text" required placeholder="Patient Name" value={newReq.patientName} onChange={(e) => setNewReq({...newReq, patientName: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
+                        <input type="text" required placeholder="Patient Name" value={newReq.patient_name} onChange={(e) => setNewReq({...newReq, patient_name: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-xs font-semibold text-slate-300 mb-1.5">Required Blood</label>
-                          <select value={newReq.bloodGroup} onChange={(e) => setNewReq({...newReq, bloodGroup: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm font-bold text-amber-400 outline-none">
+                          <select value={newReq.blood_group} onChange={(e) => setNewReq({...newReq, blood_group: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm font-bold text-amber-400 outline-none">
                             {bloodGroups.filter(b => b !== "All / تمام").map(bg => <option key={bg} value={bg}>{bg}</option>)}
                           </select>
                         </div>
