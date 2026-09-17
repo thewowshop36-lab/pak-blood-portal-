@@ -10,7 +10,6 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Supabase JavaScript Client SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -23,7 +22,6 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Supabase کنکشن سیٹ اپ
         const SUPABASE_URL = "https://mvqnekaobsyreegkouca.supabase.co";
         const SUPABASE_KEY = "sb_publishable_WuDQresEEX_duONM1RwKbg_zVYtxoV0";
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -126,7 +124,6 @@
           const [donors, setDonors] = useState([]);
           const [requests, setRequests] = useState([]);
 
-          // ڈیٹا بیس سے ڈیٹا لوڈ کرنا
           useEffect(() => {
             fetchData();
           }, []);
@@ -156,7 +153,7 @@
           const adminSecretPassword = "RABNAWAZ@786";
 
           const [newDonor, setNewDonor] = useState({
-            name: "", bloodGroup: "O+", province: Object.keys(pakistanLocations)[0], city: pakistanLocations[Object.keys(pakistanLocations)[0]][0], phone: ""
+            name: "", bloodgroup: "O+", province: Object.keys(pakistanLocations)[0], city: pakistanLocations[Object.keys(pakistanLocations)[0]][0], phone: ""
           });
 
           const [newReq, setNewReq] = useState({
@@ -207,14 +204,14 @@
           const currentCityDonors = donors.filter(d => {
             const matchProv = d.province === selectedProvince;
             const matchCity = d.city === selectedCity;
-            const matchBlood = selectedBlood === "All / تمام" || d.bloodGroup === selectedBlood;
+            const dBlood = d.bloodgroup || d.bloodGroup || "O+";
+            const matchBlood = selectedBlood === "All / تمام" || dBlood === selectedBlood;
             return matchProv && matchCity && matchBlood;
           });
 
           return (
             <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
               <div>
-                {/* نیویگیشن بار */}
                 <header className="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
                   <div className="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center">
                     <div className="flex items-center space-x-3 space-x-reverse cursor-pointer" onClick={() => { setSelectedProvince(null); setSelectedCity(null); setActiveTab('directory'); }}>
@@ -284,7 +281,6 @@
                   )}
                 </header>
 
-                {/* موٹیویشنل ہیرو بینر */}
                 {activeTab !== 'admin' && (
                   <section className="bg-gradient-to-b from-slate-900 to-slate-950 py-10 px-4 border-b border-slate-800/80 text-center relative overflow-hidden">
                     <div className="max-w-3xl mx-auto relative z-10">
@@ -294,10 +290,7 @@
                   </section>
                 )}
 
-                {/* مین کنٹینٹ */}
                 <main className="max-w-7xl mx-auto px-4 py-6">
-                  
-                  {/* بیک بٹن اور بریڈ کرمب کنٹرول */}
                   {activeTab !== 'admin' && (
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 bg-slate-900/60 backdrop-blur border border-slate-800 p-3.5 rounded-2xl shadow-sm">
                       <div className="flex items-center gap-2 text-xs md:text-sm flex-wrap">
@@ -320,7 +313,6 @@
                         )}
                       </div>
 
-                      {/* واپسی کا واضح بٹن */}
                       {(selectedProvince || selectedCity || activeTab === 'requests') && (
                         <button 
                           onClick={() => {
@@ -419,7 +411,7 @@
                                   <div className="flex justify-between items-start mb-4">
                                     <div className="flex items-center gap-3">
                                       <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center font-extrabold text-lg shadow-inner">
-                                        {donor.bloodGroup}
+                                        {donor.bloodgroup || donor.bloodGroup}
                                       </div>
                                       <div>
                                         <h4 className="font-bold text-base text-white">{donor.name}</h4>
@@ -524,7 +516,7 @@
                               <div className="space-y-2 max-h-48 overflow-y-auto">
                                 {donors.map(d => (
                                   <div key={d.id} className="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs">
-                                    <span>{d.name} ({d.bloodGroup}) - {d.city} - {d.phone}</span>
+                                    <span>{d.name} ({d.bloodgroup || d.bloodGroup}) - {d.city} - {d.phone}</span>
                                     <button onClick={() => handleDeleteDonor(d.id)} className="text-rose-400 hover:text-white px-2 py-1 rounded bg-rose-500/10">Delete</button>
                                   </div>
                                 ))}
@@ -553,7 +545,7 @@
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-xs font-semibold text-slate-300 mb-1.5">{t.bloodGroup}</label>
-                          <select value={newDonor.bloodGroup} onChange={(e) => setNewDonor({...newDonor, bloodGroup: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm font-bold text-rose-400 outline-none">
+                          <select value={newDonor.bloodgroup} onChange={(e) => setNewDonor({...newDonor, bloodgroup: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm font-bold text-rose-400 outline-none">
                             {bloodGroups.filter(b => b !== "All / تمام").map(bg => <option key={bg} value={bg}>{bg}</option>)}
                           </select>
                         </div>
@@ -630,7 +622,6 @@
                 </div>
               )}
 
-              {/* فوٹر */}
               <footer className="bg-slate-900 border-t border-slate-800 py-8 mt-12 text-center text-xs space-y-2 text-slate-400">
                 <p>{t.footerText}</p>
               </footer>
