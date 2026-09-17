@@ -13,7 +13,7 @@
         body { font-family: 'Plus Jakarta Sans', 'Noto Nastaliq Urdu', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen selection:bg-rose-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-rose-500 selection:text-white">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -49,7 +49,7 @@
           ],
           "اسلام آباد / Islamabad": ["اسلام آباد / Islamabad Capital Territory"],
           "آزاد کشمیر و گلگت / AJK & GB": [
-            "مظفر آباد / Muzaffarabad", "میرپور / Mirpur", "راولاکوٹ / Rawalakوٹ", 
+            "مظفر آباد / Muzaffarabad", "میرپور / Mirpur", "راولاکوٹ / Rawalakot", 
             "گلگت / Gilgit", "سکردو / Skardu", "ہنزہ / Hunza"
           ]
         };
@@ -63,8 +63,8 @@
             registerDonor: "بطور ڈونر رجسٹر ہوں",
             postRequest: "خون کی ضرورت پوسٹ کریں",
             adminPanel: "ایڈمن پینل",
-            heroTitle: "ہر قطرہ زندگی کی امید ہے",
-            heroDesc: "پاکستان بھر میں فوری بلڈ ڈونرز تلاش کریں یا ہنگامی ضرورت کا اعلان کریں۔",
+            heroTitle: "کسی ایک کی زندگی بچانا پوری انسانیت کو بچانے کے برابر ہے",
+            heroDesc: "آئیے! اس کارِ خیر میں اپنا حصہ ڈالیں اور ضرورت مندوں تک بروقت خون پہنچا کر زندگی کی امید بنیں۔",
             selectProvince: "صوبہ منتخب کریں",
             selectCity: "شہر / ضلع منتخب کریں",
             bloodGroup: "بلڈ گروپ",
@@ -80,7 +80,8 @@
             loginBtn: "لاگ ان کریں",
             logoutBtn: "لاگ ان ختم کریں (Logout)",
             footerText: "© 2026 پاکستان بلڈ ڈونر نیٹ ورک۔ تمام حقوق محفوظ ہیں۔",
-            managerTag: "پلیٹ فارم مینیجر: اللہ دتا ربنواز (Allah ditta RABNAWAZ)"
+            managerTag: "پلیٹ فارم مینیجر: اللہ دتا ربنواز (Allah ditta RABNAWAZ)",
+            backBtn: "← واپس جائیں"
           },
           en: {
             title: "Pakistan Blood Donor Network",
@@ -88,8 +89,8 @@
             registerDonor: "Register as Donor",
             postRequest: "Post Blood Request",
             adminPanel: "Admin Panel",
-            heroTitle: "Every Drop is Hope for Life",
-            heroDesc: "Find verified blood donors across Pakistan or broadcast emergency requests instantly.",
+            heroTitle: "Saving one life is like saving all of humanity",
+            heroDesc: "Let's step forward in this noble cause and become a beacon of hope by donating blood on time.",
             selectProvince: "Select Province",
             selectCity: "Select City / District",
             bloodGroup: "Blood Group",
@@ -105,7 +106,8 @@
             loginBtn: "Login",
             logoutBtn: "Logout",
             footerText: "© 2026 Pakistan Blood Donor Network. All rights reserved.",
-            managerTag: "Platform Manager: Allah ditta RABNAWAZ"
+            managerTag: "Platform Manager: Allah ditta RABNAWAZ",
+            backBtn: "← Go Back"
           }
         };
 
@@ -116,24 +118,24 @@
           
           const [donors, setDonors] = useState(() => {
             try {
-              const saved = localStorage.getItem('pak_blood_donors_v7');
+              const saved = localStorage.getItem('pak_blood_donors_v9');
               return saved ? JSON.parse(saved) : [];
             } catch(e) { return []; }
           });
 
           const [requests, setRequests] = useState(() => {
             try {
-              const saved = localStorage.getItem('pak_blood_requests_v7');
+              const saved = localStorage.getItem('pak_blood_requests_v9');
               return saved ? JSON.parse(saved) : [];
             } catch(e) { return []; }
           });
 
           useEffect(() => {
-            localStorage.setItem('pak_blood_donors_v7', JSON.stringify(donors));
+            localStorage.setItem('pak_blood_donors_v9', JSON.stringify(donors));
           }, [donors]);
 
           useEffect(() => {
-            localStorage.setItem('pak_blood_requests_v7', JSON.stringify(requests));
+            localStorage.setItem('pak_blood_requests_v9', JSON.stringify(requests));
           }, [requests]);
 
           const [selectedProvince, setSelectedProvince] = useState(null);
@@ -190,8 +192,8 @@
           return (
             <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
               <div>
-                {/* پریمیم نیویگیشن بار */}
-                <header className="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
+                {/* نیویگیشن بار */}
+                <header className="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
                   <div className="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center">
                     <div className="flex items-center space-x-3 space-x-reverse cursor-pointer" onClick={() => { setSelectedProvince(null); setSelectedCity(null); setActiveTab('directory'); }}>
                       <div className="bg-gradient-to-tr from-rose-600 to-rose-500 p-2.5 rounded-2xl shadow-lg shadow-rose-500/20">
@@ -260,46 +262,64 @@
                   )}
                 </header>
 
-                {/* ہیرو بینر */}
+                {/* موٹیویشنل ہیرو بینر */}
                 {activeTab !== 'admin' && (
                   <section className="bg-gradient-to-b from-slate-900 to-slate-950 py-10 px-4 border-b border-slate-800/80 text-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(225,29,72,0.1)_0,transparent_70%)]"></div>
                     <div className="max-w-3xl mx-auto relative z-10">
-                      <span className="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-extrabold px-3.5 py-1.5 rounded-full uppercase tracking-wider mb-3 inline-block">
-                        {t.subtitle}
-                      </span>
-                      <h2 className="text-2xl md:text-4xl font-extrabold tracking-tight mt-2 mb-3 text-white">{t.heroTitle}</h2>
+                      <h2 className="text-xl md:text-3xl font-extrabold tracking-tight mb-3 text-white leading-snug">{t.heroTitle}</h2>
                       <p className="text-slate-400 text-xs md:text-sm max-w-xl mx-auto leading-relaxed">{t.heroDesc}</p>
                     </div>
                   </section>
                 )}
 
                 {/* مین کنٹینٹ */}
-                <main className="max-w-7xl mx-auto px-4 py-8">
+                <main className="max-w-7xl mx-auto px-4 py-6">
+                  
+                  {/* بیک بٹن اور بریڈ کرمب کنٹرول */}
                   {activeTab !== 'admin' && (
-                    <div className="flex items-center gap-2 text-xs md:text-sm mb-6 bg-slate-900/60 backdrop-blur border border-slate-800 p-3.5 rounded-2xl shadow-sm">
-                      <button onClick={() => { setSelectedProvince(null); setSelectedCity(null); setActiveTab('directory'); }} className="text-rose-400 font-bold hover:underline">
-                        {lang === 'ur' ? 'تمام صوبے' : 'All Provinces'}
-                      </button>
-                      {selectedProvince && (
-                        <>
-                          <span className="text-slate-600">/</span>
-                          <button onClick={() => setSelectedCity(null)} className={`font-bold ${selectedCity ? 'text-rose-400 hover:underline' : 'text-slate-300'}`}>
-                            {selectedProvince}
-                          </button>
-                        </>
-                      )}
-                      {selectedCity && (
-                        <>
-                          <span className="text-slate-600">/</span>
-                          <span className="text-white font-extrabold bg-rose-500/10 text-rose-300 px-2.5 py-0.5 rounded-lg border border-rose-500/20">{selectedCity}</span>
-                        </>
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 bg-slate-900/60 backdrop-blur border border-slate-800 p-3.5 rounded-2xl shadow-sm">
+                      <div className="flex items-center gap-2 text-xs md:text-sm flex-wrap">
+                        <button onClick={() => { setSelectedProvince(null); setSelectedCity(null); setActiveTab('directory'); }} className="text-rose-400 font-bold hover:underline">
+                          {lang === 'ur' ? 'تمام صوبے' : 'All Provinces'}
+                        </button>
+                        {selectedProvince && (
+                          <>
+                            <span className="text-slate-600">/</span>
+                            <button onClick={() => setSelectedCity(null)} className={`font-bold ${selectedCity ? 'text-rose-400 hover:underline' : 'text-slate-300'}`}>
+                              {selectedProvince}
+                            </button>
+                          </>
+                        )}
+                        {selectedCity && (
+                          <>
+                            <span className="text-slate-600">/</span>
+                            <span className="text-white font-extrabold bg-rose-500/10 text-rose-300 px-2.5 py-0.5 rounded-lg border border-rose-500/20">{selectedCity}</span>
+                          </>
+                        )}
+                      </div>
+
+                      {/* واپسی کا واضح بٹن */}
+                      {(selectedProvince || selectedCity || activeTab === 'requests') && (
+                        <button 
+                          onClick={() => {
+                            if (selectedCity) {
+                              setSelectedCity(null);
+                            } else if (selectedProvince) {
+                              setSelectedProvince(null);
+                            } else if (activeTab === 'requests') {
+                              setActiveTab('directory');
+                            }
+                          }}
+                          className="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-500/30 transition flex items-center gap-1.5"
+                        >
+                          {t.backBtn}
+                        </button>
                       )}
                     </div>
                   )}
 
                   {activeTab !== 'admin' && (
-                    <div className="flex border-b border-slate-800 mb-8">
+                    <div className="flex border-b border-slate-800 mb-6">
                       <button onClick={() => setActiveTab('directory')} className={`pb-3 px-6 font-bold text-sm md:text-base border-b-2 transition ${activeTab === 'directory' ? 'border-rose-500 text-rose-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
                         {t.donorsTab} ({donors.length})
                       </button>
@@ -334,10 +354,6 @@
 
                       {selectedProvince && !selectedCity && (
                         <div>
-                          <div className="flex justify-between items-center mb-5">
-                            <h3 className="text-lg font-bold text-white">{selectedProvince}</h3>
-                            <button onClick={() => setSelectedProvince(null)} className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3.5 py-2 rounded-xl font-semibold border border-slate-700">← Back</button>
-                          </div>
                           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                             {pakistanLocations[selectedProvince].map(city => {
                               const cityDonorsCount = donors.filter(d => d.province === selectedProvince && d.city === city).length;
@@ -592,7 +608,7 @@
                 </div>
               )}
 
-              {/* پریمیم فوٹر */}
+              {/* فوٹر */}
               <footer className="bg-slate-900 border-t border-slate-800 py-8 mt-12 text-center text-xs space-y-2 text-slate-400">
                 <p>{t.footerText}</p>
                 <p className="text-rose-400 font-bold">{t.managerTag}</p>
