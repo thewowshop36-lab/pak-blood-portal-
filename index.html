@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pakistan Blood Donor Portal - Admin: Allah ditta RABNAWAZ</title>
+    <title>Pakistan Blood Donor Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -59,7 +59,7 @@
         const translations = {
           ur: {
             title: "پاکستان بلڈ ڈونر نیٹ ورک",
-            subtitle: "منتظم: اللہ دتا ربنواز (Allah ditta RABNAWAZ)",
+            subtitle: "قومی فلاحی و انسانی پلیٹ فارم",
             registerDonor: "بطور ڈونر رجسٹر ہوں",
             postRequest: "خون کی ضرورت پوسٹ کریں",
             adminPanel: "ایڈمن پینل",
@@ -79,13 +79,12 @@
             passwordPlaceholder: "پاس ورڈ درج کریں",
             loginBtn: "لاگ ان کریں",
             logoutBtn: "لاگ ان ختم کریں (Logout)",
-            footerText: "© 2026 پاکستان بلڈ ڈونر نیٹ ورک۔ تمام حقوق محفوظ ہیں۔",
-            managerTag: "پلیٹ فارم مینیجر: اللہ دتا ربنواز (Allah ditta RABNAWAZ)",
+            footerText: "© 2026 پاکستان بلڈ ڈونر نیٹ ورک۔ تمام حقوق محفوظ ہیں۔ انسانیت کی خدمت ہمارا نصب العین ہے۔",
             backBtn: "← واپس جائیں"
           },
           en: {
             title: "Pakistan Blood Donor Network",
-            subtitle: "Admin: Allah ditta RABNAWAZ",
+            subtitle: "National Welfare & Humanitarian Platform",
             registerDonor: "Register as Donor",
             postRequest: "Post Blood Request",
             adminPanel: "Admin Panel",
@@ -105,8 +104,7 @@
             passwordPlaceholder: "Enter Password",
             loginBtn: "Login",
             logoutBtn: "Logout",
-            footerText: "© 2026 Pakistan Blood Donor Network. All rights reserved.",
-            managerTag: "Platform Manager: Allah ditta RABNAWAZ",
+            footerText: "© 2026 Pakistan Blood Donor Network. All rights reserved. Serving humanity is our core mission.",
             backBtn: "← Go Back"
           }
         };
@@ -118,24 +116,24 @@
           
           const [donors, setDonors] = useState(() => {
             try {
-              const saved = localStorage.getItem('pak_blood_donors_v9');
+              const saved = localStorage.getItem('pak_blood_donors_v10');
               return saved ? JSON.parse(saved) : [];
             } catch(e) { return []; }
           });
 
           const [requests, setRequests] = useState(() => {
             try {
-              const saved = localStorage.getItem('pak_blood_requests_v9');
+              const saved = localStorage.getItem('pak_blood_requests_v10');
               return saved ? JSON.parse(saved) : [];
             } catch(e) { return []; }
           });
 
           useEffect(() => {
-            localStorage.setItem('pak_blood_donors_v9', JSON.stringify(donors));
+            localStorage.setItem('pak_blood_donors_v10', JSON.stringify(donors));
           }, [donors]);
 
           useEffect(() => {
-            localStorage.setItem('pak_blood_requests_v9', JSON.stringify(requests));
+            localStorage.setItem('pak_blood_requests_v10', JSON.stringify(requests));
           }, [requests]);
 
           const [selectedProvince, setSelectedProvince] = useState(null);
@@ -490,7 +488,7 @@
                           <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
                             <div>
                               <h3 className="text-lg font-bold text-white">Admin Control Panel</h3>
-                              <p className="text-xs text-rose-400">Manager: Allah ditta RABNAWAZ</p>
+                              <p className="text-xs text-rose-400">Authorized Management</p>
                             </div>
                             <button onClick={() => { setIsAdminLoggedIn(false); setAdminPass(""); }} className="bg-slate-800 hover:bg-slate-700 text-rose-400 px-3 py-2 rounded-xl text-xs font-bold border border-slate-700">
                               {t.logoutBtn}
@@ -611,7 +609,6 @@
               {/* فوٹر */}
               <footer className="bg-slate-900 border-t border-slate-800 py-8 mt-12 text-center text-xs space-y-2 text-slate-400">
                 <p>{t.footerText}</p>
-                <p className="text-rose-400 font-bold">{t.managerTag}</p>
               </footer>
             </div>
           );
