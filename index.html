@@ -71,7 +71,6 @@
             subtitle: "قومی فلاحی و انسانی پلیٹ فارم",
             registerDonor: "بطور ڈونر رجسٹر ہوں",
             postRequest: "خون کی ضرورت پوسٹ کریں",
-            adminPanel: "ایڈمن پینل",
             heroTitle: "کسی ایک کی زندگی بچانا پوری انسانیت کو بچانے کے برابر ہے",
             heroDesc: "آئیے! اس کارِ خیر میں اپنا حصہ ڈالیں اور ضرورت مندوں تک بروقت خون پہنچا کر زندگی کی امید بنیں۔",
             selectProvince: "صوبہ منتخب کریں",
@@ -84,10 +83,6 @@
             patient: "مریض:",
             hospital: "ہسپتال:",
             urgency: "فوری ضرورت",
-            adminLogin: "ایڈمن لاگ ان",
-            passwordPlaceholder: "پاس ورڈ درج کریں",
-            loginBtn: "لاگ ان کریں",
-            logoutBtn: "لاگ ان ختم کریں (Logout)",
             footerText: "© 2026 پاکستان بلڈ ڈونر نیٹ ورک۔ تمام حقوق محفوظ ہیں۔ انسانیت کی خدمت ہمارا نصب العین ہے۔",
             backBtn: "← واپس جائیں"
           },
@@ -96,7 +91,6 @@
             subtitle: "National Welfare & Humanitarian Platform",
             registerDonor: "Register as Donor",
             postRequest: "Post Blood Request",
-            adminPanel: "Admin Panel",
             heroTitle: "Saving one life is like saving all of humanity",
             heroDesc: "Let's step forward in this noble cause and become a beacon of hope by donating blood on time.",
             selectProvince: "Select Province",
@@ -109,10 +103,6 @@
             patient: "Patient:",
             hospital: "Hospital:",
             urgency: "Urgent",
-            adminLogin: "Admin Login",
-            passwordPlaceholder: "Enter Password",
-            loginBtn: "Login",
-            logoutBtn: "Logout",
             footerText: "© 2026 Pakistan Blood Donor Network. All rights reserved. Serving humanity is our core mission.",
             backBtn: "← Go Back"
           }
@@ -149,10 +139,6 @@
           const [showDonorModal, setShowDonorModal] = useState(false);
           const [showReqModal, setShowReqModal] = useState(false);
           const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-          const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
-          const [adminPass, setAdminPass] = useState("");
-          const adminSecretPassword = "RABNAWAZ@786";
 
           const [newDonor, setNewDonor] = useState({
             name: "", bloodgroup: "O+", province: Object.keys(pakistanLocations)[0], city: pakistanLocations[Object.keys(pakistanLocations)[0]][0], phone: ""
@@ -196,13 +182,6 @@
             }
           };
 
-          const handleDeleteDonor = async (id) => {
-            const { error } = await supabase.from('donors').delete().eq('id', id);
-            if (!error) {
-              setDonors(donors.filter(d => d.id !== id));
-            }
-          };
-
           const currentCityDonors = donors.filter(d => {
             const matchProv = d.province === selectedProvince;
             const matchCity = d.city === selectedCity;
@@ -236,9 +215,6 @@
                       <button onClick={() => setShowReqModal(true)} className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl font-bold text-xs shadow-lg shadow-amber-500/20 transition transform hover:-translate-y-0.5">
                         {t.postRequest}
                       </button>
-                      <button onClick={() => setActiveTab('admin')} className={`px-3 py-2 rounded-xl font-bold text-xs transition border ${activeTab === 'admin' ? 'bg-rose-500 text-white border-rose-400' : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'}`}>
-                        {t.adminPanel}
-                      </button>
                     </div>
 
                     <div className="flex md:hidden items-center gap-2">
@@ -259,67 +235,58 @@
                       <button onClick={() => { setShowReqModal(true); setMobileMenuOpen(false); }} className="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl font-bold text-sm text-center">
                         {t.postRequest}
                       </button>
-                      
-         {
-                      </button>
                     </div>
                   )}
                 </header>
 
-                 {
-                  <section className="bg-gradient-to-b from-slate-900 to-slate-950 py-10 px-4 border-b border-slate-800/80 text-center relative overflow-hidden">
-                    <div className="max-w-3xl mx-auto relative z-10">
-                      <h2 className="text-xl md:text-3xl font-extrabold tracking-tight mb-3 text-white leading-snug">{t.heroTitle}</h2>
-                      <p className="text-slate-400 text-xs md:text-sm max-w-xl mx-auto leading-relaxed">{t.heroDesc}</p>
-                    </div>
-                  </section>
-                )}
+                <section className="bg-gradient-to-b from-slate-900 to-slate-950 py-10 px-4 border-b border-slate-800/80 text-center relative overflow-hidden">
+                  <div className="max-w-3xl mx-auto relative z-10">
+                    <h2 className="text-xl md:text-3xl font-extrabold tracking-tight mb-3 text-white leading-snug">{t.heroTitle}</h2>
+                    <p className="text-slate-400 text-xs md:text-sm max-w-xl mx-auto leading-relaxed">{t.heroDesc}</p>
+                  </div>
+                </section>
 
                 <main className="max-w-7xl mx-auto px-4 py-6">
-                  {activeTab !== 'admin' && (
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 bg-slate-900/60 backdrop-blur border border-slate-800 p-3.5 rounded-2xl shadow-sm">
-                      <div className="flex items-center gap-2 text-xs md:text-sm flex-wrap">
-                        <button onClick={() => { setSelectedProvince(null); setSelectedCity(null); setActiveTab('directory'); }} className="text-rose-400 font-bold hover:underline">
-                          {lang === 'ur' ? 'تمام صوبے' : 'All Provinces'}
-                        </button>
-                        {selectedProvince && (
-                          <>
-                            <span className="text-slate-600">/</span>
-                            <button onClick={() => setSelectedCity(null)} className={`font-bold ${selectedCity ? 'text-rose-400 hover:underline' : 'text-slate-300'}`}>
-                              {selectedProvince}
-                            </button>
-                          </>
-                        )}
-                        {selectedCity && (
-                          <>
-                            <span className="text-slate-600">/</span>
-                            <span className="text-white font-extrabold bg-rose-500/10 text-rose-300 px-2.5 py-0.5 rounded-lg border border-rose-500/20">{selectedCity}</span>
-                          </>
-                        )}
-                      </div>
-
-                      {(selectedProvince || selectedCity || activeTab === 'requests') && (
-                        <button onClick={() => {
-                          if (selectedCity) setSelectedCity(null);
-                          else if (selectedProvince) setSelectedProvince(null);
-                          else if (activeTab === 'requests') setActiveTab('directory');
-                        }} className="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-500/30 transition flex items-center gap-1.5">
-                          {t.backBtn}
-                        </button>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 bg-slate-900/60 backdrop-blur border border-slate-800 p-3.5 rounded-2xl shadow-sm">
+                    <div className="flex items-center gap-2 text-xs md:text-sm flex-wrap">
+                      <button onClick={() => { setSelectedProvince(null); setSelectedCity(null); setActiveTab('directory'); }} className="text-rose-400 font-bold hover:underline">
+                        {lang === 'ur' ? 'تمام صوبے' : 'All Provinces'}
+                      </button>
+                      {selectedProvince && (
+                        <>
+                          <span className="text-slate-600">/</span>
+                          <button onClick={() => setSelectedCity(null)} className={`font-bold ${selectedCity ? 'text-rose-400 hover:underline' : 'text-slate-300'}`}>
+                            {selectedProvince}
+                          </button>
+                        </>
+                      )}
+                      {selectedCity && (
+                        <>
+                          <span className="text-slate-600">/</span>
+                          <span className="text-white font-extrabold bg-rose-500/10 text-rose-300 px-2.5 py-0.5 rounded-lg border border-rose-500/20">{selectedCity}</span>
+                        </>
                       )}
                     </div>
-                  )}
 
-                  {activeTab !== 'admin' && (
-                    <div className="flex border-b border-slate-800 mb-6">
-                      <button onClick={() => setActiveTab('directory')} className={`pb-3 px-6 font-bold text-sm md:text-base border-b-2 transition ${activeTab === 'directory' ? 'border-rose-500 text-rose-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
-                        {t.donorsTab} ({donors.length})
+                    {(selectedProvince || selectedCity || activeTab === 'requests') && (
+                      <button onClick={() => {
+                        if (selectedCity) setSelectedCity(null);
+                        else if (selectedProvince) setSelectedProvince(null);
+                        else if (activeTab === 'requests') setActiveTab('directory');
+                      }} className="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-500/30 transition flex items-center gap-1.5">
+                        {t.backBtn}
                       </button>
-                      <button onClick={() => setActiveTab('requests')} className={`pb-3 px-6 font-bold text-sm md:text-base border-b-2 transition ${activeTab === 'requests' ? 'border-rose-500 text-rose-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
-                        {t.requestsTab} ({requests.length})
-                      </button>
-                    </div>
-                  )}
+                    )}
+                  </div>
+
+                  <div className="flex border-b border-slate-800 mb-6">
+                    <button onClick={() => setActiveTab('directory')} className={`pb-3 px-6 font-bold text-sm md:text-base border-b-2 transition ${activeTab === 'directory' ? 'border-rose-500 text-rose-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
+                      {t.donorsTab} ({donors.length})
+                    </button>
+                    <button onClick={() => setActiveTab('requests')} className={`pb-3 px-6 font-bold text-sm md:text-base border-b-2 transition ${activeTab === 'requests' ? 'border-rose-500 text-rose-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
+                      {t.requestsTab} ({requests.length})
+                    </button>
+                  </div>
 
                   {activeTab === 'directory' && (
                     <div>
@@ -454,53 +421,6 @@
                               </div>
                             </div>
                           ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {activeTab === 'admin' && (
-                    <div className="max-w-3xl mx-auto bg-slate-900 rounded-2xl border border-slate-800 p-6 md:p-8 shadow-xl">
-                      {!isAdminLoggedIn ? (
-                        <div className="max-w-md mx-auto text-center py-6">
-                          <h3 className="text-xl font-bold text-white mb-2">{t.adminLogin}</h3>
-                          <p className="text-xs text-slate-400 mb-6">Restricted access for Platform Manager only</p>
-                          <form onSubmit={(e) => { 
-                            e.preventDefault(); 
-                            if (adminPass === adminSecretPassword) { 
-                              setIsAdminLoggedIn(true); 
-                            } else { 
-                              alert("Incorrect Password!"); 
-                            } 
-                          }} className="space-y-4">
-                            <input type="password" placeholder={t.passwordPlaceholder} value={adminPass} onChange={(e) => setAdminPass(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-center text-white outline-none focus:border-rose-500" />
-                            <button type="submit" className="w-full bg-rose-600 hover:bg-rose-500 text-white py-3 rounded-xl font-bold text-xs shadow transition">{t.loginBtn}</button>
-                          </form>
-                        </div>
-                      ) : (
-                        <div>
-                          <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
-                            <div>
-                              <h3 className="text-lg font-bold text-white">Admin Control Panel</h3>
-                              <p className="text-xs text-rose-400">Authorized Management</p>
-                            </div>
-                            <button onClick={() => { setIsAdminLoggedIn(false); setAdminPass(""); }} className="bg-slate-800 hover:bg-slate-700 text-rose-400 px-3 py-2 rounded-xl text-xs font-bold border border-slate-700">
-                              {t.logoutBtn}
-                            </button>
-                          </div>
-                          <div className="mb-6">
-                            <h4 className="font-bold text-sm text-slate-300 mb-3">Registered Donors ({donors.length})</h4>
-                            {donors.length === 0 ? <p className="text-xs text-slate-500 bg-slate-950 p-4 rounded-xl text-center">No donors found.</p> : (
-                              <div className="space-y-2 max-h-48 overflow-y-auto">
-                                {donors.map(d => (
-                                  <div key={d.id} className="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs">
-                                    <span>{d.name} ({d.bloodgroup || d.bloodGroup}) - {d.city} - {d.phone}</span>
-                                    <button onClick={() => handleDeleteDonor(d.id)} className="text-rose-400 hover:text-white px-2 py-1 rounded bg-rose-500/10">Delete</button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
                         </div>
                       )}
                     </div>
