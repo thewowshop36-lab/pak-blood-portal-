@@ -1,611 +1,296 @@
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7851628350442317"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
-   
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pakistan Blood Donor Network</title>
-    <meta name="google-site-verification" content="Z7x9RTZEmPO-qEgee6EfJXOAwUNFXZT0yelA_jOqQpI" />
+    <title>پاکستان بلڈ ڈونر نیٹ ورک</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', 'Noto Nastaliq Urdu', sans-serif; }
-    </style>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-rose-500 selection:text-white">
-    <div id="root"></div>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen">
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-
-        const SUPABASE_URL = "https://mvqnekaobsyreegkouca.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_WuDQresEEX_duONM1RwKbg_zVYtxoV0";
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        const pakistanLocations = {
-          "پنجاب / Punjab": [
-            "احمد پور شرقیہ / Ahmedpur East", "اٹک / Attock", "بہاولنگر / Bahawalnagar", "بہاولپور / Bahawalpur", 
-            "بھکر / Bhakkar", "چکوال / Chakwal", "چینیوٹ / Chiniot", "ڈیرہ غازی خان / D.G. Khan", 
-            "فیصل آباد / Faisalabad", "گوجرانوالہ / Gujranwala", "گجرات / Gujrat", "حافظ آباد / Hafizabad", 
-            "جھنگ / Jhang", "جہلم / Jhelum", "قصور / Kasur", "خانیوال / Khanewal", "خوشاب / Khushab", 
-            "لاہور / Lahore", "لودھراں / Lodhran", "منڈی بہاؤالدین / Mandi Bahauddin", "میانوالی / Mianwali", 
-            "ملتان / Multan", "مظفر گڑھ / Muzaffargarh", "نارووال / Narowal", "اوکاڑہ / Okara", 
-            "پاکپتن / Pakpattan", "رحیم یار خان / Rahim Yar Khan", "راجن پور / Rajanpur", "راولپنڈی / Rawalpindi", 
-            "ساہیوال / Sahiwal", "سرگودھا / Sargodha", "شیخوپورہ / Sheikhupura", "سیالکوٹ / Sialkot", 
-            "ٹوبہ ٹیک سنگھ / Toba Tek Singh", "وہاڑی / Vehari"
-          ],
-          "سندھ / Sindh": [
-            "بدین / Badin", "گھوٹکی / Ghotki", "حیدرآباد / Hyderabad", "جیکب آباد / Jacobabad", 
-            "جامشورو / Jamshoro", "کراچی / Karachi", "کشمور / Kashmore", "لاڑکانہ / Larkana", 
-            "مٹیاری / Matiari", "میرپور خاص / Mirpur Khas", "نوشہروفیروز / Naushahro Feroze", 
-            "نوابشاہ / Nawabshah", "سکھر / Sukkur", "شکارپور / Shikarpur", "ٹنڈو الہ یار / Tando Allahyar", 
-            "ٹنڈو محمد خان / Tando Muhammad Khan", "تھرپارکر / Tharparkar", "عمرکوٹ / Umerkot"
-          ],
-          "خیبر پختونخوا / KPK": [
-            "ایبٹ آباد / Abbottabad", "بنوں / Bannu", "چارسدہ / Charsadda", "چترال / Chitral", 
-            "ڈیرہ اسماعیل خان / D.I. Khan", "ہری پور / Haripur", "کوہاٹ / Kohat", "مردان / Mardan", 
-            "نوشہرہ / Nowshera", "پشاور / Peshawar", "صوابی / Swabi", "سوات / Swat", "ٹانک / Tank"
-          ],
-          "بلوچستان / Balochistan": [
-            "گوادر / Gwadar", "خضدار / Khuzdar", "لسبیلہ / Lasbela", "مستونگ / Mastung", 
-            "کوئٹہ / Quetta", "سبی / Sibi", "ژوب / Zhob"
-          ],
-          "اسلام آباد / Islamabad": ["اسلام آباد / Islamabad Capital Territory"],
-          "آزاد کشمیر و گلگت / AJK & GB": [
-            "مظفر آباد / Muzaffarabad", "میرپور / Mirpur", "راولاکوٹ / Rawalakot", 
-            "گلگت / Gilgit", "سکردو / Skardu", "ہنزہ / Hunza"
-          ]
-        };
-
-        const bloodGroups = ["All / تمام", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-
-        const translations = {
-          ur: {
-            title: "پاکستان بلڈ ڈونر نیٹ ورک",
-            subtitle: "قومی فلاحی و انسانی پلیٹ فارم",
-            registerDonor: "بطور ڈونر رجسٹر ہوں",
-            postRequest: "خون کی ضرورت پوسٹ کریں",
-            adminPanel: "ایڈمن پینل",
-            heroTitle: "کسی ایک کی زندگی بچانا پوری انسانیت کو بچانے کے برابر ہے",
-            heroDesc: "آئیے! اس کارِ خیر میں اپنا حصہ ڈالیں اور ضرورت مندوں تک بروقت خون پہنچا کر زندگی کی امید بنیں۔",
-            selectProvince: "صوبہ منتخب کریں",
-            selectCity: "شہر / ضلع منتخب کریں",
-            bloodGroup: "بلڈ گروپ",
-            donorsTab: "دستیاب ڈونرز",
-            requestsTab: "ہنگامی درخواستیں",
-            available: "دستیاب (Available)",
-            phone: "رابطہ نمبر:",
-            patient: "مریض:",
-            hospital: "ہسپتال:",
-            urgency: "فوری ضرورت",
-            adminLogin: "ایڈمن لاگ ان",
-            passwordPlaceholder: "پاس ورڈ درج کریں",
-            loginBtn: "لاگ ان کریں",
-            logoutBtn: "لاگ ان ختم کریں (Logout)",
-            footerText: "© 2026 پاکستان بلڈ ڈونر نیٹ ورک۔ تمام حقوق محفوظ ہیں۔ انسانیت کی خدمت ہمارا نصب العین ہے۔",
-            backBtn: "← واپس جائیں"
-          },
-          en: {
-            title: "Pakistan Blood Donor Network",
-            subtitle: "National Welfare & Humanitarian Platform",
-            registerDonor: "Register as Donor",
-            postRequest: "Post Blood Request",
-            adminPanel: "Admin Panel",
-            heroTitle: "Saving one life is like saving all of humanity",
-            heroDesc: "Let's step forward in this noble cause and become a beacon of hope by donating blood on time.",
-            selectProvince: "Select Province",
-            selectCity: "Select City / District",
-            bloodGroup: "Blood Group",
-            donorsTab: "Available Donors",
-            requestsTab: "Emergency Requests",
-            available: "Available",
-            phone: "Contact:",
-            patient: "Patient:",
-            hospital: "Hospital:",
-            urgency: "Urgent",
-            adminLogin: "Admin Login",
-            passwordPlaceholder: "Enter Password",
-            loginBtn: "Login",
-            logoutBtn: "Logout",
-            footerText: "© 2026 Pakistan Blood Donor Network. All rights reserved. Serving humanity is our core mission.",
-            backBtn: "← Go Back"
-          }
-        };
-
-        function App() {
-          const [lang, setLang] = useState('ur');
-          const t = translations[lang];
-          const [activeTab, setActiveTab] = useState('directory'); 
-          
-          const [donors, setDonors] = useState([]);
-          const [requests, setRequests] = useState([]);
-
-          useEffect(() => {
-            fetchData();
-          }, []);
-
-          const fetchData = async () => {
-            try {
-              const { data: donorData } = await supabase.from('donors').select('*');
-              if (donorData) setDonors(donorData);
-
-              const { data: reqData } = await supabase.from('requests').select('*');
-              if (reqData) setRequests(reqData);
-            } catch (err) {
-              console.error("Error fetching data:", err);
-            }
-          };
-
-          const [selectedProvince, setSelectedProvince] = useState(null);
-          const [selectedCity, setSelectedCity] = useState(null);
-          const [selectedBlood, setSelectedBlood] = useState("All / تمام");
-
-          const [showDonorModal, setShowDonorModal] = useState(false);
-          const [showReqModal, setShowReqModal] = useState(false);
-          const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-          const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
-          const [adminPass, setAdminPass] = useState("");
-          const adminSecretPassword = "RABNAWAZ@786";
-
-          const [newDonor, setNewDonor] = useState({
-            name: "", bloodgroup: "O+", province: Object.keys(pakistanLocations)[0], city: pakistanLocations[Object.keys(pakistanLocations)[0]][0], phone: ""
-          });
-
-          const [newReq, setNewReq] = useState({
-            patient_name: "", blood_group: "O+", province: Object.keys(pakistanLocations)[0], city: pakistanLocations[Object.keys(pakistanLocations)[0]][0], hospital: "", contact: "", urgency: "Urgent / فوری"
-          });
-
-          const handleRegisterDonor = async (e) => {
-            e.preventDefault();
-            if (!newDonor.name || !newDonor.phone) {
-              alert(lang === 'ur' ? "براہ کرم نام اور فون نمبر درج کریں۔" : "Please enter name and phone.");
-              return;
-            }
-            
-            const { data, error } = await supabase.from('donors').insert([newDonor]).select();
-            if (error) {
-              alert("Error: " + error.message);
-            } else {
-              setDonors([...data, ...donors]);
-              setShowDonorModal(false);
-              alert(lang === 'ur' ? "آپ کامیابی سے رجسٹر ہو گئے ہیں!" : "Successfully registered as donor!");
-            }
-          };
-
-          const handlePostRequest = async (e) => {
-            e.preventDefault();
-            if (!newReq.patient_name || !newReq.contact || !newReq.hospital) {
-              alert(lang === 'ur' ? "براہ کرم تمام معلومات درج کریں۔" : "Please fill all required fields.");
-              return;
-            }
-
-            const { data, error } = await supabase.from('requests').insert([newReq]).select();
-            if (error) {
-              alert("Error: " + error.message);
-            } else {
-              setRequests([...data, ...requests]);
-              setShowReqModal(false);
-              alert(lang === 'ur' ? "ہنگامی درخواست پوسٹ کر دی گئی ہے!" : "Emergency request posted successfully!");
-            }
-          };
-
-          const handleDeleteDonor = async (id) => {
-            const { error } = await supabase.from('donors').delete().eq('id', id);
-            if (!error) {
-              setDonors(donors.filter(d => d.id !== id));
-            }
-          };
-
-          const currentCityDonors = donors.filter(d => {
-            const matchProv = d.province === selectedProvince;
-            const matchCity = d.city === selectedCity;
-            const dBlood = d.bloodgroup || d.bloodGroup || "O+";
-            const matchBlood = selectedBlood === "All / تمام" || dBlood === selectedBlood;
-            return matchProv && matchCity && matchBlood;
-          });
-
-          return (
-            <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
-              <div>
-                <header className="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
-                  <div className="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center">
-                    <div className="flex items-center space-x-3 space-x-reverse cursor-pointer" onClick={() => { setSelectedProvince(null); setSelectedCity(null); setActiveTab('directory'); }}>
-                      <div className="bg-gradient-to-tr from-rose-600 to-rose-500 p-2.5 rounded-2xl shadow-lg shadow-rose-500/20">
-                        <svg className="w-6 h-6 text-white fill-current animate-pulse" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                      </div>
-                      <div>
-                        <h1 className="text-base md:text-lg font-extrabold tracking-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">{t.title}</h1>
-                        <p className="text-[11px] text-rose-400 font-medium">{t.subtitle}</p>
-                      </div>
+    <!-- ہیڈر اور ہیمبرگر مینو بٹن -->
+    <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 shadow-md">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <button onclick="toggleMenu()" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-200 transition border border-slate-700">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+                <div class="flex items-center space-x-2 space-x-reverse cursor-pointer" onclick="switchTab('home')">
+                    <div class="bg-rose-500/20 p-2 rounded-xl text-rose-500">
+                        <i data-lucide="heart" class="w-5 h-5 fill-rose-500"></i>
                     </div>
-
-                    <div className="hidden md:flex items-center space-x-3 space-x-reverse">
-                      <button onClick={() => setLang(lang === 'ur' ? 'en' : 'ur')} className="bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-bold px-3 py-2 rounded-xl border border-slate-700 transition">
-                        {lang === 'ur' ? 'English 🌐' : 'اردو 🌐'}
-                      </button>
-                      <button onClick={() => setShowDonorModal(true)} className="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl font-bold text-xs shadow-lg shadow-rose-600/30 transition transform hover:-translate-y-0.5">
-                        {t.registerDonor}
-                      </button>
-                      <button onClick={() => setShowReqModal(true)} className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl font-bold text-xs shadow-lg shadow-amber-500/20 transition transform hover:-translate-y-0.5">
-                        {t.postRequest}
-                      </button>
-                      <button onClick={() => setActiveTab('admin')} className={`px-3 py-2 rounded-xl font-bold text-xs transition border ${activeTab === 'admin' ? 'bg-rose-500 text-white border-rose-400' : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'}`}>
-                        {t.adminPanel}
-                      </button>
-                    </div>
-
-                    <div className="flex md:hidden items-center gap-2">
-                      <button onClick={() => setLang(lang === 'ur' ? 'en' : 'ur')} className="bg-slate-800 text-rose-400 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-700">
-                        {lang === 'ur' ? 'EN' : 'اردو'}
-                      </button>
-                      <button className="text-white p-1" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                        <span className="text-2xl">☰</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {mobileMenuOpen && (
-                    <div className="md:hidden bg-slate-900 border-t border-slate-800 px-4 py-4 flex flex-col gap-2.5">
-                      <button onClick={() => { setShowDonorModal(true); setMobileMenuOpen(false); }} className="w-full bg-rose-600 text-white py-2.5 rounded-xl font-bold text-sm text-center">
-                        {t.registerDonor}
-                      </button>
-                      <button onClick={() => { setShowReqModal(true); setMobileMenuOpen(false); }} className="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl font-bold text-sm text-center">
-                        {t.postRequest}
-                      </button>
-                      <button onClick={() => { setActiveTab('admin'); setMobileMenuOpen(false); }} className="w-full bg-slate-800 text-white py-2.5 rounded-xl font-bold text-sm text-center border border-slate-700">
-                        {t.adminPanel}
-                      </button>
-                    </div>
-                  )}
-                </header>
-
-                {activeTab !== 'admin' && (
-                  <section className="bg-gradient-to-b from-slate-900 to-slate-950 py-10 px-4 border-b border-slate-800/80 text-center relative overflow-hidden">
-                    <div className="max-w-3xl mx-auto relative z-10">
-                      <h2 className="text-xl md:text-3xl font-extrabold tracking-tight mb-3 text-white leading-snug">{t.heroTitle}</h2>
-                      <p className="text-slate-400 text-xs md:text-sm max-w-xl mx-auto leading-relaxed">{t.heroDesc}</p>
-                    </div>
-                  </section>
-                )}
-
-                <main className="max-w-7xl mx-auto px-4 py-6">
-                  {activeTab !== 'admin' && (
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 bg-slate-900/60 backdrop-blur border border-slate-800 p-3.5 rounded-2xl shadow-sm">
-                      <div className="flex items-center gap-2 text-xs md:text-sm flex-wrap">
-                        <button onClick={() => { setSelectedProvince(null); setSelectedCity(null); setActiveTab('directory'); }} className="text-rose-400 font-bold hover:underline">
-                          {lang === 'ur' ? 'تمام صوبے' : 'All Provinces'}
-                        </button>
-                        {selectedProvince && (
-                          <>
-                            <span className="text-slate-600">/</span>
-                            <button onClick={() => setSelectedCity(null)} className={`font-bold ${selectedCity ? 'text-rose-400 hover:underline' : 'text-slate-300'}`}>
-                              {selectedProvince}
-                            </button>
-                          </>
-                        )}
-                        {selectedCity && (
-                          <>
-                            <span className="text-slate-600">/</span>
-                            <span className="text-white font-extrabold bg-rose-500/10 text-rose-300 px-2.5 py-0.5 rounded-lg border border-rose-500/20">{selectedCity}</span>
-                          </>
-                        )}
-                      </div>
-
-                      {(selectedProvince || selectedCity || activeTab === 'requests') && (
-                        <button onClick={() => {
-                          if (selectedCity) setSelectedCity(null);
-                          else if (selectedProvince) setSelectedProvince(null);
-                          else if (activeTab === 'requests') setActiveTab('directory');
-                        }} className="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-500/30 transition flex items-center gap-1.5">
-                          {t.backBtn}
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  {activeTab !== 'admin' && (
-                    <div className="flex border-b border-slate-800 mb-6">
-                      <button onClick={() => setActiveTab('directory')} className={`pb-3 px-6 font-bold text-sm md:text-base border-b-2 transition ${activeTab === 'directory' ? 'border-rose-500 text-rose-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
-                        {t.donorsTab} ({donors.length})
-                      </button>
-                      <button onClick={() => setActiveTab('requests')} className={`pb-3 px-6 font-bold text-sm md:text-base border-b-2 transition ${activeTab === 'requests' ? 'border-rose-500 text-rose-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
-                        {t.requestsTab} ({requests.length})
-                      </button>
-                    </div>
-                  )}
-
-                  {activeTab === 'directory' && (
                     <div>
-                      {!selectedProvince && (
-                        <div>
-                          <h3 className="text-lg font-bold text-white mb-4">{t.selectProvince}</h3>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {Object.keys(pakistanLocations).map(prov => {
-                              const totalCities = pakistanLocations[prov].length;
-                              const provDonorsCount = donors.filter(d => d.province === prov).length;
-                              return (
-                                <div key={prov} onClick={() => setSelectedProvince(prov)} className="bg-slate-900 hover:bg-slate-850 p-5 rounded-2xl border border-slate-800 hover:border-rose-500/50 cursor-pointer transition transform hover:-translate-y-1 shadow-lg flex items-center justify-between group">
-                                  <div>
-                                    <h4 className="text-base font-bold text-white group-hover:text-rose-400 transition">{prov}</h4>
-                                    <p className="text-xs text-slate-400 mt-1">Cities: {totalCities} | Donors: {provDonorsCount}</p>
-                                  </div>
-                                  <div className="w-10 h-10 rounded-xl bg-slate-800 text-rose-400 flex items-center justify-center group-hover:bg-rose-600 group-hover:text-white transition font-bold">→</div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-
-                      {selectedProvince && !selectedCity && (
-                        <div>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                            {pakistanLocations[selectedProvince].map(city => {
-                              const cityDonorsCount = donors.filter(d => d.province === selectedProvince && d.city === city).length;
-                              return (
-                                <div key={city} onClick={() => setSelectedCity(city)} className="bg-slate-900 hover:bg-slate-850 p-4 rounded-xl border border-slate-800 hover:border-rose-500 cursor-pointer transition text-center shadow">
-                                  <h4 className="font-bold text-sm text-slate-200 group-hover:text-white">{city}</h4>
-                                  <span className="inline-block mt-2 text-[11px] bg-rose-500/10 text-rose-300 border border-rose-500/20 px-2.5 py-0.5 rounded-full font-semibold">
-                                    Donors: {cityDonorsCount}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-
-                      {selectedProvince && selectedCity && (
-                        <div>
-                          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 bg-slate-900 p-4 rounded-2xl border border-slate-800">
-                            <div>
-                              <h3 className="text-lg font-bold text-white">{selectedCity}</h3>
-                              <p className="text-xs text-slate-400">Available Donors in this city</p>
-                            </div>
-                            <div className="flex items-center gap-2 w-full md:w-auto">
-                              <span className="text-xs font-semibold text-slate-400">{t.bloodGroup}:</span>
-                              <select value={selectedBlood} onChange={(e) => setSelectedBlood(e.target.value)} className="bg-slate-950 border border-slate-700 rounded-xl p-2 text-xs font-bold text-rose-400 outline-none">
-                                {bloodGroups.map(bg => <option key={bg} value={bg}>{bg}</option>)}
-                              </select>
-                            </div>
-                          </div>
-
-                          {currentCityDonors.length === 0 ? (
-                            <div className="bg-slate-900 rounded-2xl p-12 text-center border border-slate-800">
-                              <h4 className="text-base font-bold text-slate-300">No donors registered in {selectedCity} yet.</h4>
-                              <button onClick={() => setShowDonorModal(true)} className="mt-4 bg-rose-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow hover:bg-rose-500 transition">Register as First Donor</button>
-                            </div>
-                          ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                              {currentCityDonors.map(donor => (
-                                <div key={donor.id} className="bg-slate-900 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between shadow-lg">
-                                  <div className="flex justify-between items-start mb-4">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center font-extrabold text-lg shadow-inner">
-                                        {donor.bloodgroup || donor.bloodGroup}
-                                      </div>
-                                      <div>
-                                        <h4 className="font-bold text-base text-white">{donor.name}</h4>
-                                        <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">📍 {donor.city}</p>
-                                      </div>
-                                    </div>
-                                    <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-2.5 py-1 rounded-full font-bold">
-                                      {t.available}
-                                    </span>
-                                  </div>
-                                  <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-                                    <span className="text-xs text-slate-400">{t.phone}</span>
-                                    <a href={`tel:${donor.phone}`} className="bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white px-3.5 py-1.5 rounded-xl text-xs font-bold border border-rose-500/20 transition">
-                                      📞 {donor.phone}
-                                    </a>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      )}
+                        <h1 class="text-base font-bold text-white">پاکستان بلڈ ڈونر نیٹ ورک</h1>
+                        <p class="text-[10px] text-slate-400">فلاحی پلیٹ فارم</p>
                     </div>
-                  )}
-
-                  {activeTab === 'requests' && (
-                    <div>
-                      <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-bold text-white">{t.requestsTab}</h3>
-                        <button onClick={() => setShowReqModal(true)} className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl text-xs font-bold shadow transition">+ {t.postRequest}</button>
-                      </div>
-
-                      {requests.length === 0 ? (
-                        <div className="bg-slate-900 rounded-2xl p-12 text-center border border-slate-800">
-                          <h4 className="text-base font-bold text-slate-300">No emergency requests active right now.</h4>
-                        </div>
-                      ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                          {requests.map(req => (
-                            <div key={req.id} className="bg-slate-900 rounded-2xl border border-amber-500/30 p-5 flex flex-col justify-between shadow-lg">
-                              <div>
-                                <div className="flex justify-between items-start mb-3">
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center font-extrabold text-lg">
-                                      {req.blood_group}
-                                    </div>
-                                    <div>
-                                      <h4 className="font-bold text-base text-white">{t.patient} {req.patient_name}</h4>
-                                      <p className="text-xs text-slate-400">🏥 {req.hospital}, {req.city}</p>
-                                    </div>
-                                  </div>
-                                  <span className="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] px-2.5 py-1 rounded-full font-bold animate-pulse">
-                                    {req.urgency}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-                                <span className="text-xs text-slate-400">{t.phone}</span>
-                                <a href={`tel:${req.contact}`} className="bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-bold border border-amber-500/20 transition">
-                                  📞 {req.contact}
-                                </a>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {activeTab === 'admin' && (
-                    <div className="max-w-3xl mx-auto bg-slate-900 rounded-2xl border border-slate-800 p-6 md:p-8 shadow-xl">
-                      {!isAdminLoggedIn ? (
-                        <div className="max-w-md mx-auto text-center py-6">
-                          <h3 className="text-xl font-bold text-white mb-2">{t.adminLogin}</h3>
-                          <p className="text-xs text-slate-400 mb-6">Restricted access for Platform Manager only</p>
-                          <form onSubmit={(e) => { 
-                            e.preventDefault(); 
-                            if (adminPass === adminSecretPassword) { 
-                              setIsAdminLoggedIn(true); 
-                            } else { 
-                              alert("Incorrect Password!"); 
-                            } 
-                          }} className="space-y-4">
-                            <input type="password" placeholder={t.passwordPlaceholder} value={adminPass} onChange={(e) => setAdminPass(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-center text-white outline-none focus:border-rose-500" />
-                            <button type="submit" className="w-full bg-rose-600 hover:bg-rose-500 text-white py-3 rounded-xl font-bold text-xs shadow transition">{t.loginBtn}</button>
-                          </form>
-                        </div>
-                      ) : (
-                        <div>
-                          <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
-                            <div>
-                              <h3 className="text-lg font-bold text-white">Admin Control Panel</h3>
-                              <p className="text-xs text-rose-400">Authorized Management</p>
-                            </div>
-                            <button onClick={() => { setIsAdminLoggedIn(false); setAdminPass(""); }} className="bg-slate-800 hover:bg-slate-700 text-rose-400 px-3 py-2 rounded-xl text-xs font-bold border border-slate-700">
-                              {t.logoutBtn}
-                            </button>
-                          </div>
-                          <div className="mb-6">
-                            <h4 className="font-bold text-sm text-slate-300 mb-3">Registered Donors ({donors.length})</h4>
-                            {donors.length === 0 ? <p className="text-xs text-slate-500 bg-slate-950 p-4 rounded-xl text-center">No donors found.</p> : (
-                              <div className="space-y-2 max-h-48 overflow-y-auto">
-                                {donors.map(d => (
-                                  <div key={d.id} className="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs">
-                                    <span>{d.name} ({d.bloodgroup || d.bloodGroup}) - {d.city} - {d.phone}</span>
-                                    <button onClick={() => handleDeleteDonor(d.id)} className="text-rose-400 hover:text-white px-2 py-1 rounded bg-rose-500/10">Delete</button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </main>
-              </div>
-
-              {showDonorModal && (
-                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-                  <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 md:p-8 border border-slate-800 shadow-2xl relative">
-                    <button onClick={() => setShowDonorModal(false)} className="absolute top-5 left-5 text-slate-400 hover:text-white text-xl">✕</button>
-                    <h3 className="text-xl font-bold text-white mb-1">{t.registerDonor}</h3>
-                    <p className="text-xs text-slate-400 mb-6">Enter your details to help patients in your city.</p>
-                    <form onSubmit={handleRegisterDonor} className="space-y-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">Full Name</label>
-                        <input type="text" required placeholder="e.g. Muhammad Ahmad" value={newDonor.name} onChange={(e) => setNewDonor({...newDonor, name: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-rose-500" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">{t.bloodGroup}</label>
-                          <select value={newDonor.bloodgroup} onChange={(e) => setNewDonor({...newDonor, bloodgroup: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm font-bold text-rose-400 outline-none">
-                            {bloodGroups.filter(b => b !== "All / تمام").map(bg => <option key={bg} value={bg}>{bg}</option>)}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Phone Number</label>
-                          <input type="text" required placeholder="03001234567" value={newDonor.phone} onChange={(e) => setNewDonor({...newDonor, phone: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-rose-500" />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Province</label>
-                          <select value={newDonor.province} onChange={(e) => { const prov = e.target.value; const cities = pakistanLocations[prov] || []; setNewDonor({...newDonor, province: prov, city: cities[0] || ""}); }} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
-                            {Object.keys(pakistanLocations).map(prov => <option key={prov} value={prov}>{prov}</option>)}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">City</label>
-                          <select value={newDonor.city} onChange={(e) => setNewDonor({...newDonor, city: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
-                            {(pakistanLocations[newDonor.province] || []).map(city => <option key={city} value={city}>{city}</option>)}
-                          </select>
-                        </div>
-                      </div>
-                      <button type="submit" className="w-full bg-rose-600 hover:bg-rose-500 text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-rose-600/30 transition">Submit Registration</button>
-                    </form>
-                  </div>
                 </div>
-              )}
-
-              {showReqModal && (
-                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-                  <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 md:p-8 border border-slate-800 shadow-2xl relative">
-                    <button onClick={() => setShowReqModal(false)} className="absolute top-5 left-5 text-slate-400 hover:text-white text-xl">✕</button>
-                    <h3 className="text-xl font-bold text-white mb-1">{t.postRequest}</h3>
-                    <p className="text-xs text-slate-400 mb-6">Broadcast emergency blood requirement.</p>
-                    <form onSubmit={handlePostRequest} className="space-y-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">Patient Name</label>
-                        <input type="text" required placeholder="Patient Name" value={newReq.patient_name} onChange={(e) => setNewReq({...newReq, patient_name: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Required Blood</label>
-                          <select value={newReq.blood_group} onChange={(e) => setNewReq({...newReq, blood_group: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm font-bold text-amber-400 outline-none">
-                            {bloodGroups.filter(b => b !== "All / تمام").map(bg => <option key={bg} value={bg}>{bg}</option>)}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Contact Number</label>
-                          <input type="text" required placeholder="03001234567" value={newReq.contact} onChange={(e) => setNewReq({...newReq, contact: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Province</label>
-                          <select value={newReq.province} onChange={(e) => { const prov = e.target.value; const cities = pakistanLocations[prov] || []; setNewReq({...newReq, province: prov, city: cities[0] || ""}); }} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
-                            {Object.keys(pakistanLocations).map(prov => <option key={prov} value={prov}>{prov}</option>)}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">City</label>
-                          <select value={newReq.city} onChange={(e) => setNewReq({...newReq, city: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
-                            {(pakistanLocations[newReq.province] || []).map(city => <option key={city} value={city}>{city}</option>)}
-                          </select>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">Hospital & Address</label>
-                        <input type="text" required placeholder="e.g. Nishtar Hospital, Multan" value={newReq.hospital} onChange={(e) => setNewReq({...newReq, hospital: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
-                      </div>
-                      <button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-amber-500/20 transition">Post Emergency Request</button>
-                    </form>
-                  </div>
-                </div>
-              )}
-
-              <footer className="bg-slate-900 border-t border-slate-800 py-8 mt-12 text-center text-xs space-y-2 text-slate-400">
-                <p>{t.footerText}</p>
-              </footer>
             </div>
-          );
+            <button onclick="toggleLanguage()" id="langBtn" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition">
+                English
+            </button>
+        </div>
+    </header>
+
+    <!-- سلائیڈ آؤٹ سائیڈ بار مینو (Drawer) -->
+    <div id="sidebarOverlay" class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm hidden flex">
+        <div class="w-72 bg-slate-900 border-l border-slate-800 p-6 flex flex-col justify-between shadow-2xl">
+            <div class="space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                    <h2 class="font-bold text-white text-sm">مینو (Menu)</h2>
+                    <button onclick="toggleMenu()" class="text-slate-400 hover:text-white">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <nav class="space-y-2">
+                    <button onclick="switchTab('home'); toggleMenu();" class="w-full flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 transition">
+                        <i data-lucide="home" class="w-4 h-4"></i>
+                        <span>ہوم پیج (Home)</span>
+                    </button>
+                    <button onclick="switchTab('donors'); toggleMenu();" class="w-full flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 transition">
+                        <i data-lucide="users" class="w-4 h-4"></i>
+                        <span>دستیاب ڈونرز (Donors)</span>
+                    </button>
+                    <button onclick="switchTab('emergency'); toggleMenu();" class="w-full flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 transition">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        <span>ہنگامی درخواستیں (Emergency)</span>
+                    </button>
+                    <button onclick="switchTab('register'); toggleMenu();" class="w-full flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 transition">
+                        <i data-lucide="heart" class="w-4 h-4"></i>
+                        <span>بطور ڈونر بنیں (Register)</span>
+                    </button>
+                </nav>
+            </div>
+            <div class="text-xs text-slate-500 text-center pt-4 border-t border-slate-800">
+                صدقہ جاریہ پراجیکٹ v2.0
+            </div>
+        </div>
+        <div class="flex-1" onclick="toggleMenu()"></div>
+    </div>
+
+    <!-- مین باڈی -->
+    <main class="max-w-4xl mx-auto p-4 space-y-6">
+
+        <!-- 1. ہوم پیج (Home Tab) -->
+        <div id="tab-home" class="space-y-6">
+            <section class="bg-gradient-to-br from-rose-950/40 via-slate-900 to-slate-900 border border-rose-900/30 rounded-2xl p-6 text-center space-y-4 shadow-xl">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white leading-snug">
+                    کسی ایک کی زندگی بچانا پوری انسانیت کو بچانے کے برابر ہے
+                </h2>
+                <p class="text-sm text-slate-300 max-w-xl mx-auto">
+                    بروقت خون کا عطیہ قیمتی جانیں بچا سکتا ہے۔ ہمارے اس فلاحی نیٹ ورک کا حصہ بنیں اور انسانیت کی خدمت کریں۔
+                </p>
+                <div class="pt-2 flex justify-center gap-3">
+                    <button onclick="switchTab('register')" class="bg-rose-600 hover:bg-rose-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg transition">
+                        بطور ڈونر رجسٹر ہوں
+                    </button>
+                    <button onclick="switchTab('emergency')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-5 py-2.5 rounded-xl text-xs font-bold border border-slate-700 transition">
+                        ہنگامی ضرورت دیکھیں
+                    </button>
+                </div>
+            </section>
+
+            <!-- لائیو کاؤنٹرز -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-center">
+                    <i data-lucide="users" class="w-6 h-6 text-rose-500 mx-auto mb-1"></i>
+                    <div id="donorCount" class="text-2xl font-bold text-white">1</div>
+                    <div class="text-xs text-slate-400">کل رجسٹرڈ ڈونرز</div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-center">
+                    <i data-lucide="alert-circle" class="w-6 h-6 text-amber-500 mx-auto mb-1"></i>
+                    <div class="text-2xl font-bold text-white">1</div>
+                    <div class="text-xs text-slate-400">ہنگامی ریکوئسٹس</div>
+                </div>
+            </div>
+
+            <!-- آگاہی پوسٹس -->
+            <div class="space-y-4">
+                <h3 class="text-base font-bold text-white flex items-center space-x-2 space-x-reverse">
+                    <i data-lucide="file-text" class="w-4 h-4 text-rose-500"></i>
+                    <span>خون کے عطیات سے متعلق اہم معلومات و پوسٹس</span>
+                </h3>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-2">
+                        <span class="bg-rose-500/20 text-rose-400 text-[10px] font-bold px-2 py-0.5 rounded">صحت کی ٹپس</span>
+                        <h4 class="font-bold text-sm text-white">خون دینے کے کیا فوائد ہیں؟</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            باقاعدگی سے خون کا عطیہ دینے سے دل کی بیماریاں کم ہوتی ہیں، نیا خون بنتا ہے اور جسم صحت مند رہتا ہے۔
+                        </p>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-2">
+                        <span class="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded">ضروری ہدایت</span>
+                        <h4 class="font-bold text-sm text-white">کون خون دے سکتا ہے؟</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            عمر 18 سے 60 سال کے درمیان ہو، وزن کم از کم 50 کلو ہو اور آپ بالکل صحت مند ہوں۔ ہر 3 ماہ بعد خون دیا جا سکتا ہے۔
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. دستیاب ڈونرز لسٹ (Donors Tab) -->
+        <div id="tab-donors" class="space-y-4 hidden">
+            <h3 class="text-lg font-semibold text-white">رجسترڈ بلڈ ڈونرز کی فہرست</h3>
+            <div id="donorsList" class="grid gap-3">
+                <!-- ڈونرز یہاں جاوا اسکریپٹ کے ذریعے لوڈ ہوں گے -->
+            </div>
+        </div>
+
+        <!-- 3. ہنگامی درخواستیں (Emergency Tab) -->
+        <div id="tab-emergency" class="space-y-4 hidden">
+            <div class="bg-rose-950/30 border border-rose-900/50 p-4 rounded-xl flex items-center space-x-3 space-x-reverse">
+                <i data-lucide="alert-circle" class="w-6 h-6 text-rose-500 shrink-0 animate-pulse"></i>
+                <p class="text-xs text-rose-200">
+                    یہاں وہ ہنگامی درخواستیں دکھائی جارہی ہیں جنہیں فوری خون کی ضرورت ہے۔ براہ کرم رابطہ کر کے مدد کریں۔
+                </p>
+            </div>
+            <div id="emergencyList" class="grid gap-3">
+                <!-- ایمرجنسی ریکوئسٹس یہاں شو ہوں گی -->
+            </div>
+        </div>
+
+        <!-- 4. ڈونر رجسٹریشن فارم (Register Tab) -->
+        <div id="tab-register" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 hidden">
+            <h3 class="text-lg font-bold text-white">نیا بلڈ ڈونر رجسٹر کریں</h3>
+            <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">پورا نام *</label>
+                    <input type="text" id="regName" required placeholder="अपना نام لکھیں" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-rose-500">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">بلڈ گروپ *</label>
+                        <select id="regBlood" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-rose-500">
+                            <option value="O+">O+</option><option value="O-">O-</option>
+                            <option value="A+">A+</option><option value="A-">A-</option>
+                            <option value="B+">B+</option><option value="B-">B-</option>
+                            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">شہر *</label>
+                        <input type="text" id="regCity" required placeholder="مثلاً: لاہور، فیصل آباد" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-rose-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">واٹس ایپ / فون نمبر *</label>
+                        <input type="tel" id="regPhone" required placeholder="+923001234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-rose-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">آخری بار خون کب دیا تھا؟ (اختیاری)</label>
+                        <input type="date" id="regDate" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-rose-500">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-medium py-3 rounded-xl transition shadow-lg shadow-rose-900/30 flex items-center justify-center space-x-2 space-x-reverse">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                    <span>ڈونر رجسٹر کریں</span>
+                </button>
+            </form>
+        </div>
+
+    </main>
+
+    <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-900 mt-10">
+        <p>پاکستان بلڈ ڈونر نیٹ ورک — صدقہ جاریہ پلیٹ فارم</p>
+    </footer>
+
+    <!-- جاوا اسکریپت فنکشنالٹی -->
+    <script>
+        // ڈیٹا
+        let donors = [
+            { id: 1, name: 'محمد علی', bloodGroup: 'O+', city: 'لاہور (Lahore)', phone: '+923001234567', lastDonationDate: '2026-01-15' }
+        ];
+
+        let emergencyRequests = [
+            { id: 1, patientName: 'احمد خان', bloodGroup: 'B+', city: 'لاہور (Lahore)', hospital: 'Jinnah Hospital', contact: '+923009876543', units: 2 }
+        ];
+
+        function switchTab(tabId) {
+            ['home', 'donors', 'emergency', 'register'].forEach(t => {
+                document.getElementById('tab-' + t).classList.add('hidden');
+            });
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            if(tabId === 'donors') renderDonors();
+            if(tabId === 'emergency') renderEmergency();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        function toggleMenu() {
+            const overlay = document.getElementById('sidebarOverlay');
+            overlay.classList.toggle('hidden');
+        }
+
+        function renderDonors() {
+            const container = document.getElementById('donorsList');
+            container.innerHTML = donors.map(d => `
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="space-y-1">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <span class="font-bold text-white text-base">${d.name}</span>
+                            <span class="bg-rose-500/20 text-rose-400 text-xs px-2 py-0.5 rounded-md font-bold border border-rose-500/30">${d.bloodGroup}</span>
+                        </div>
+                        <div class="flex items-center text-xs text-slate-400 space-x-3 space-x-reverse">
+                            <span>📍 ${d.city}</span>
+                            ${d.lastDonationDate ? `<span class="text-amber-400">آخری عطیہ: ${d.lastDonationDate}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <a href="tel:${d.phone}" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center space-x-1 space-x-reverse border border-slate-700 transition">
+                            📞 کال کریں
+                        </a>
+                        <a href="https://wa.me/${d.phone.replace(/[^0-9]/g, '')}?text=السلام علیکم! مجھے خون کی ضرورت ہے، کیا آپ مدد کر سکتے ہیں؟" target="_blank" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center space-x-1 space-x-reverse transition">
+                            💬 واٹس ایپ
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderEmergency() {
+            const container = document.getElementById('emergencyList');
+            container.innerHTML = emergencyRequests.map(r => `
+                <div class="bg-slate-900 border border-rose-900/40 p-4 rounded-xl space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            مریض: <span class="font-bold text-white">${r.patientName}</span>
+                            <div class="text-xs text-slate-400 mt-0.5">ہسپتال: ${r.hospital}, ${r.city}</div>
+                        </div>
+                        <span class="bg-rose-600 text-white text-xs px-2.5 py-1 rounded-lg font-bold">${r.bloodGroup} (${r.units} یونٹس)</span>
+                    </div>
+                    <div class="flex justify-end pt-2 border-t border-slate-800">
+                        <a href="tel:${r.contact}" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-lg text-xs font-medium flex items-center space-x-1.5 space-x-reverse transition">
+                            📞 فوری رابطہ کریں
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const newD = {
+                id: Date.now(),
+                name: document.getElementById('regName').value,
+                bloodGroup: document.getElementById('regBlood').value,
+                city: document.getElementById('regCity').value,
+                phone: document.getElementById('regPhone').value,
+                lastDonationDate: document.getElementById('regDate').value
+            };
+            donors.push(newD);
+            document.getElementById('donorCount').innerText = donors.length;
+            alert('آپ کامیابی سے رجسٹر ہو گئے ہیں!');
+            document.getElementById('registerForm').reset();
+            switchTab('donors');
+        }
+
+        // آئیکنز انیشلائز کریں
+        lucide.createIcons();
     </script>
 </body>
 </html>
