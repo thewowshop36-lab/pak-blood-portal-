@@ -123,7 +123,8 @@ export default function App() {
 
   const filteredCurrentCityDonors = useMemo(() => {
     return donors.filter((d) => {
-      const matchCity = (d.city || '').toLowerCase().includes((selectedCity || '').toLowerCase().split('/')[0].trim());
+      const matchCity = true;
+
 
       const matchBlood = selectedBlood ? d.blood_group === selectedBlood : true;
       let matchSearch = true;
