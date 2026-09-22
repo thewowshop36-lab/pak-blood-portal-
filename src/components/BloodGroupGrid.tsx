@@ -13,7 +13,7 @@ const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 export const BloodGroupGrid: React.FC<BloodGroupGridProps> = ({
   selectedBlood,
   onSelect,
-  counts,
+  counts = {},
   lang,
   theme = 'light',
 }) => {
@@ -39,7 +39,7 @@ export const BloodGroupGrid: React.FC<BloodGroupGridProps> = ({
       <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5">
         {bloodGroups.map((bg) => {
           const isSelected = selectedBlood === bg;
-          const count = counts[bg] || 0;
+          const count = (counts && counts[bg]) ? counts[bg] : 0;
 
           return (
             <button
@@ -49,12 +49,14 @@ export const BloodGroupGrid: React.FC<BloodGroupGridProps> = ({
                 isSelected
                   ? 'bg-gradient-to-b from-rose-600 via-rose-700 to-rose-900 text-white shadow-lg shadow-rose-600/30 ring-2 ring-rose-500 -translate-y-1'
                   : isDark
-                  ? 'bg-slate-900/90 hover:bg-slate-800/90 text-slate-200 border border-slate-800 hover:border-rose-500/50 shadow-md'
+                  ? 'bg-slate-900 text-slate-200 border border-slate-800 hover:border-rose-500/50 shadow-md'
                   : 'bg-white hover:bg-rose-50/60 text-slate-800 border border-slate-200 hover:border-rose-400 shadow-sm hover:shadow'
               }`}
             >
+              {/* 3D Gloss Highlight */}
               <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none rounded-t-2xl" />
 
+              {/* Glowing Drop Icon */}
               <div
                 className={`w-8 h-8 rounded-xl flex items-center justify-center mb-1.5 transition-transform group-hover:scale-110 ${
                   isSelected
@@ -67,17 +69,19 @@ export const BloodGroupGrid: React.FC<BloodGroupGridProps> = ({
                 <span className="text-base font-black">🩸</span>
               </div>
 
+              {/* Blood Group Text */}
               <span className="text-base sm:text-lg font-black tracking-tight leading-none mb-1">
                 {bg}
               </span>
 
+              {/* Count Badge */}
               <span
                 className={`text-[10px] px-2 py-0.5 rounded-full font-bold transition ${
                   isSelected
                     ? 'bg-black/30 text-rose-200'
                     : isDark
-                    ? 'bg-slate-800 text-slate-400 group-hover:text-rose-300'
-                    : 'bg-slate-100 text-slate-600 group-hover:bg-rose-100 group-hover:text-rose-700'
+                    ? 'bg-slate-800 text-slate-300 group-hover:text-rose-300'
+                    : 'bg-slate-100 text-slate-700 group-hover:bg-rose-100 group-hover:text-rose-700'
                 }`}
               >
                 {count} {lang === 'ur' ? 'ڈونرز' : 'Donors'}
