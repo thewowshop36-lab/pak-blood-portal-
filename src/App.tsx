@@ -124,8 +124,6 @@ export default function App() {
   const filteredCurrentCityDonors = useMemo(() => {
     return donors.filter((d) => {
       const matchCity = true;
-
-
       const matchBlood = selectedBlood ? d.blood_group === selectedBlood : true;
       let matchSearch = true;
       if (searchQuery.trim()) {
@@ -676,7 +674,7 @@ export default function App() {
                 <BloodGroupGrid
                   selectedBlood={selectedBlood || 'All / تمام'}
                   onSelect={(b) => setSelectedBlood(b === 'All / تمام' ? null : b)}
-                  counts={{}}
+                  donors={donors}
                   lang={lang}
                   theme={theme}
                 />
@@ -1086,4 +1084,4 @@ export default function App() {
       />
     </div>
   );
-      }
+}
