@@ -30,7 +30,7 @@ jobs:
           -Pandroid.injected.signing.key.password=android
 
     - name: Upload AAB Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: app-release-aab
         path: app/build/outputs/bundle/release/app-release.aab
