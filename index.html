@@ -1,532 +1,854 @@
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7851628350442317"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
-   
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pakistan Blood Donor Network</title>
-    <meta name="google-site-verification" content="Z7x9RTZEmPO-qEgee6EfJXOAwUNFXZT0yelA_jOqQpI" />
+    <title>Pakistan Blood Donor Network | پاکستان بلڈ پورٹل</title>
+    <meta name="description" content="پاکستان کا سب سے بڑا لائیو بلڈ ڈونر نیٹ ورک - فوری واٹس ایپ اور کال پر بلڈ ڈونرز سے رابطہ">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Noto Sans Arabic', 'Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- React, ReactDOM, Babel, Supabase CDN -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Plus Jakarta Sans', 'Noto Nastaliq Urdu', sans-serif; }
+        body { font-family: 'Noto Sans Arabic', 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-rose-500 selection:text-white">
+<body class="bg-slate-50 text-slate-900 min-h-screen selection:bg-rose-600 selection:text-white transition-colors duration-200">
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useMemo } = React;
 
+        // Supabase Live Client
         const SUPABASE_URL = "https://mvqnekaobsyreegkouca.supabase.co";
         const SUPABASE_KEY = "sb_publishable_WuDQresEEX_duONM1RwKbg_zVYtxoV0";
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const pakistanLocations = {
+        // Visual awareness campaigns with HD photography
+        const campaigns = [
+          {
+            id: 1,
+            titleUrdu: "تھیلیسیمیا کے معصوم بچوں کی جان بچائیں",
+            descUrdu: "پاکستان میں روزانہ سینکڑوں معصوم بچوں کو زندہ رہنے کے لیے تازہ خون کی ضرورت ہوتی ہے۔ آپ کا ایک عطیہ ان کے چہروں پر مسکراہٹ لا سکتا ہے۔",
+            image: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80",
+            tag: "زندگی کا تحفہ",
+            color: "bg-rose-600"
+          },
+          {
+            id: 2,
+            titleUrdu: "ایک بوتل خون، تین زندگیوں کی ضمانت",
+            descUrdu: "خون کے اجزاء (ریڈ سیلز، پلازما اور پلیٹلیٹس) علیحدہ کر کے بیک وقت ۳ مختلف مریضوں کی جانیں بچائی جاتی ہیں۔",
+            image: "https://images.unsplash.com/photo-1615461066841-6116e61058f4?auto=format&fit=crop&w=800&q=80",
+            tag: "صدقہ جاریہ",
+            color: "bg-emerald-600"
+          },
+          {
+            id: 3,
+            titleUrdu: "خون کا عطیہ آپ کے اپنے دل اور صحت کے لیے مفید",
+            descUrdu: "باقاعدگی سے خون دینے سے دل کے دورے کا خطرہ کم ہوتا ہے اور جسم میں نیا، تازہ خون بننے کا عمل تیز ہوتا ہے۔",
+            image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80",
+            tag: "طبی فوائد",
+            color: "bg-sky-600"
+          },
+          {
+            id: 4,
+            titleUrdu: "ایمرجنسی و حادثات میں فوری خون کی فراہمی",
+            descUrdu: "روڈ حادثات اور ہنگامی سرجری کے دوران پہلا ایک گھنٹہ سنہری ہوتا ہے، جہاں فوری خون زندگی اور موت کا فیصلہ کرتا ہے۔",
+            image: "https://images.unsplash.com/photo-1587745416684-47953f16f02f?auto=format&fit=crop&w=800&q=80",
+            tag: "ہنگامی خدمت",
+            color: "bg-amber-600"
+          }
+        ];
+
+        // Avatar images for donor cards
+        const avatarImages = [
+          "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
+          "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=150&q=80",
+          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80"
+        ];
+
+        // Pakistan Locations Hierarchy
+        const pakistanProvinces = {
           "پنجاب / Punjab": [
-            "احمد پور شرقیہ / Ahmedpur East", "اٹک / Attock", "بہاولنگر / Bahawalnagar", "بہاولپور / Bahawalpur", 
-            "بھکر / Bhakkar", "چکوال / Chakwal", "چینیوٹ / Chiniot", "ڈیرہ غازی خان / D.G. Khan", 
-            "فیصل آباد / Faisalabad", "گوجرانوالہ / Gujranwala", "گجرات / Gujrat", "حافظ آباد / Hafizabad", 
-            "جھنگ / Jhang", "جہلم / Jhelum", "قصور / Kasur", "خانیوال / Khanewal", "خوشاب / Khushab", 
-            "لاہور / Lahore", "لودھراں / Lodhran", "منڈی بہاؤالدین / Mandi Bahauddin", "میانوالی / Mianwali", 
-            "ملتان / Multan", "مظفر گڑھ / Muzaffargarh", "نارووال / Narowal", "اوکاڑہ / Okara", 
-            "پاکپتن / Pakpattan", "رحیم یار خان / Rahim Yar Khan", "راجن پور / Rajanpur", "راولپنڈی / Rawalpindi", 
-            "ساہیوال / Sahiwal", "سرگودھا / Sargodha", "شیخوپورہ / Sheikhupura", "سیالکوٹ / Sialkot", 
-            "ٹوبہ ٹیک سنگھ / Toba Tek Singh", "وہاڑی / Vehari"
+            "خانیوال / Khanewal", "لاہور / Lahore", "ملتان / Multan", "فیصل آباد / Faisalabad", 
+            "راولپنڈی / Rawalpindi", "گوجرانوالہ / Gujranwala", "سیالکوٹ / Sialkot", "بہاولپور / Bahawalpur", 
+            "ساہیوال / Sahiwal", "سرگودھا / Sargodha", "وہاڑی / Vehari", "شیخوپورہ / Sheikhupura", 
+            "گجرات / Gujrat", "قصور / Kasur", "رحیم یار خان / Rahim Yar Khan", "اوکاڑہ / Okara", 
+            "ڈی جی خان / D.G. Khan", "مظفر گڑھ / Muzaffargarh", "منڈی بہاؤالدین / Mandi Bahauddin", 
+            "ٹوبہ ٹیک سنگھ / Toba Tek Singh", "جھنگ / Jhang", "خوشاب / Khushab", "میانوالی / Mianwali", 
+            "لودھراں / Lodhran", "بھکر / Bhakkar", "بہاولنگر / Bahawalnagar", "پاکپتن / Pakpattan", 
+            "چکوال / Chakwal", "اٹک / Attock", "جہلم / Jhelum", "چینیوٹ / Chiniot", "حافظ آباد / Hafizabad", 
+            "نارووال / Narowal", "راجن پور / Rajanpur", "احمد پور شرقیہ / Ahmedpur East"
           ],
           "سندھ / Sindh": [
-            "بدین / Badin", "گھوٹکی / Ghotki", "حیدرآباد / Hyderabad", "جیکب آباد / Jacobabad", 
-            "جامشورو / Jamshoro", "کراچی / Karachi", "کشمور / Kashmore", "لاڑکانہ / Larkana", 
-            "مٹیاری / Matiari", "میرپور خاص / Mirpur Khas", "نوشہروفیروز / Naushahro Feroze", 
-            "نوابشاہ / Nawabshah", "سکھر / Sukkur", "شکارپور / Shikarpur", "ٹنڈو الہ یار / Tando Allahyar", 
-            "ٹنڈو محمد خان / Tando Muhammad Khan", "تھرپارکر / Tharparkar", "عمرکوٹ / Umerkot"
+            "کراچی / Karachi", "حیدرآباد / Hyderabad", "سکھر / Sukkur", "لاڑکانہ / Larkana", 
+            "نوابشاہ / Nawabshah", "میرپور خاص / Mirpur Khas", "بدین / Badin", "گھوٹکی / Ghotki"
           ],
           "خیبر پختونخوا / KPK": [
-            "ایبٹ آباد / Abbottabad", "بنوں / Bannu", "چارسدہ / Charsadda", "چترال / Chitral", 
-            "ڈیرہ اسماعیل خان / D.I. Khan", "ہری پور / Haripur", "کوہاٹ / Kohat", "مردان / Mardan", 
-            "نوشہرہ / Nowshera", "پشاور / Peshawar", "صوابی / Swabi", "سوات / Swat", "ٹانک / Tank"
+            "پشاور / Peshawar", "مردان / Mardan", "ایبٹ آباد / Abbottabad", "سوات / Swat", 
+            "ڈیرہ اسماعیل خان / D.I. Khan", "کوہاٹ / Kohat", "بنوں / Bannu"
           ],
-          "بلوچستان / Balochistan": [
-            "گوادر / Gwadar", "خضدار / Khuzdar", "لسبیلہ / Lasbela", "مستونگ / Mastung", 
-            "کوئٹہ / Quetta", "سبی / Sibi", "ژوب / Zhob"
-          ],
-          "اسلام آباد / Islamabad": ["اسلام آباد / Islamabad Capital Territory"],
-          "آزاد کشمیر و گلگت / AJK & GB": [
-            "مظفر آباد / Muzaffarabad", "میرپور / Mirpur", "راولاکوٹ / Rawalakot", 
-            "گلگت / Gilgit", "سکردو / Skardu", "ہنزہ / Hunza"
-          ]
+          "بلوچستان / Balochistan": ["کوئٹہ / Quetta", "گوادر / Gwadar", "خضدار / Khuzdar"],
+          "اسلام آباد / Islamabad": ["اسلام آباد / Islamabad Capital Territory"]
         };
 
-        const bloodGroups = ["All / تمام", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-
-        const translations = {
-          ur: {
-            title: "پاکستان بلڈ ڈونر نیٹ ورک",
-            subtitle: "قومی فلاحی و انسانی پلیٹ فارم",
-            registerDonor: "بطور ڈونر رجسٹر ہوں",
-            postRequest: "خون کی ضرورت پوسٹ کریں",
-            heroTitle: "کسی ایک کی زندگی بچانا پوری انسانیت کو بچانے کے برابر ہے",
-            heroDesc: "آئیے! اس کارِ خیر میں اپنا حصہ ڈالیں اور ضرورت مندوں تک بروقت خون پہنچا کر زندگی کی امید بنیں۔",
-            selectProvince: "صوبہ منتخب کریں",
-            selectCity: "شہر / ضلع منتخب کریں",
-            bloodGroup: "بلڈ گروپ",
-            donorsTab: "دستیاب ڈونرز",
-            requestsTab: "ہنگامی درخواستیں",
-            available: "دستیاب (Available)",
-            phone: "رابطہ نمبر:",
-            patient: "مریض:",
-            hospital: "ہسپتال:",
-            urgency: "فوری ضرورت",
-            footerText: "© 2026 پاکستان بلڈ ڈونر نیٹ ورک۔ تمام حقوق محفوظ ہیں۔ انسانیت کی خدمت ہمارا نصب العین ہے۔",
-            backBtn: "← واپس جائیں"
-          },
-          en: {
-            title: "Pakistan Blood Donor Network",
-            subtitle: "National Welfare & Humanitarian Platform",
-            registerDonor: "Register as Donor",
-            postRequest: "Post Blood Request",
-            heroTitle: "Saving one life is like saving all of humanity",
-            heroDesc: "Let's step forward in this noble cause and become a beacon of hope by donating blood on time.",
-            selectProvince: "Select Province",
-            selectCity: "Select City / District",
-            bloodGroup: "Blood Group",
-            donorsTab: "Available Donors",
-            requestsTab: "Emergency Requests",
-            available: "Available",
-            phone: "Contact:",
-            patient: "Patient:",
-            hospital: "Hospital:",
-            urgency: "Urgent",
-            footerText: "© 2026 Pakistan Blood Donor Network. All rights reserved. Serving humanity is our core mission.",
-            backBtn: "← Go Back"
-          }
+        const nearbyCities = {
+          "خانیوال / Khanewal": ["ملتان / Multan", "وہاڑی / Vehari", "ساہیوال / Sahiwal", "ٹوبہ ٹیک سنگھ / Toba Tek Singh", "لودھراں / Lodhran"],
+          "ملتان / Multan": ["خانیوال / Khanewal", "مظفر گڑھ / Muzaffargarh", "لودھراں / Lodhran", "بہاولپور / Bahawalpur"],
+          "لاہور / Lahore": ["شیخوپورہ / Sheikhupura", "قصور / Kasur", "گوجرانوالہ / Gujranwala", "اوکاڑہ / Okara"],
+          "فیصل آباد / Faisalabad": ["چینیوٹ / Chiniot", "ٹوبہ ٹیک سنگھ / Toba Tek Singh", "جھنگ / Jhang"]
         };
+
+        const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
         function App() {
           const [lang, setLang] = useState('ur');
-          const t = translations[lang];
-          const [activeTab, setActiveTab] = useState('directory'); 
-          
+          // DEFAULT TO CLEAN WHITE THEME
+          const [theme, setTheme] = useState(() => localStorage.getItem('portal_theme') || 'light');
+          const isDark = theme === 'dark';
+
           const [donors, setDonors] = useState([]);
           const [requests, setRequests] = useState([]);
+          const [loading, setLoading] = useState(true);
+
+          const [activeTab, setActiveTab] = useState('donors');
+          const [activeSlide, setActiveSlide] = useState(0);
+
+          // Location
+          const [selectedCity, setSelectedCity] = useState(() => {
+            return localStorage.getItem('saved_blood_city') || 'خانیوال / Khanewal';
+          });
+
+          // Filters
+          const [selectedBlood, setSelectedBlood] = useState('All / تمام');
+          const [searchQuery, setSearchQuery] = useState('');
+
+          // Modals
+          const [showRegisterModal, setShowRegisterModal] = useState(false);
+          const [showPostReqModal, setShowPostReqModal] = useState(false);
+
+          // Forms
+          const [donorForm, setDonorForm] = useState({
+            name: '', bloodgroup: 'O+', province: 'پنجاب / Punjab', city: 'خانیوال / Khanewal', tehsil: '', phone: ''
+          });
+          const [reqForm, setReqForm] = useState({
+            patient_name: '', blood_group: 'O+', province: 'پنجاب / Punjab', city: 'خانیوال / Khanewal', hospital: '', contact: '', urgency: 'فوری'
+          });
+
+          // Voting Poll State
+          const [pollVotes, setPollVotes] = useState({
+            pledge: 1340,
+            already: 890,
+            prayer: 1720
+          });
+          const [hasVotedPoll, setHasVotedPoll] = useState(() => {
+            return localStorage.getItem('blood_poll_voted') || null;
+          });
+
+          // Donor Prayers State
+          const [donorVotes, setDonorVotes] = useState({});
 
           useEffect(() => {
             fetchData();
           }, []);
 
+          useEffect(() => {
+            localStorage.setItem('portal_theme', theme);
+            if (theme === 'dark') {
+              document.documentElement.classList.add('dark');
+              document.body.className = "bg-slate-950 text-slate-100 min-h-screen selection:bg-rose-600 selection:text-white transition-colors duration-200";
+            } else {
+              document.documentElement.classList.remove('dark');
+              document.body.className = "bg-slate-50 text-slate-900 min-h-screen selection:bg-rose-600 selection:text-white transition-colors duration-200";
+            }
+          }, [theme]);
+
+          useEffect(() => {
+            if (selectedCity) {
+              localStorage.setItem('saved_blood_city', selectedCity);
+              setDonorForm(prev => ({ ...prev, city: selectedCity }));
+              setReqForm(prev => ({ ...prev, city: selectedCity }));
+            }
+          }, [selectedCity]);
+
           const fetchData = async () => {
+            setLoading(true);
             try {
-              const { data: donorData } = await supabase.from('donors').select('*');
-              if (donorData) setDonors(donorData);
+              const { data: dData } = await supabase.from('donors').select('*').order('id', { ascending: false });
+              if (dData) setDonors(dData);
+              const { data: rData } = await supabase.from('requests').select('*').order('id', { ascending: false });
+              if (rData) setRequests(rData);
+            } catch (e) {
+              console.error(e);
+            } finally {
+              setLoading(false);
+            }
+          };
 
-              const { data: reqData } = await supabase.from('requests').select('*');
-              if (reqData) setRequests(reqData);
+          const handleVoteOption = (key) => {
+            if (hasVotedPoll) return;
+            setPollVotes(prev => ({ ...prev, [key]: prev[key] + 1 }));
+            setHasVotedPoll(key);
+            localStorage.setItem('blood_poll_voted', key);
+            alert(lang === 'ur' ? 'آپ کا ووٹ کامیابی سے درج ہو گیا ہے۔ جزاک اللہ خیراً!' : 'Vote recorded! Thank you!');
+          };
+
+          const handleVoteForDonor = (donorId) => {
+            const key = `donor_vote_${donorId}`;
+            if (localStorage.getItem(key)) return;
+            setDonorVotes(prev => ({ ...prev, [donorId]: (prev[donorId] || 15) + 1 }));
+            localStorage.setItem(key, 'true');
+          };
+
+          const totalPollVotes = pollVotes.pledge + pollVotes.already + pollVotes.prayer;
+
+          const counts = useMemo(() => {
+            const map = { "A+": 0, "A-": 0, "B+": 0, "B-": 0, "O+": 0, "O-": 0, "AB+": 0, "AB-": 0 };
+            donors.forEach(d => {
+              const bg = d.bloodgroup || d.bloodGroup;
+              if (bg && map[bg] !== undefined) {
+                if (!selectedCity || d.city === selectedCity) map[bg]++;
+              }
+            });
+            return map;
+          }, [donors, selectedCity]);
+
+          const filteredDonors = useMemo(() => {
+            return donors.filter(d => {
+              const bg = d.bloodgroup || d.bloodGroup || '';
+              const matchBlood = selectedBlood === 'All / تمام' || bg === selectedBlood;
+              const matchCity = !selectedCity || d.city === selectedCity;
+              let matchSearch = true;
+              if (searchQuery.trim()) {
+                const q = searchQuery.toLowerCase().trim();
+                matchSearch = (d.name || '').toLowerCase().includes(q) ||
+                              (d.city || '').toLowerCase().includes(q) ||
+                              (d.tehsil || '').toLowerCase().includes(q) ||
+                              bg.toLowerCase().includes(q);
+              }
+              return matchBlood && matchCity && matchSearch;
+            });
+          }, [donors, selectedBlood, selectedCity, searchQuery]);
+
+          const backupDonors = useMemo(() => {
+            const neighbors = nearbyCities[selectedCity] || [];
+            if (neighbors.length === 0) return [];
+            return donors.filter(d => {
+              const isNeighbor = neighbors.includes(d.city);
+              const bg = d.bloodgroup || d.bloodGroup || '';
+              const matchBlood = selectedBlood === 'All / تمام' || bg === selectedBlood;
+              return isNeighbor && matchBlood;
+            });
+          }, [donors, selectedCity, selectedBlood]);
+
+          const handleRegisterSubmit = async (e) => {
+            e.preventDefault();
+            if (!donorForm.name || !donorForm.phone) return alert('نام اور فون نمبر درج کریں۔');
+            try {
+              const { data, error } = await supabase.from('donors').insert([donorForm]).select();
+              if (error) {
+                alert("خرابی: " + error.message);
+              } else {
+                setDonors([data[0], ...donors]);
+                setShowRegisterModal(false);
+                alert('جزاک اللہ! آپ بطور ڈونر رجسٹر ہو گئے ہیں۔');
+              }
             } catch (err) {
-              console.error("Error fetching data:", err);
+              alert(err.message);
             }
           };
 
-          const [selectedProvince, setSelectedProvince] = useState(null);
-          const [selectedCity, setSelectedCity] = useState(null);
-          const [selectedBlood, setSelectedBlood] = useState("All / تمام");
-
-          const [showDonorModal, setShowDonorModal] = useState(false);
-          const [showReqModal, setShowReqModal] = useState(false);
-          const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-          const [newDonor, setNewDonor] = useState({
-            name: "", bloodgroup: "O+", province: Object.keys(pakistanLocations)[0], city: pakistanLocations[Object.keys(pakistanLocations)[0]][0], phone: ""
-          });
-
-          const [newReq, setNewReq] = useState({
-            patient_name: "", blood_group: "O+", province: Object.keys(pakistanLocations)[0], city: pakistanLocations[Object.keys(pakistanLocations)[0]][0], hospital: "", contact: "", urgency: "Urgent / فوری"
-          });
-
-          const handleRegisterDonor = async (e) => {
+          const handleRequestSubmit = async (e) => {
             e.preventDefault();
-            if (!newDonor.name || !newDonor.phone) {
-              alert(lang === 'ur' ? "براہ کرم نام اور فون نمبر درج کریں۔" : "Please enter name and phone.");
-              return;
-            }
-            
-            const { data, error } = await supabase.from('donors').insert([newDonor]).select();
-            if (error) {
-              alert("Error: " + error.message);
-            } else {
-              setDonors([...data, ...donors]);
-              setShowDonorModal(false);
-              alert(lang === 'ur' ? "آپ کامیابی سے رجسٹر ہو گئے ہیں!" : "Successfully registered as donor!");
-            }
-          };
-
-          const handlePostRequest = async (e) => {
-            e.preventDefault();
-            if (!newReq.patient_name || !newReq.contact || !newReq.hospital) {
-              alert(lang === 'ur' ? "براہ کرم تمام معلومات درج کریں۔" : "Please fill all required fields.");
-              return;
-            }
-
-            const { data, error } = await supabase.from('requests').insert([newReq]).select();
-            if (error) {
-              alert("Error: " + error.message);
-            } else {
-              setRequests([...data, ...requests]);
-              setShowReqModal(false);
-              alert(lang === 'ur' ? "ہنگامی درخواست پوسٹ کر دی گئی ہے!" : "Emergency request posted successfully!");
+            if (!reqForm.patient_name || !reqForm.contact || !reqForm.hospital) return alert('تمام خانے پر کریں۔');
+            try {
+              const { data, error } = await supabase.from('requests').insert([reqForm]).select();
+              if (error) {
+                alert("خرابی: " + error.message);
+              } else {
+                setRequests([data[0], ...requests]);
+                setShowPostReqModal(false);
+                alert('خون کی ضرورت کی اپیل پوسٹ ہو گئی ہے!');
+              }
+            } catch (err) {
+              alert(err.message);
             }
           };
-
-          const currentCityDonors = donors.filter(d => {
-            const matchProv = d.province === selectedProvince;
-            const matchCity = d.city === selectedCity;
-            const dBlood = d.bloodgroup || d.bloodGroup || "O+";
-            const matchBlood = selectedBlood === "All / تمام" || dBlood === selectedBlood;
-            return matchProv && matchCity && matchBlood;
-          });
 
           return (
-            <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
+            <div className={`min-h-screen flex flex-col justify-between transition-colors duration-200 ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
               <div>
-                <header className="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
-                  <div className="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center">
-                    <div className="flex items-center space-x-3 space-x-reverse cursor-pointer" onClick={() => { setSelectedProvince(null); setSelectedCity(null); setActiveTab('directory'); }}>
-                      <div className="bg-gradient-to-tr from-rose-600 to-rose-500 p-2.5 rounded-2xl shadow-lg shadow-rose-500/20">
-                        <svg className="w-6 h-6 text-white fill-current animate-pulse" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                {/* HEADER */}
+                <header className={`sticky top-0 z-40 backdrop-blur border-b shadow-sm ${isDark ? 'bg-slate-900/95 border-slate-800' : 'bg-white/95 border-slate-200'}`}>
+                  <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+                    <div onClick={() => { setSelectedBlood('All / تمام'); setActiveTab('donors'); }} className="flex items-center gap-3 cursor-pointer">
+                      <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-rose-600 to-red-800 flex items-center justify-center text-xl text-white shadow-md shadow-rose-600/30">
+                        🩸
                       </div>
                       <div>
-                        <h1 className="text-base md:text-lg font-extrabold tracking-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">{t.title}</h1>
-                        <p className="text-[11px] text-rose-400 font-medium">{t.subtitle}</p>
+                        <h1 className={`text-base sm:text-lg font-black flex items-center gap-1.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {lang === 'ur' ? 'پاکستان بلڈ پورٹل' : 'Pakistan Blood Portal'}
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block"></span>
+                        </h1>
+                        <p className="text-[11px] text-rose-600 font-bold">
+                          {lang === 'ur' ? 'قومی لائیو بلڈ ڈونر نیٹ ورک' : 'Live National Blood Donor Network'}
+                        </p>
                       </div>
                     </div>
 
-                    <div className="hidden md:flex items-center space-x-3 space-x-reverse">
-                      <button onClick={() => setLang(lang === 'ur' ? 'en' : 'ur')} className="bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-bold px-3 py-2 rounded-xl border border-slate-700 transition">
-                        {lang === 'ur' ? 'English 🌐' : 'اردو 🌐'}
+                    <div className="flex items-center gap-2">
+                      {/* White / Dark Mode Toggle */}
+                      <button
+                        onClick={() => setTheme(isDark ? 'light' : 'dark')}
+                        className={`px-3 py-2 rounded-xl text-xs font-black transition flex items-center gap-1 border ${
+                          isDark ? 'bg-slate-800 text-amber-300 border-slate-700' : 'bg-slate-100 text-slate-800 border-slate-200'
+                        }`}
+                      >
+                        <span>{isDark ? '☀️' : '🌙'}</span>
+                        <span className="hidden sm:inline">{isDark ? 'وائٹ موڈ' : 'ڈارک موڈ'}</span>
                       </button>
-                      <button onClick={() => setShowDonorModal(true)} className="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl font-bold text-xs shadow-lg shadow-rose-600/30 transition transform hover:-translate-y-0.5">
-                        {t.registerDonor}
-                      </button>
-                      <button onClick={() => setShowReqModal(true)} className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl font-bold text-xs shadow-lg shadow-amber-500/20 transition transform hover:-translate-y-0.5">
-                        {t.postRequest}
-                      </button>
-                    </div>
 
-                    <div className="flex md:hidden items-center gap-2">
-                      <button onClick={() => setLang(lang === 'ur' ? 'en' : 'ur')} className="bg-slate-800 text-rose-400 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-700">
-                        {lang === 'ur' ? 'EN' : 'اردو'}
+                      <button onClick={() => setLang(lang === 'ur' ? 'en' : 'ur')} className={`px-2.5 py-2 rounded-xl text-xs font-black border ${
+                        isDark ? 'bg-slate-800 text-rose-400 border-slate-700' : 'bg-rose-50 text-rose-700 border-rose-200'
+                      }`}>
+                        {lang === 'ur' ? 'English' : 'اردو'}
                       </button>
-                      <button className="text-white p-1" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                        <span className="text-2xl">☰</span>
+                      <button onClick={() => setShowPostReqModal(true)} className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-2 rounded-xl font-black text-xs shadow-sm">
+                        🚨 <span className="hidden md:inline">{lang === 'ur' ? 'خون درکار ہے' : 'Need Blood'}</span>
+                      </button>
+                      <button onClick={() => setShowRegisterModal(true)} className="bg-rose-600 hover:bg-rose-500 text-white px-3.5 py-2 rounded-xl font-black text-xs shadow-md shadow-rose-600/20">
+                        + {lang === 'ur' ? 'ڈونر بنیں' : 'Register'}
                       </button>
                     </div>
                   </div>
-
-                  {mobileMenuOpen && (
-                    <div className="md:hidden bg-slate-900 border-t border-slate-800 px-4 py-4 flex flex-col gap-2.5">
-                      <button onClick={() => { setShowDonorModal(true); setMobileMenuOpen(false); }} className="w-full bg-rose-600 text-white py-2.5 rounded-xl font-bold text-sm text-center">
-                        {t.registerDonor}
-                      </button>
-                      <button onClick={() => { setShowReqModal(true); setMobileMenuOpen(false); }} className="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl font-bold text-sm text-center">
-                        {t.postRequest}
-                      </button>
-                    </div>
-                  )}
                 </header>
 
-                <section className="bg-gradient-to-b from-slate-900 to-slate-950 py-10 px-4 border-b border-slate-800/80 text-center relative overflow-hidden">
-                  <div className="max-w-3xl mx-auto relative z-10">
-                    <h2 className="text-xl md:text-3xl font-extrabold tracking-tight mb-3 text-white leading-snug">{t.heroTitle}</h2>
-                    <p className="text-slate-400 text-xs md:text-sm max-w-xl mx-auto leading-relaxed">{t.heroDesc}</p>
+                {/* HERO SECTION WITH PHOTO BACKGROUND */}
+                <section className={`relative overflow-hidden py-10 px-4 border-b text-center ${
+                  isDark ? 'bg-slate-950 border-slate-800' : 'bg-gradient-to-b from-rose-50/70 via-white to-slate-50 border-slate-200'
+                }`}>
+                  <img
+                    src="https://images.unsplash.com/photo-1615461066841-6116e61058f4?auto=format&fit=crop&w=1600&q=80"
+                    alt="Blood Donation Drive"
+                    className={`absolute inset-0 w-full h-full object-cover object-center filter scale-105 ${
+                      isDark ? 'opacity-15 brightness-75' : 'opacity-10 brightness-110'
+                    }`}
+                  />
+                  <div className={`absolute inset-0 ${isDark ? 'bg-gradient-to-b from-slate-950/80 via-slate-950/95 to-slate-950' : 'bg-gradient-to-b from-white/70 via-white/90 to-slate-50'}`} />
+
+                  <div className="max-w-4xl mx-auto relative z-10">
+                    <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-black mb-3 border shadow-2xs ${
+                      isDark ? 'bg-rose-500/10 text-rose-400 border-rose-500/25' : 'bg-rose-100 text-rose-900 border-rose-200'
+                    }`}>
+                      وَمَنْ أَحْيَاهَا فَكَأَنَّمَا أَحْيَا النَّاسَ جَمِيعًا
+                    </span>
+                    <h2 className={`text-xl sm:text-3xl md:text-4xl font-black leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      {lang === 'ur' ? 'اپنے شہر اور علاقے میں فوری بلڈ ڈونر تلاش کریں' : 'Find Verified Blood Donors Instantly in Your City'}
+                    </h2>
+                    <p className={`text-xs sm:text-sm max-w-xl mx-auto mt-2 leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                      {lang === 'ur' ? 'خانیوال سمیت پاکستان کے تمام اضلاع میں ایک کلک پر واٹس ایپ اور کال کے ذریعے بلڈ ڈونرز سے رابطہ کریں۔' : 'Connect with donors in Khanewal and across Pakistan via 1-click WhatsApp & Call.'}
+                    </p>
+
+                    <div className="flex items-center justify-center gap-6 mt-6 flex-wrap">
+                      <div className={`px-4 py-2.5 rounded-2xl shadow-sm border ${isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'}`}>
+                        <span className="text-lg font-black text-rose-600">{donors.length}</span>
+                        <span className={`text-xs block font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{lang === 'ur' ? 'رجسٹرڈ ڈونرز' : 'Donors'}</span>
+                      </div>
+                      <div className={`px-4 py-2.5 rounded-2xl shadow-sm border ${isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'}`}>
+                        <span className="text-lg font-black text-amber-600">{requests.length}</span>
+                        <span className={`text-xs block font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{lang === 'ur' ? 'ہنگامی اپیلیں' : 'Requests'}</span>
+                      </div>
+                      <div className={`px-4 py-2.5 rounded-2xl shadow-sm border ${isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'}`}>
+                        <span className="text-lg font-black text-emerald-600">{totalPollVotes.toLocaleString()}</span>
+                        <span className={`text-xs block font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{lang === 'ur' ? 'حمایت اور ووٹ' : 'Pledges'}</span>
+                      </div>
+                    </div>
                   </div>
                 </section>
 
                 <main className="max-w-7xl mx-auto px-4 py-6">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 bg-slate-900/60 backdrop-blur border border-slate-800 p-3.5 rounded-2xl shadow-sm">
-                    <div className="flex items-center gap-2 text-xs md:text-sm flex-wrap">
-                      <button onClick={() => { setSelectedProvince(null); setSelectedCity(null); setActiveTab('directory'); }} className="text-rose-400 font-bold hover:underline">
-                        {lang === 'ur' ? 'تمام صوبے' : 'All Provinces'}
-                      </button>
-                      {selectedProvince && (
-                        <>
-                          <span className="text-slate-600">/</span>
-                          <button onClick={() => setSelectedCity(null)} className={`font-bold ${selectedCity ? 'text-rose-400 hover:underline' : 'text-slate-300'}`}>
-                            {selectedProvince}
-                          </button>
-                        </>
-                      )}
-                      {selectedCity && (
-                        <>
-                          <span className="text-slate-600">/</span>
-                          <span className="text-white font-extrabold bg-rose-500/10 text-rose-300 px-2.5 py-0.5 rounded-lg border border-rose-500/20">{selectedCity}</span>
-                        </>
-                      )}
+                  {/* PHOTO AWARENESS CAMPAIGN SLIDER */}
+                  <div className="mb-8">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className={`text-base font-black flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        <span>📸</span>
+                        <span>{lang === 'ur' ? 'آگاہی مہم اور تصویری گیلری' : 'Awareness Campaigns & Photo Gallery'}</span>
+                      </h3>
+                      <div className="flex gap-1.5">
+                        {campaigns.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setActiveSlide(i)}
+                            className={`h-2 rounded-full transition-all ${activeSlide === i ? 'w-6 bg-rose-600' : isDark ? 'w-2 bg-slate-700' : 'w-2 bg-slate-300'}`}
+                          />
+                        ))}
+                      </div>
                     </div>
 
-                    {(selectedProvince || selectedCity || activeTab === 'requests') && (
-                      <button onClick={() => {
-                        if (selectedCity) setSelectedCity(null);
-                        else if (selectedProvince) setSelectedProvince(null);
-                        else if (activeTab === 'requests') setActiveTab('directory');
-                      }} className="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-500/30 transition flex items-center gap-1.5">
-                        {t.backBtn}
-                      </button>
-                    )}
+                    <div className="relative rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-900 min-h-[300px] flex items-end shadow-xl">
+                      <img
+                        src={campaigns[activeSlide].image}
+                        alt="Campaign"
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-transparent" />
+                      <div className="relative z-10 p-6 md:p-8 max-w-2xl text-white">
+                        <span className={`inline-block text-white text-[11px] font-black px-3 py-1 rounded-full mb-2 ${campaigns[activeSlide].color}`}>
+                          {campaigns[activeSlide].tag}
+                        </span>
+                        <h4 className="text-lg md:text-2xl font-black mb-2">{campaigns[activeSlide].titleUrdu}</h4>
+                        <p className="text-slate-200 text-xs md:text-sm mb-4 leading-relaxed">{campaigns[activeSlide].descUrdu}</p>
+                        <button onClick={() => setShowRegisterModal(true)} className="bg-rose-600 hover:bg-rose-500 text-white font-black text-xs px-5 py-2.5 rounded-xl shadow-lg">
+                          ❤️ میں خون عطیہ کرنے کا عہد کرتا ہوں
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex border-b border-slate-800 mb-6">
-                    <button onClick={() => setActiveTab('directory')} className={`pb-3 px-6 font-bold text-sm md:text-base border-b-2 transition ${activeTab === 'directory' ? 'border-rose-500 text-rose-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
-                      {t.donorsTab} ({donors.length})
-                    </button>
-                    <button onClick={() => setActiveTab('requests')} className={`pb-3 px-6 font-bold text-sm md:text-base border-b-2 transition ${activeTab === 'requests' ? 'border-rose-500 text-rose-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
-                      {t.requestsTab} ({requests.length})
-                    </button>
-                  </div>
-
-                  {activeTab === 'directory' && (
-                    <div>
-                      {!selectedProvince && (
+                  {/* EMERGENCY ALERT */}
+                  {requests.length > 0 && (
+                    <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white rounded-2xl p-4 mb-6 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-xl animate-bounce">🚨</span>
                         <div>
-                          <h3 className="text-lg font-bold text-white mb-4">{t.selectProvince}</h3>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {Object.keys(pakistanLocations).map(prov => {
-                              const totalCities = pakistanLocations[prov].length;
-                              const provDonorsCount = donors.filter(d => d.province === prov).length;
-                              return (
-                                <div key={prov} onClick={() => setSelectedProvince(prov)} className="bg-slate-900 hover:bg-slate-850 p-5 rounded-2xl border border-slate-800 hover:border-rose-500/50 cursor-pointer transition transform hover:-translate-y-1 shadow-lg flex items-center justify-between group">
-                                  <div>
-                                    <h4 className="text-base font-bold text-white group-hover:text-rose-400 transition">{prov}</h4>
-                                    <p className="text-xs text-slate-400 mt-1">Cities: {totalCities} | Donors: {provDonorsCount}</p>
-                                  </div>
-                                  <div className="w-10 h-10 rounded-xl bg-slate-800 text-rose-400 flex items-center justify-center group-hover:bg-rose-600 group-hover:text-white transition font-bold">→</div>
-                                </div>
-                              );
-                            })}
-                          </div>
+                          <span className="bg-black/30 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-full">
+                            {lang === 'ur' ? 'انتہائی ہنگامی اپیل' : 'Emergency Alert'}
+                          </span>
+                          <p className="text-sm font-black mt-1">
+                            {requests[0].patient_name} — <span className="text-amber-200 px-1.5 py-0.5 bg-black/40 rounded">{requests[0].blood_group}</span> ({requests[0].hospital}, {requests[0].city})
+                          </p>
                         </div>
-                      )}
-
-                      {selectedProvince && !selectedCity && (
-                        <div>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                            {pakistanLocations[selectedProvince].map(city => {
-                              const cityDonorsCount = donors.filter(d => d.province === selectedProvince && d.city === city).length;
-                              return (
-                                <div key={city} onClick={() => setSelectedCity(city)} className="bg-slate-900 hover:bg-slate-850 p-4 rounded-xl border border-slate-800 hover:border-rose-500 cursor-pointer transition text-center shadow">
-                                  <h4 className="font-bold text-sm text-slate-200 group-hover:text-white">{city}</h4>
-                                  <span className="inline-block mt-2 text-[11px] bg-rose-500/10 text-rose-300 border border-rose-500/20 px-2.5 py-0.5 rounded-full font-semibold">
-                                    Donors: {cityDonorsCount}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-
-                      {selectedProvince && selectedCity && (
-                        <div>
-                          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 bg-slate-900 p-4 rounded-2xl border border-slate-800">
-                            <div>
-                              <h3 className="text-lg font-bold text-white">{selectedCity}</h3>
-                              <p className="text-xs text-slate-400">Available Donors in this city</p>
-                            </div>
-                            <div className="flex items-center gap-2 w-full md:w-auto">
-                              <span className="text-xs font-semibold text-slate-400">{t.bloodGroup}:</span>
-                              <select value={selectedBlood} onChange={(e) => setSelectedBlood(e.target.value)} className="bg-slate-950 border border-slate-700 rounded-xl p-2 text-xs font-bold text-rose-400 outline-none">
-                                {bloodGroups.map(bg => <option key={bg} value={bg}>{bg}</option>)}
-                              </select>
-                            </div>
-                          </div>
-
-                          {currentCityDonors.length === 0 ? (
-                            <div className="bg-slate-900 rounded-2xl p-12 text-center border border-slate-800">
-                              <h4 className="text-base font-bold text-slate-300">No donors registered in {selectedCity} yet.</h4>
-                              <button onClick={() => setShowDonorModal(true)} className="mt-4 bg-rose-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow hover:bg-rose-500 transition">Register as First Donor</button>
-                            </div>
-                          ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                              {currentCityDonors.map(donor => (
-                                <div key={donor.id} className="bg-slate-900 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between shadow-lg">
-                                  <div className="flex justify-between items-start mb-4">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center font-extrabold text-lg shadow-inner">
-                                        {donor.bloodgroup || donor.bloodGroup}
-                                      </div>
-                                      <div>
-                                        <h4 className="font-bold text-base text-white">{donor.name}</h4>
-                                        <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">📍 {donor.city}</p>
-                                      </div>
-                                    </div>
-                                    <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-2.5 py-1 rounded-full font-bold">
-                                      {t.available}
-                                    </span>
-                                  </div>
-                                  <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-                                    <span className="text-xs text-slate-400">{t.phone}</span>
-                                    <a href={`tel:${donor.phone}`} className="bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white px-3.5 py-1.5 rounded-xl text-xs font-bold border border-rose-500/20 transition">
-                                      📞 {donor.phone}
-                                    </a>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <a href={`https://wa.me/92${requests[0].contact ? requests[0].contact.replace(/[^0-9]/g, '').slice(-10) : ''}`} target="_blank" className="bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 shadow">
+                          💬 {lang === 'ur' ? 'واٹس ایپ' : 'WhatsApp'}
+                        </a>
+                        <a href={`tel:${requests[0].contact}`} className="bg-white text-rose-900 px-3 py-2 rounded-xl text-xs font-black shadow">
+                          📞 {lang === 'ur' ? 'کال کریں' : 'Call'}
+                        </a>
+                      </div>
                     </div>
                   )}
 
-                  {activeTab === 'requests' && (
-                    <div>
-                      <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-bold text-white">{t.requestsTab}</h3>
-                        <button onClick={() => setShowReqModal(true)} className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl text-xs font-bold shadow transition">+ {t.postRequest}</button>
+                  {/* LOCATION & 3D BLOOD GROUP SELECTOR */}
+                  <div className={`border rounded-3xl p-5 mb-6 space-y-4 shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+                    <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>📍 {lang === 'ur' ? 'آپ کا شہر:' : 'City:'}</span>
+                        <select
+                          value={selectedCity}
+                          onChange={(e) => setSelectedCity(e.target.value)}
+                          className={`border rounded-xl px-3 py-2 text-xs font-bold outline-none ${isDark ? 'bg-slate-950 border-rose-500/40 text-rose-300' : 'bg-slate-50 border-rose-300 text-rose-700'}`}
+                        >
+                          {Object.keys(pakistanProvinces).map(prov => (
+                            <optgroup key={prov} label={prov}>
+                              {pakistanProvinces[prov].map(c => (
+                                <option key={c} value={c}>{c}</option>
+                              ))}
+                            </optgroup>
+                          ))}
+                        </select>
+
+                        <div className="hidden sm:flex items-center gap-1.5">
+                          {['خانیوال / Khanewal', 'ملتان / Multan', 'لاہور / Lahore', 'فیصل آباد / Faisalabad'].map(c => (
+                            <button
+                              key={c}
+                              onClick={() => setSelectedCity(c)}
+                              className={`text-[11px] px-2.5 py-1 rounded-lg border font-bold ${
+                                selectedCity === c
+                                  ? 'bg-rose-600 text-white border-rose-600 shadow-sm'
+                                  : isDark ? 'bg-slate-800 text-slate-400 border-slate-700' : 'bg-slate-100 text-slate-600 border-slate-200'
+                              }`}
+                            >
+                              {c.split(' / ')[0]}
+                            </button>
+                          ))}
+                        </div>
                       </div>
 
-                      {requests.length === 0 ? (
-                        <div className="bg-slate-900 rounded-2xl p-12 text-center border border-slate-800">
-                          <h4 className="text-base font-bold text-slate-300">No emergency requests active right now.</h4>
+                      <div className="w-full lg:w-80">
+                        <input
+                          type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder={lang === 'ur' ? 'نام، علاقہ یا گروپ تلاش کریں...' : 'Search donor or area...'}
+                          className={`w-full border rounded-2xl px-4 py-2 text-xs outline-none focus:border-rose-500 ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`}
+                        />
+                      </div>
+                    </div>
+
+                    {/* 3D Blood Badges */}
+                    <div className={`pt-3 border-t ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+                      <div className="flex justify-between items-center mb-3">
+                        <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>🩸 {lang === 'ur' ? 'بلڈ گروپ منتخب کریں:' : 'Select Blood Group:'}</span>
+                        {selectedBlood !== 'All / تمام' && (
+                          <button onClick={() => setSelectedBlood('All / تمام')} className="text-xs text-rose-600 underline font-semibold">
+                            {lang === 'ur' ? 'تمام دیکھیں' : 'Show All'}
+                          </button>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5">
+                        {bloodGroups.map(bg => {
+                          const isSel = selectedBlood === bg;
+                          const count = counts[bg] || 0;
+                          return (
+                            <button
+                              key={bg}
+                              onClick={() => setSelectedBlood(isSel ? 'All / تمام' : bg)}
+                              className={`relative p-3 rounded-2xl text-center transition flex flex-col items-center justify-center ${
+                                isSel
+                                  ? 'bg-gradient-to-b from-rose-600 to-rose-900 text-white shadow-md ring-2 ring-rose-500 -translate-y-1'
+                                  : isDark
+                                  ? 'bg-slate-950 text-slate-200 border border-slate-800 hover:border-rose-500'
+                                  : 'bg-white text-slate-800 border border-slate-200 hover:border-rose-400 shadow-xs'
+                              }`}
+                            >
+                              <span className="text-lg font-black mb-1">{bg}</span>
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                                isSel ? 'bg-black/40 text-rose-200' : isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-600'
+                              }`}>
+                                {count} {lang === 'ur' ? 'ڈونرز' : ''}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* TABS */}
+                  <div className={`flex border-b mb-6 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                    <button
+                      onClick={() => setActiveTab('donors')}
+                      className={`pb-3 px-6 font-extrabold text-sm md:text-base border-b-2 transition ${activeTab === 'donors' ? 'border-rose-500 text-rose-600' : 'border-transparent text-slate-400'}`}
+                    >
+                      🩸 {lang === 'ur' ? 'دستیاب بلڈ ڈونرز' : 'Available Donors'} ({filteredDonors.length})
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('requests')}
+                      className={`pb-3 px-6 font-extrabold text-sm md:text-base border-b-2 transition ${activeTab === 'requests' ? 'border-amber-500 text-amber-600' : 'border-transparent text-slate-400'}`}
+                    >
+                      🚨 {lang === 'ur' ? 'ہنگامی درخواستیں' : 'Requests'} ({requests.length})
+                    </button>
+                  </div>
+
+                  {/* DONORS LIST */}
+                  {activeTab === 'donors' && (
+                    <div>
+                      {loading ? (
+                        <p className="text-center py-12 text-xs text-slate-400">لوڈ ہو رہا ہے...</p>
+                      ) : filteredDonors.length === 0 ? (
+                        <div className={`border rounded-3xl p-10 text-center max-w-md mx-auto shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+                          <p className={`text-sm font-bold mb-4 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{selectedCity} میں اس وقت کوئی ڈونر نہیں ملا۔</p>
+                          <button onClick={() => setShowRegisterModal(true)} className="bg-rose-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow">
+                            + بطور پہلا ڈونر رجسٹر ہوں
+                          </button>
                         </div>
                       ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                          {requests.map(req => (
-                            <div key={req.id} className="bg-slate-900 rounded-2xl border border-amber-500/30 p-5 flex flex-col justify-between shadow-lg">
-                              <div>
-                                <div className="flex justify-between items-start mb-3">
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center font-extrabold text-lg">
-                                      {req.blood_group}
+                          {filteredDonors.map((d, i) => {
+                            const bg = d.bloodgroup || d.bloodGroup || 'O+';
+                            const pClean = (d.phone || '').replace(/[^0-9]/g, '');
+                            const waNum = pClean.startsWith('03') ? '92' + pClean.slice(1) : pClean;
+                            const waMsg = encodeURIComponent(`السلام علیکم ${d.name} بھائی! مریض کے لیے فوری خون گروپ (${bg}) کی ضرورت ہے۔ کیا آپ دستیاب ہیں؟`);
+                            const avatar = avatarImages[Math.abs((d.name || 'A').charCodeAt(0)) % avatarImages.length];
+                            const donorVotesCount = donorVotes[d.id] || (Math.floor(((d.name || '').length * 7) % 35) + 12);
+                            const hasVotedThisDonor = !!localStorage.getItem(`donor_vote_${d.id}`);
+
+                            return (
+                              <div key={d.id || i} className={`border rounded-2xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between ${
+                                isDark ? 'bg-slate-900 border-slate-800 hover:border-rose-500/50' : 'bg-white border-slate-200 hover:border-rose-400'
+                              }`}>
+                                <div>
+                                  <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-3">
+                                      <div className="relative">
+                                        <img src={avatar} alt={d.name} className="w-13 h-13 rounded-2xl object-cover border-2 border-slate-200 shadow-sm" />
+                                        <span className="absolute -bottom-1 -right-1 bg-rose-600 text-white font-black text-[11px] px-1.5 py-0.5 rounded-lg border border-white shadow">
+                                          {bg}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <h4 className={`font-extrabold text-base ${isDark ? 'text-white' : 'text-slate-900'}`}>{d.name}</h4>
+                                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>📍 {d.city} {d.tehsil ? `(${d.tehsil})` : ''}</p>
+                                      </div>
                                     </div>
-                                    <div>
-                                      <h4 className="font-bold text-base text-white">{t.patient} {req.patient_name}</h4>
-                                      <p className="text-xs text-slate-400">🏥 {req.hospital}, {req.city}</p>
-                                    </div>
+                                    <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                                      دستیاب
+                                    </span>
                                   </div>
-                                  <span className="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] px-2.5 py-1 rounded-full font-bold animate-pulse">
-                                    {req.urgency}
-                                  </span>
+
+                                  {/* Donor Prayer / Vote */}
+                                  <div className={`flex items-center justify-between rounded-xl px-3 py-1.5 mb-3 border ${
+                                    isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+                                  }`}>
+                                    <div className="flex items-center gap-1.5 text-xs">
+                                      <span>❤️</span>
+                                      <span className="font-bold text-rose-600">{donorVotesCount}</span>
+                                      <span className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>دعائیں و ووٹ</span>
+                                    </div>
+                                    <button
+                                      onClick={() => handleVoteForDonor(d.id)}
+                                      disabled={hasVotedThisDonor}
+                                      className={`text-[11px] font-bold px-2 py-1 rounded-lg border ${
+                                        hasVotedThisDonor
+                                          ? 'bg-rose-100 text-rose-700 border-rose-200'
+                                          : isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-white text-slate-700 border-slate-200 shadow-2xs'
+                                      }`}
+                                    >
+                                      {hasVotedThisDonor ? '✓ دعا دی گئی' : '🤲 دعا / ووٹ دیں'}
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className={`pt-3 border-t grid grid-cols-2 gap-2 mt-2 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+                                  <a href={`https://wa.me/${waNum}?text=${waMsg}`} target="_blank" className="bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-200 px-3 py-2 rounded-xl text-xs font-bold text-center transition shadow-2xs">
+                                    💬 واٹس ایپ
+                                  </a>
+                                  <a href={`tel:${d.phone}`} className="bg-rose-600 hover:bg-rose-500 text-white px-3 py-2 rounded-xl text-xs font-black text-center shadow-sm">
+                                    📞 کال کریں
+                                  </a>
                                 </div>
                               </div>
-                              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-                                <span className="text-xs text-slate-400">{t.phone}</span>
-                                <a href={`tel:${req.contact}`} className="bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-bold border border-amber-500/20 transition">
-                                  📞 {req.contact}
-                                </a>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* NEARBY DISTRICTS */}
+                      {backupDonors.length > 0 && (
+                        <div className={`mt-12 pt-8 border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                          <h3 className={`text-base font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            🔄 {selectedCity.split(' / ')[0]} کے قریبی اضلاع کے دستیاب ڈونرز
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {backupDonors.slice(0, 6).map((d, i) => (
+                              <div key={i} className={`border rounded-2xl p-4 flex flex-col justify-between ${
+                                isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-xs'
+                              }`}>
+                                <div className="flex items-center gap-3 mb-3">
+                                  <span className="w-10 h-10 rounded-xl bg-rose-600 text-white font-black flex items-center justify-center text-sm">{d.bloodgroup}</span>
+                                  <div>
+                                    <h4 className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{d.name}</h4>
+                                    <p className="text-xs text-rose-600">📍 {d.city}</p>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <a href={`https://wa.me/92${(d.phone || '').replace(/[^0-9]/g, '').slice(-10)}`} target="_blank" className="bg-emerald-50 text-emerald-700 text-xs py-1.5 rounded-lg text-center font-bold border border-emerald-200">💬 واٹس ایپ</a>
+                                  <a href={`tel:${d.phone}`} className="bg-rose-600 text-white text-xs py-1.5 rounded-lg text-center font-bold shadow-2xs">📞 کال</a>
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
                   )}
+
+                  {/* REQUESTS LIST */}
+                  {activeTab === 'requests' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                      {requests.map((r, i) => (
+                        <div key={i} className={`border rounded-2xl p-5 shadow-sm flex flex-col justify-between ${
+                          isDark ? 'bg-slate-900 border-amber-500/30' : 'bg-white border-amber-300'
+                        }`}>
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <span className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 border border-amber-300 font-black text-lg flex items-center justify-center">
+                                {r.blood_group}
+                              </span>
+                              <div>
+                                <h4 className={`font-bold text-base ${isDark ? 'text-white' : 'text-slate-900'}`}>{r.patient_name}</h4>
+                                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>🏥 {r.hospital}, {r.city}</p>
+                              </div>
+                            </div>
+                            <span className="bg-rose-50 text-rose-600 border border-rose-200 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                              {r.urgency || 'فوری'}
+                            </span>
+                          </div>
+                          <div className={`pt-3 border-t grid grid-cols-2 gap-2 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+                            <a href={`https://wa.me/92${(r.contact || '').replace(/[^0-9]/g, '').slice(-10)}`} target="_blank" className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs py-2 rounded-xl text-center font-bold">💬 واٹس ایپ</a>
+                            <a href={`tel:${r.contact}`} className="bg-amber-500 text-slate-950 text-xs py-2 rounded-xl text-center font-black shadow-2xs">📞 کال کریں</a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* COMMUNITY VOTE & PLEDGE POLL SECTION */}
+                  <div className={`mt-12 border rounded-3xl p-6 sm:p-8 shadow-sm ${
+                    isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                  }`}>
+                    <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                      <div>
+                        <span className="text-rose-600 font-bold text-xs uppercase">عوامی رائے دہی و ووٹ</span>
+                        <h3 className={`text-base sm:text-xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>کیا آپ ضرورت پڑنے پر خون کا عطیہ دینے کے لیے تیار ہیں؟</h3>
+                      </div>
+                      <div className={`border px-4 py-2 rounded-2xl text-center ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                        <span className="text-lg font-black text-rose-600">{totalPollVotes.toLocaleString()}</span>
+                        <span className={`text-[11px] block font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>کل ووٹ</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 space-y-3">
+                      {[
+                        { key: 'pledge', icon: '🩸', text: 'ہاں! میں ایمرجنسی میں خون کا عطیہ دینے کا عہد کرتا ہوں ❤️', votes: pollVotes.pledge },
+                        { key: 'already', icon: '🙌', text: 'میں پہلے بھی خون دے چکا ہوں اور دوبارہ بھی دوں گا 🏅', votes: pollVotes.already },
+                        { key: 'prayer', icon: '✨', text: 'میں تمام مریضوں کے لیے شفاء کی دعا کرتا ہوں 🤲', votes: pollVotes.prayer }
+                      ].map((item) => {
+                        const percent = totalPollVotes > 0 ? Math.round((item.votes / totalPollVotes) * 100) : 0;
+                        const isVoted = hasVotedPoll === item.key;
+                        return (
+                          <div
+                            key={item.key}
+                            onClick={() => handleVoteOption(item.key)}
+                            className={`p-4 rounded-2xl border transition flex items-center justify-between cursor-pointer ${
+                              isVoted
+                                ? 'bg-rose-50 border-rose-500 ring-2 ring-rose-300'
+                                : isDark ? 'bg-slate-950 border-slate-800 hover:border-rose-500' : 'bg-slate-50 border-slate-200 hover:border-rose-400'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-2xl">{item.icon}</span>
+                              <div>
+                                <h5 className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.text}</h5>
+                                {hasVotedPoll && <span className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{item.votes.toLocaleString()} ووٹ</span>}
+                              </div>
+                            </div>
+                            <div>
+                              {hasVotedPoll ? (
+                                <span className="bg-rose-600 text-white font-black text-xs px-3 py-1 rounded-xl shadow">{percent}%</span>
+                              ) : (
+                                <button className="bg-rose-600 text-white font-black text-xs px-4 py-2 rounded-xl shadow cursor-pointer">ووٹ دیں</button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </main>
               </div>
 
-              {showDonorModal && (
-                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-                  <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 md:p-8 border border-slate-800 shadow-2xl relative">
-                    <button onClick={() => setShowDonorModal(false)} className="absolute top-5 left-5 text-slate-400 hover:text-white text-xl">✕</button>
-                    <h3 className="text-xl font-bold text-white mb-1">{t.registerDonor}</h3>
-                    <p className="text-xs text-slate-400 mb-6">Enter your details to help patients in your city.</p>
-                    <form onSubmit={handleRegisterDonor} className="space-y-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">Full Name</label>
-                        <input type="text" required placeholder="e.g. Muhammad Ahmad" value={newDonor.name} onChange={(e) => setNewDonor({...newDonor, name: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-rose-500" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">{t.bloodGroup}</label>
-                          <select value={newDonor.bloodgroup} onChange={(e) => setNewDonor({...newDonor, bloodgroup: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm font-bold text-rose-400 outline-none">
-                            {bloodGroups.filter(b => b !== "All / تمام").map(bg => <option key={bg} value={bg}>{bg}</option>)}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Phone Number</label>
-                          <input type="text" required placeholder="03001234567" value={newDonor.phone} onChange={(e) => setNewDonor({...newDonor, phone: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-rose-500" />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Province</label>
-                          <select value={newDonor.province} onChange={(e) => { const prov = e.target.value; const cities = pakistanLocations[prov] || []; setNewDonor({...newDonor, province: prov, city: cities[0] || ""}); }} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
-                            {Object.keys(pakistanLocations).map(prov => <option key={prov} value={prov}>{prov}</option>)}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">City</label>
-                          <select value={newDonor.city} onChange={(e) => setNewDonor({...newDonor, city: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
-                            {(pakistanLocations[newDonor.province] || []).map(city => <option key={city} value={city}>{city}</option>)}
-                          </select>
-                        </div>
-                      </div>
-                      <button type="submit" className="w-full bg-rose-600 hover:bg-rose-500 text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-rose-600/30 transition">Submit Registration</button>
-                    </form>
-                  </div>
-                </div>
-              )}
-
-              {showReqModal && (
-                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-                  <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 md:p-8 border border-slate-800 shadow-2xl relative">
-                    <button onClick={() => setShowReqModal(false)} className="absolute top-5 left-5 text-slate-400 hover:text-white text-xl">✕</button>
-                    <h3 className="text-xl font-bold text-white mb-1">{t.postRequest}</h3>
-                    <p className="text-xs text-slate-400 mb-6">Broadcast emergency blood requirement.</p>
-                    <form onSubmit={handlePostRequest} className="space-y-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">Patient Name</label>
-                        <input type="text" required placeholder="Patient Name" value={newReq.patient_name} onChange={(e) => setNewReq({...newReq, patient_name: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Required Blood</label>
-                          <select value={newReq.blood_group} onChange={(e) => setNewReq({...newReq, blood_group: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm font-bold text-amber-400 outline-none">
-                            {bloodGroups.filter(b => b !== "All / تمام").map(bg => <option key={bg} value={bg}>{bg}</option>)}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Contact Number</label>
-                          <input type="text" required placeholder="03001234567" value={newReq.contact} onChange={(e) => setNewReq({...newReq, contact: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Province</label>
-                          <select value={newReq.province} onChange={(e) => { const prov = e.target.value; const cities = pakistanLocations[prov] || []; setNewReq({...newReq, province: prov, city: cities[0] || ""}); }} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
-                            {Object.keys(pakistanLocations).map(prov => <option key={prov} value={prov}>{prov}</option>)}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-300 mb-1.5">City</label>
-                          <select value={newReq.city} onChange={(e) => setNewReq({...newReq, city: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none">
-                            {(pakistanLocations[newReq.province] || []).map(city => <option key={city} value={city}>{city}</option>)}
-                          </select>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">Hospital & Address</label>
-                        <input type="text" required placeholder="e.g. Nishtar Hospital, Multan" value={newReq.hospital} onChange={(e) => setNewReq({...newReq, hospital: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-amber-500" />
-                      </div>
-                      <button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-amber-500/20 transition">Post Emergency Request</button>
-                    </form>
-                  </div>
-                </div>
-              )}
-
-              <footer className="bg-slate-900 border-t border-slate-800 py-8 mt-12 text-center text-xs space-y-2 text-slate-400">
-                <p>{t.footerText}</p>
+              {/* FOOTER */}
+              <footer className={`border-t py-6 px-4 text-center text-xs ${isDark ? 'bg-slate-900 border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-500 shadow-2xs'}`}>
+                <p>© 2026 پاکستان بلڈ پورٹل۔ انسانیت کی خدمت ہمارا نصب العین ہے۔</p>
               </footer>
+
+              {/* REGISTER MODAL */}
+              {showRegisterModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+                  <div className={`w-full max-w-md border rounded-3xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto ${isDark ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-900'}`}>
+                    <div className={`flex justify-between items-center pb-3 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                      <h3 className="font-bold text-base">بطور بلڈ ڈونر رجسٹر ہوں</h3>
+                      <button onClick={() => setShowRegisterModal(false)} className="text-slate-400 hover:text-rose-600 text-lg">✕</button>
+                    </div>
+                    <form onSubmit={handleRegisterSubmit} className="mt-4 space-y-3">
+                      <div>
+                        <label className="text-xs font-bold block mb-1">مکمل نام *</label>
+                        <input type="text" required value={donorForm.name} onChange={e => setDonorForm({...donorForm, name: e.target.value})} className={`w-full border rounded-xl px-3 py-2 text-sm ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`} placeholder="مثال: محمد احمد" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold block mb-1">بلڈ گروپ *</label>
+                        <select value={donorForm.bloodgroup} onChange={e => setDonorForm({...donorForm, bloodgroup: e.target.value})} className={`w-full border rounded-xl px-3 py-2 text-sm font-bold text-rose-600 ${isDark ? 'bg-slate-950 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                          {bloodGroups.map(bg => <option key={bg} value={bg}>{bg}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold block mb-1">موبائل / واٹس ایپ نمبر *</label>
+                        <input type="tel" required value={donorForm.phone} onChange={e => setDonorForm({...donorForm, phone: e.target.value})} className={`w-full border rounded-xl px-3 py-2 text-sm ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`} placeholder="03001234567" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold block mb-1">شہر *</label>
+                        <select value={donorForm.city} onChange={e => setDonorForm({...donorForm, city: e.target.value})} className={`w-full border rounded-xl p-2 text-xs font-bold ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`}>
+                          {pakistanProvinces["پنجاب / Punjab"].map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold block mb-1">تحصیل یا محلہ (اختیاری)</label>
+                        <input type="text" value={donorForm.tehsil} onChange={e => setDonorForm({...donorForm, tehsil: e.target.value})} placeholder="مثلاً: کبیروالا، میاں چنوں، کینٹ" className={`w-full border rounded-xl px-3 py-2 text-xs ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`} />
+                      </div>
+                      <button type="submit" className="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 rounded-xl mt-3 shadow-md">
+                        رجسٹریشن مکمل کریں
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              )}
+
+              {/* POST REQUEST MODAL */}
+              {showPostReqModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+                  <div className={`w-full max-w-md border rounded-3xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto ${isDark ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-900'}`}>
+                    <div className={`flex justify-between items-center pb-3 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                      <h3 className="font-bold text-base">خون کی ہنگامی ضرورت پوسٹ کریں</h3>
+                      <button onClick={() => setShowPostReqModal(false)} className="text-slate-400 hover:text-rose-600 text-lg">✕</button>
+                    </div>
+                    <form onSubmit={handleRequestSubmit} className="mt-4 space-y-3">
+                      <div>
+                        <label className="text-xs font-bold block mb-1">مریض کا نام *</label>
+                        <input type="text" required value={reqForm.patient_name} onChange={e => setReqForm({...reqForm, patient_name: e.target.value})} className={`w-full border rounded-xl px-3 py-2 text-sm ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`} placeholder="مریض کا نام" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs font-bold block mb-1">بلڈ گروپ *</label>
+                          <select value={reqForm.blood_group} onChange={e => setReqForm({...reqForm, blood_group: e.target.value})} className={`w-full border rounded-xl px-3 py-2 text-sm font-bold text-rose-600 ${isDark ? 'bg-slate-950 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                            {bloodGroups.map(bg => <option key={bg} value={bg}>{bg}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-xs font-bold block mb-1">شہر *</label>
+                          <select value={reqForm.city} onChange={e => setReqForm({...reqForm, city: e.target.value})} className={`w-full border rounded-xl px-3 py-2 text-xs ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`}>
+                            {pakistanProvinces["پنجاب / Punjab"].map(c => <option key={c} value={c}>{c}</option>)}
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold block mb-1">ہسپتال کا نام *</label>
+                        <input type="text" required value={reqForm.hospital} onChange={e => setReqForm({...reqForm, hospital: e.target.value})} className={`w-full border rounded-xl px-3 py-2 text-sm ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`} placeholder="مثال: DHQ ہسپتال خانیوال" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold block mb-1">رابطہ نمبر (واٹس ایپ والا) *</label>
+                        <input type="tel" required value={reqForm.contact} onChange={e => setReqForm({...reqForm, contact: e.target.value})} className={`w-full border rounded-xl px-3 py-2 text-sm ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`} placeholder="03001234567" />
+                      </div>
+                      <button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl mt-3 shadow-md">
+                        📢 اپیل جاری کریں
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              )}
             </div>
           );
         }
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
-    <script src="https://pl31440622.profitableratecpmnetwork.com/f4/d3/75/f4d375b95788239df95a32094b290308.js"></script>
 </body>
 </html>
