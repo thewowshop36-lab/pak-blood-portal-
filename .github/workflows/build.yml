@@ -20,6 +20,7 @@ jobs:
 
     - name: Build Release App Bundle (AAB)
       run: |
+        cd "$(ls -d pak-blood-portal-* | head -n 1)"
         if [ -f "gradlew" ]; then
           chmod +x gradlew
           ./gradlew bundleRelease
