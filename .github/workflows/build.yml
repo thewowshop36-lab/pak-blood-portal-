@@ -2,35 +2,47 @@ name: Build Android App Bundle
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '17'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      - name: Create Missing Settings File if Needed
+        run: |
+          if [ ! -f "settings.gradle" ] && [ ! -f "settings.gradle.kts" ]; then
+            echo "include ':app'" > settings.gradle
+          fi
 
-    - name: Build Signed Release App Bundle (AAB)
-      run: |
-        ./gradlew bundleRelease \
-          -Pandroid.injected.signing.store.file=$HOME/.android/debug.keystore \
-          -Pandroid.injected.signing.store.password=android \
-          -Pandroid.injected.signing.key.alias=androiddebugkey \
-          -Pandroid.injected.signing.key.password=android
+      - name: Build Release App Bundle (AAB)
+        run: |
+          gradle wrapper --gradle-version 8.7
+          chmod +x gradlew
+          ./gradlew bundleRelease
 
-    - name: Upload AAB Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-release-aab
-        path: app/build/outputs/bundle/release/app-release.aab
+      - name: Sign App Bundle
+        run: |
+          keytool -genkey -v -keystore release.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias upload-key -storepass pakblood123 -keypass pakblood123 -dname "CN=PakBloodPortal, OU=App, O=Org, L=Lahore, S=Punjab, C=PK"
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore release.keystore -storepass pakblood123 -keypass pakblood123 app/build/outputs/bundle/release/*.aab upload-key
+
+      - name: Upload AAB Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-signed-aab
+          path: "app/build/outputs/bundle/release/*.aab"
+
+      - name: Upload Keystore (Save this file safely!)
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-keystore
+          path: release.keystore
