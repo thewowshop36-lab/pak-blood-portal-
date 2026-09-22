@@ -137,6 +137,143 @@ export const cityTehsils: Record<string, string[]> = {
     "نارتھ ناظم آباد / North Nazimabad",
     "ملیر / Malir"
   ]
+  export const cityTehsils: Record<string, string[]> = {
+  "خانیوال / Khanewal": [
+    "خانیوال سٹی / Khanewal City",
+    "کبیروالا / Kabirwala",
+    "میاں چنوں / Mian Channu",
+    "جہانیاں / Jahanian",
+    "عبدالحکیم / Abdul Hakeem"
+  ],
+  "ملتان / Multan": [
+    "ملتان سٹی / Multan City",
+    "ملتان کینٹ / Multan Cantt",
+    "شجاع آباد / Shujabad",
+    "جلال پور پیروالا / Jalalpur Pirwala"
+  ],
+  "لاہور / Lahore": [
+    "گلبرگ / Gulberg",
+    "ماڈل ٹاؤن / Model Town",
+    "ڈی ایچ اے / DHA",
+    "جوہر ٹاؤن / Johar Town",
+    "علامہ اقبال ٹاؤن / Allama Iqbal Town",
+    "شاہدرہ / Shahdara",
+    "کینٹ / Cantt",
+    "شالامار / Shalimar",
+    "راوی / Ravi"
+  ],
+  "فیصل آباد / Faisalabad": [
+    "فیصل آباد سٹی / Faisalabad City",
+    "فیصل آباد صدر / Faisalabad Saddar",
+    "جڑانوالہ / Jaranwala",
+    "سمندری / Samundri",
+    "تاندلیانوالہ / Tandlianwala",
+    "چک جھمرہ / Chak Jhumra"
+  ],
+  "راولپنڈی / Rawalpindi": [
+    "راولپنڈی سٹی / Rawalpindi City",
+    "کینٹ / Cantt",
+    "صدر / Saddar",
+    "سیٹلائٹ ٹاؤن / Satellite Town",
+    "گوجر خان / Gujar Khan",
+    "ٹیکسلا / Taxila",
+    "کلرسیداں / Kallar Syedan",
+    "مری / Murree",
+    "کوٹلی ستیاں / Kotli Sattian"
+  ],
+  "گوجرانوالہ / Gujranwala": [
+    "گوجرانوالہ سٹی / Gujranwala City",
+    "کامونکی / Kamoke",
+    "نوشہرہ ورکاں / Nowshera Virkan",
+    "وزیر آباد / Wazirabad"
+  ],
+  "سیالکوٹ / Sialkot": [
+    "سیالکوٹ سٹی / Sialkot City",
+    "ڈسکہ / Daska",
+    "پسرور / Pasrur",
+    "سمبڑیال / Sambrial"
+  ],
+  "بہاولپور / Bahawalpur": [
+    "بہاولپور سٹی / Bahawalpur City",
+    "احمد پور شرقیہ / Ahmedpur East",
+    "حاصل پور / Hasilpur",
+    "خیرپور ٹامیوالی / Khairpur Tamewali",
+    "یزمان / Yazman"
+  ],
+  "ساہیوال / Sahiwal": [
+    "ساہیوال سٹی / Sahiwal City",
+    "چیچہ وطنی / Chichawatni"
+  ],
+  "سرگودھا / Sargodha": [
+    "سرگودھا سٹی / Sargodha City",
+    "بھلوال / Bhalwal",
+    "شاہ پور / Shahpur",
+    "سلوانیوالی / Sillanwali",
+    "کوٹ مومن / Kot Momin"
+  ],
+  "وہاڑی / Vehari": [
+    "وہاڑی سٹی / Vehari City",
+    "بورے والا / Burewala",
+    "میلسی / Mailsi"
+  ],
+  "رحیم یار خان / Rahim Yar Khan": [
+    "رحیم یار خان سٹی / Rahim Yar Khan City",
+    "صادق آباد / Sadiqabad",
+    "خانپور / Khanpur",
+    "لیاقت پور / Liaquatpur"
+  ],
+  "اوکاڑہ / Okara": [
+    "اوکاڑہ سٹی / Okara City",
+    "دیپالپور / Depalpur",
+    "رینالہ خورد / Renala Khurd"
+  ],
+  "مظفر گڑھ / Muzaffargarh": [
+    "مظفر گڑھ سٹی / Muzaffargarh City",
+    "کوٹ ادو / Kot Addu",
+    "علی پور / Alipur",
+    "جتوئی / Jatoi"
+  ],
+  "ڈیرہ غازی خان / D.G. Khan": [
+    "ڈی جی خان سٹی / D.G. Khan City",
+    "تونسہ شریف / Taunsa",
+    "کوٹ چٹھہ / Kot Chutta"
+  ],
+  "کراچی / Karachi": [
+    "صدر / Saddar",
+    "گلشن اقبال / Gulshan-e-Iqbal",
+    "کورنگی / Korangi",
+    "کلفٹن / Clifton",
+    "نارتھ ناظم آباد / North Nazimabad",
+    "ملیر / Malir",
+    "لیاقت آباد / Liaquatabad",
+    "جمشید ٹاؤن / Jamshed Town",
+    "بلدیہ ٹاؤن / Baldia Town"
+  ],
+  "حیدرآباد / Hyderabad": [
+    "حیدرآباد سٹی / Hyderabad City",
+    "قاسم آباد / Qasimabad",
+    "لطیف آباد / Latifabad"
+  ],
+  "پشاور / Peshawar": [
+    "پشاور سٹی / Peshawar City",
+    "حیات آباد / Hayatabad",
+    "صدر / Saddar",
+    "کینٹ / Cantt"
+  ],
+  "کوئٹہ / Quetta": [
+    "کوئٹہ سٹی / Quetta City",
+    "کینٹ / Cantt",
+    "سریاب / Sariab"
+  ],
+  "اسلام آباد / Islamabad": [
+    "سیکٹر ایف / Sector F",
+    "سیکٹر جی / Sector G",
+    "سیکٹر ایچ / Sector H",
+    "سیکٹر آئی / Sector I",
+    "بحریہ ٹاؤن / Bahria Town",
+    "ڈی ایچ اے / DHA"
+  ]
+};
 };
 
 export const nearbyCities: Record<string, string[]> = {
