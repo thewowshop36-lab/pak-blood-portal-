@@ -7,7 +7,8 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.aiastudio.pakbloodportal"
+        applicationId "com.allahditta.pakbloodportal"
+
         minSdk 21
         targetSdk 34
         versionCode 1
