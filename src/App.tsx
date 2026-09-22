@@ -191,9 +191,8 @@ export default function App() {
       }`}
       dir={lang === 'ur' ? 'rtl' : 'ltr'}
     >
-      {/* FIXED TOP HEADER WRAPPER - REMAINS STATIONARY DURING SCROLL */}
+      {/* FIXED TOP HEADER WRAPPER */}
       <div className="fixed top-0 inset-x-0 z-50 shadow-md">
-        {/* Top Ticker */}
         <div className="bg-gradient-to-r from-red-700 via-rose-700 to-red-800 text-white text-[11px] sm:text-xs py-1 px-3 shadow-inner">
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
             <div className="flex items-center gap-2 shrink-0">
@@ -222,12 +221,10 @@ export default function App() {
           </div>
         </div>
 
-        {/* Header Navbar */}
         <header className={`backdrop-blur-md border-b shadow-xs transition-colors ${
           isDark ? 'bg-slate-900/95 border-slate-800' : 'bg-white/95 border-slate-200'
         }`}>
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-2">
-            {/* Logo */}
             <div
               onClick={() => {
                 setActiveTab('home');
@@ -252,7 +249,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Desktop 5-Page Navigation */}
             <nav className="hidden lg:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/60 p-1 rounded-2xl border border-slate-200 dark:border-slate-700/60">
               <button
                 onClick={() => setActiveTab('home')}
@@ -315,7 +311,6 @@ export default function App() {
               </button>
             </nav>
 
-            {/* Action Buttons */}
             <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={() => setActiveTab('helplines')}
@@ -362,7 +357,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Mobile Quick Action Bar */}
           <div className="sm:hidden px-3 pb-2 pt-1 grid grid-cols-2 gap-2 border-t border-slate-100 dark:border-slate-800/60">
             <button
               onClick={() => setActiveTab('requests')}
@@ -382,7 +376,6 @@ export default function App() {
         </header>
       </div>
 
-      {/* Hero Section */}
       <section className={`relative overflow-hidden py-8 sm:py-10 px-4 border-b text-center transition-colors ${
         isDark ? 'bg-slate-950 border-slate-800 text-white' : 'bg-gradient-to-b from-rose-50/80 via-white to-slate-50 border-slate-200 text-slate-900'
       }`}>
@@ -440,14 +433,12 @@ export default function App() {
         </div>
       </section>
 
-      {/* Main Multi-Page Container */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 py-6 w-full flex-1">
-        {/* PAGE 1: HOME (ہوم پیج) */}
+        {/* PAGE 1: HOME */}
         {activeTab === 'home' && (
           <div className="space-y-8">
             <EmergencyBanner requests={requests} onViewAll={() => setActiveTab('requests')} lang={lang} />
 
-            {/* 3 Quick Action Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div
                 onClick={() => { setActiveTab('donors'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
@@ -513,45 +504,38 @@ export default function App() {
               </div>
             </div>
 
-            {/* Visual Campaign Slider with Photos & Modal Details */}
             <VisualCampaignSlider
               lang={lang}
               onPledgeClick={() => setShowRegisterModal(true)}
               theme={theme}
             />
 
-            {/* 4 Steps of Blood Donation */}
             <BloodDonationSteps
               lang={lang}
               theme={theme}
               onRegisterClick={() => setShowRegisterModal(true)}
             />
 
-            {/* Video Awareness & Doctor Guidance Clips */}
             <BloodDonationVideos
               lang={lang}
               theme={theme}
             />
 
-            {/* Donor Eligibility & Medical Guidelines */}
             <DonorEligibilityGuidelines
               lang={lang}
               theme={theme}
             />
 
-            {/* Myths vs Scientific Facts */}
             <MythsVsFacts
               lang={lang}
               theme={theme}
             />
 
-            {/* Pakistan Blood Camps & Drives Photo Gallery */}
             <CampsPhotoGallery
               lang={lang}
               theme={theme}
             />
 
-            {/* Donors Preview on Home */}
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -579,7 +563,7 @@ export default function App() {
                 </div>
               ) : (
                 <div className={`p-8 rounded-3xl border text-center ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-                  <p className="text-sm font-bold text-slate-400">
+                  <p className={`text-sm font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                     {lang === 'ur' ? 'اس وقت اس شہر کے لیے ڈونرز موجود نہیں۔ آپ پہلے ڈونر بنیں!' : 'No donors listed yet for this city. Be the first to register!'}
                   </p>
                   <button
@@ -592,18 +576,15 @@ export default function App() {
               )}
             </div>
 
-            {/* Community Poll Vote */}
             <CommunityPollVote lang={lang} theme={theme} />
-
-            {/* Frequently Asked Questions */}
             <HomeFAQ lang={lang} theme={theme} />
           </div>
         )}
 
-        {/* PAGE 2: DONORS (ڈونرز لسٹ) */}
+        {/* PAGE 2: DONORS (محفوظ اور درست بیک گراؤنڈ کلاسز کے ساتھ) */}
         {activeTab === 'donors' && (
-          <div className="space-y-6">
-            <div className={`p-5 rounded-3xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+          <div className={`space-y-6 p-4 sm:p-6 rounded-3xl ${isDark ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
+            <div className={`p-5 rounded-3xl border ${isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
               <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 mb-4">
                 <div className="flex-1 relative">
                   <input
@@ -612,7 +593,7 @@ export default function App() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder={lang === 'ur' ? 'ڈونر کا نام، علاقہ، تحصیل یا ہسپتال تلاش کریں...' : 'Search by donor name, tehsil, area...'}
                     className={`w-full px-4 py-2.5 rounded-2xl text-xs sm:text-sm border focus:outline-none focus:border-rose-500 ${
-                      isDark ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'
+                      isDark ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-400' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-500'
                     }`}
                   />
                   {searchQuery && (
@@ -646,7 +627,7 @@ export default function App() {
                     value={selectedCity}
                     onChange={(e) => setSelectedCity(e.target.value)}
                     className={`px-3 py-2.5 rounded-2xl text-xs font-black border focus:outline-none text-rose-600 ${
-                      isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+                      isDark ? 'bg-slate-950 border-slate-800 text-rose-400' : 'bg-slate-50 border-slate-200 text-rose-600'
                     }`}
                   >
                     {currentCitiesInProvince.map((city) => (
@@ -657,7 +638,7 @@ export default function App() {
               </div>
 
               <div>
-                <span className="text-xs font-bold text-slate-400 block mb-2">
+                <span className={`text-xs font-bold block mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                   {lang === 'ur' ? 'بلڈ گروپ منتخب کریں:' : 'Filter by Blood Group:'}
                 </span>
                 <BloodGroupGrid
@@ -691,7 +672,7 @@ export default function App() {
               </div>
             ) : (
               <div className={`p-8 rounded-3xl border text-center ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-                <p className="text-sm font-bold text-slate-400">
+                <p className={`text-sm font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                   {lang === 'ur' ? 'اس بلڈ گروپ کے لیے ابھی کوئی ڈونر رجسٹرڈ نہیں۔' : 'No donors found for this selection.'}
                 </p>
                 <button
@@ -705,7 +686,7 @@ export default function App() {
 
             {nearbyDonorsList.length > 0 && (
               <div className="mt-10 pt-6 border-t border-slate-200 dark:border-slate-800">
-                <h4 className={`text-sm sm:text-base font-black mb-3 text-amber-600 flex items-center gap-1.5`}>
+                <h4 className={`text-sm sm:text-base font-black mb-3 text-amber-500 flex items-center gap-1.5`}>
                   <span>📍</span>
                   <span>{lang === 'ur' ? `قریبی اضلاع و تحصیلوں میں دستیاب ڈونرز (${nearbyDonorsList.length})` : `Nearby Districts Donors (${nearbyDonorsList.length})`}</span>
                 </h4>
@@ -719,7 +700,7 @@ export default function App() {
           </div>
         )}
 
-        {/* PAGE 3: REQUESTS (خون چاہیے / ہنگامی اپیلیں) */}
+        {/* PAGE 3: REQUESTS */}
         {activeTab === 'requests' && (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
@@ -817,7 +798,7 @@ export default function App() {
               </div>
             ) : (
               <div className={`p-8 rounded-3xl border text-center ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-                <p className="text-sm font-bold text-slate-400">
+                <p className={`text-sm font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                   {lang === 'ur' ? 'اس وقت کوئی ہنگامی اپیل موجود نہیں۔' : 'No emergency requests active.'}
                 </p>
               </div>
@@ -825,7 +806,7 @@ export default function App() {
           </div>
         )}
 
-        {/* PAGE 4: HELPLINES (ایمرجنسی ہیلپ لائنز) */}
+        {/* PAGE 4: HELPLINES */}
         {activeTab === 'helplines' && (
           <div className="space-y-6">
             <div>
@@ -878,9 +859,9 @@ export default function App() {
           </div>
         )}
 
-        {/* PAGE 5: GUIDE (بلڈ گائیڈ و مطابقت) */}
+        {/* PAGE 5: GUIDE (محفوظ اور درست بیک گراؤنڈ کلاسز کے ساتھ) */}
         {activeTab === 'guide' && (
-          <div className="space-y-6">
+          <div className={`space-y-6 p-4 sm:p-6 rounded-3xl ${isDark ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
             <div>
               <h3 className={`text-lg sm:text-xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {lang === 'ur' ? 'بلڈ گروپ مطابقت چارٹ (Blood Compatibility Chart)' : 'Blood Group Compatibility Guide'}
@@ -890,8 +871,8 @@ export default function App() {
               </p>
             </div>
 
-            <div className={`p-6 rounded-3xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-              <span className="text-xs font-bold text-slate-400 block mb-3">
+            <div className={`p-6 rounded-3xl border ${isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+              <span className={`text-xs font-bold block mb-3 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                 {lang === 'ur' ? 'بلڈ گروپ منتخب کریں:' : 'Select Blood Group:'}
               </span>
 
@@ -903,7 +884,7 @@ export default function App() {
                     className={`py-2 rounded-xl text-xs font-black transition cursor-pointer ${
                       guideSelectedBlood === bg
                         ? 'bg-rose-600 text-white shadow-md'
-                        : isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        : isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
                     {bg}
@@ -912,7 +893,7 @@ export default function App() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-950 border-slate-800' : 'bg-emerald-50/50 border-emerald-200'}`}>
+                <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-950 border-slate-800 text-white' : 'bg-emerald-50/50 border-emerald-200 text-slate-900'}`}>
                   <h4 className="text-sm font-black text-emerald-600 mb-2 flex items-center gap-1.5">
                     <span>🩸</span>
                     <span>{guideSelectedBlood} {lang === 'ur' ? 'ان گروپس کو خون دے سکتا ہے (Give To):' : 'Can Give Blood To:'}</span>
@@ -926,7 +907,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-950 border-slate-800' : 'bg-rose-50/50 border-rose-200'}`}>
+                <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-950 border-slate-800 text-white' : 'bg-rose-50/50 border-rose-200 text-slate-900'}`}>
                   <h4 className="text-sm font-black text-rose-600 mb-2 flex items-center gap-1.5">
                     <span>🤲</span>
                     <span>{guideSelectedBlood} {lang === 'ur' ? 'ان گروپس سے خون لے سکتا ہے (Receive From):' : 'Can Receive Blood From:'}</span>
@@ -952,7 +933,6 @@ export default function App() {
         )}
       </main>
 
-      {/* Footer */}
       <footer className={`border-t py-8 px-4 mt-12 transition-colors ${
         isDark ? 'bg-slate-950 border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-600'
       }`}>
@@ -971,7 +951,6 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Mobile & Tablet Bottom Navigation Bar - FIRMLY FIXED AT BOTTOM */}
       <nav
         className={`lg:hidden fixed bottom-0 inset-x-0 z-50 border-t backdrop-blur-xl shadow-2xl flex items-center justify-around py-1.5 px-2 pb-[max(env(safe-area-inset-bottom,0px),8px)] transition-colors ${
           isDark
@@ -1040,7 +1019,6 @@ export default function App() {
         </button>
       </nav>
 
-      {/* Modals */}
       <RegisterDonorModal
         isOpen={showRegisterModal}
         onClose={() => setShowRegisterModal(false)}
@@ -1072,4 +1050,4 @@ export default function App() {
       />
     </div>
   );
-              }
+}
