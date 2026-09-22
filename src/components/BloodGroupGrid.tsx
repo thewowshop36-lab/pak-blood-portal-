@@ -1,9 +1,10 @@
 import React from 'react';
+import { Donor } from '../types';
 
 interface BloodGroupGridProps {
-  selectedBlood: string;
+  selected: string | null;
   onSelect: (bg: string) => void;
-  counts: Record<string, number>;
+  donors?: Donor[]; // ڈونرز کی لسٹ تاکہ خود بخود کاؤنٹ ہو سکے
   lang: 'ur' | 'en';
   theme?: 'light' | 'dark';
 }
@@ -11,13 +12,19 @@ interface BloodGroupGridProps {
 const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
 export const BloodGroupGrid: React.FC<BloodGroupGridProps> = ({
-  selectedBlood,
+  selected,
   onSelect,
-  counts = {},
+  donors = [],
   lang,
   theme = 'light',
 }) => {
   const isDark = theme === 'dark';
+
+  // خود بخود ہر بلڈ گروپ کے ڈونرز کی گنتی کرنا
+  const counts = bloodGroups.reduce((acc, bg) => {
+    acc[bg] = donors.filter(d => (d.bloodgroup || d.bloodGroup || d.blood_group) === bg).length;
+    return acc;
+  }, {} as Record<string, number>);
 
   return (
     <div className="w-full">
@@ -26,9 +33,9 @@ export const BloodGroupGrid: React.FC<BloodGroupGridProps> = ({
           <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping inline-block" />
           {lang === 'ur' ? 'بلڈ گروپ منتخب کریں' : 'Select Blood Group'}
         </h3>
-        {selectedBlood !== 'All / تمام' && (
+        {selected && (
           <button
-            onClick={() => onSelect('All / تمام')}
+            onClick={() => onSelect('')}
             className="text-xs text-rose-600 hover:text-rose-700 font-bold underline cursor-pointer"
           >
             {lang === 'ur' ? 'تمام گروپس دکھائیں' : 'Show All Groups'}
@@ -38,13 +45,13 @@ export const BloodGroupGrid: React.FC<BloodGroupGridProps> = ({
 
       <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5">
         {bloodGroups.map((bg) => {
-          const isSelected = selectedBlood === bg;
-          const count = (counts && counts[bg]) ? counts[bg] : 0;
+          const isSelected = selected === bg;
+          const count = counts[bg] || 0;
 
           return (
             <button
               key={bg}
-              onClick={() => onSelect(isSelected ? 'All / تمام' : bg)}
+              onClick={() => onSelect(isSelected ? '' : bg)}
               className={`relative overflow-hidden rounded-2xl p-3 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer text-center group active:scale-95 ${
                 isSelected
                   ? 'bg-gradient-to-b from-rose-600 via-rose-700 to-rose-900 text-white shadow-lg shadow-rose-600/30 ring-2 ring-rose-500 -translate-y-1'
@@ -53,10 +60,8 @@ export const BloodGroupGrid: React.FC<BloodGroupGridProps> = ({
                   : 'bg-white hover:bg-rose-50/60 text-slate-800 border border-slate-200 hover:border-rose-400 shadow-sm hover:shadow'
               }`}
             >
-              {/* 3D Gloss Highlight */}
               <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none rounded-t-2xl" />
 
-              {/* Glowing Drop Icon */}
               <div
                 className={`w-8 h-8 rounded-xl flex items-center justify-center mb-1.5 transition-transform group-hover:scale-110 ${
                   isSelected
@@ -69,12 +74,10 @@ export const BloodGroupGrid: React.FC<BloodGroupGridProps> = ({
                 <span className="text-base font-black">🩸</span>
               </div>
 
-              {/* Blood Group Text */}
               <span className="text-base sm:text-lg font-black tracking-tight leading-none mb-1">
                 {bg}
               </span>
 
-              {/* Count Badge */}
               <span
                 className={`text-[10px] px-2 py-0.5 rounded-full font-bold transition ${
                   isSelected
