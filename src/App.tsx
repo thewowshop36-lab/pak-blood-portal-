@@ -182,7 +182,18 @@ export default function App() {
     });
   }, [requests, selectedBlood, searchQuery]);
 
-  const guideInfo = bloodCompatibility[guideSelectedBlood] || bloodCompatibility['O+'];
+  // Blood compatibility object with safety check
+  const guideInfo = bloodCompatibility[guideSelectedBlood] || bloodCompatibility['O+'] || {
+    canGiveTo: [],
+    canReceiveFrom: [],
+    give: [],
+    receive: [],
+    tagUrdu: ''
+  };
+
+  // Safe helper arrays so the app never crashes
+  const giveList: string[] = (guideInfo as any).canGiveTo || (guideInfo as any).give || [];
+  const receiveList: string[] = (guideInfo as any).canReceiveFrom || (guideInfo as any).receive || [];
 
   return (
     <div
@@ -661,8 +672,9 @@ export default function App() {
                   {lang === 'ur' ? 'بلڈ گروپ منتخب کریں:' : 'Filter by Blood Group:'}
                 </span>
                 <BloodGroupGrid
-                  selected={selectedBlood}
-                  onSelect={(b) => setSelectedBlood(b === selectedBlood ? null : b)}
+                  selectedBlood={selectedBlood || 'All / تمام'}
+                  onSelect={(b) => setSelectedBlood(b === 'All / تمام' ? null : b)}
+                  counts={{}}
                   lang={lang}
                   theme={theme}
                 />
@@ -918,7 +930,7 @@ export default function App() {
                     <span>{guideSelectedBlood} {lang === 'ur' ? 'ان گروپس کو خون دے سکتا ہے (Give To):' : 'Can Give Blood To:'}</span>
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {guideInfo.give.map((g) => (
+                    {giveList.map((g) => (
                       <span key={g} className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-xs font-black shadow-xs">
                         {g}
                       </span>
@@ -932,7 +944,7 @@ export default function App() {
                     <span>{guideSelectedBlood} {lang === 'ur' ? 'ان گروپس سے خون لے سکتا ہے (Receive From):' : 'Can Receive Blood From:'}</span>
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {guideInfo.receive.map((r) => (
+                    {receiveList.map((r) => (
                       <span key={r} className="px-3 py-1 bg-rose-600 text-white rounded-lg text-xs font-black shadow-xs">
                         {r}
                       </span>
@@ -1072,4 +1084,4 @@ export default function App() {
       />
     </div>
   );
-                    }
+      }
