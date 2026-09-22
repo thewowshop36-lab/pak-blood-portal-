@@ -18,27 +18,21 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    - name: Create Missing Settings File if Needed
+      run: |
+        if [ ! -f "settings.gradle" ] && [ ! -f "settings.gradle.kts" ]; then
+          echo "include ':app'" > settings.gradle
+        fi
+
     - name: Build Release App Bundle (AAB)
       run: |
-        # Find the directory containing settings.gradle or build.gradle and move into it
-        TARGET_DIR=$(dirname $(find . -name "settings.gradle" -o -name "build.gradle" | head -n 1))
-        echo "Moving to target directory: $TARGET_DIR"
-        cd "$TARGET_DIR"
-        
         if [ -f "gradlew" ]; then
           chmod +x gradlew
           ./gradlew bundleRelease
         else
-          # If gradlew is in the parent directory, use it, otherwise create wrapper
-          cd ..
-          if [ -f "gradlew" ]; then
-            chmod +x gradlew
-            ./gradlew :app:bundleRelease
-          else
-            gradle wrapper
-            chmod +x gradlew
-            ./gradlew :app:bundleRelease
-          fi
+          gradle wrapper
+          chmod +x gradlew
+          ./gradlew bundleRelease
         fi
 
     - name: Upload AAB Artifact
