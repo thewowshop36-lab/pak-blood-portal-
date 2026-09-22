@@ -112,50 +112,6 @@ export const cityTehsils: Record<string, string[]> = {
     "ماڈل ٹاؤن / Model Town",
     "ڈی ایچ اے / DHA",
     "جوہر ٹاؤن / Johar Town",
-    "اقبال ٹاؤن / Allama Iqbal Town",
-    "شاہدرہ / Shahdara",
-    "کینٹ / Cantt"
-  ],
-  "فیصل آباد / Faisalabad": [
-    "فیصل آباد سٹی / Faisalabad City",
-    "جڑانوالہ / Jaranwala",
-    "سمندری / Samundri",
-    "تاندرلیانوالہ / Tandlianwala"
-  ],
-  "راولپنڈی / Rawalpindi": [
-    "راولپنڈی کینٹ / Cantt",
-    "صدر / Saddar",
-    "سیٹلائٹ ٹاؤن / Satellite Town",
-    "گوجر خان / Gujar Khan",
-    "ٹیکسلا / Taxila"
-  ],
-  "کراچی / Karachi": [
-    "صدر / Saddar",
-    "گلشن اقبال / Gulshan-e-Iqbal",
-    "کورنگی / Korangi",
-    "کلفٹن / Clifton",
-    "نارتھ ناظم آباد / North Nazimabad",
-    "ملیر / Malir"
-  ]
-  export const cityTehsils: Record<string, string[]> = {
-  "خانیوال / Khanewal": [
-    "خانیوال سٹی / Khanewal City",
-    "کبیروالا / Kabirwala",
-    "میاں چنوں / Mian Channu",
-    "جہانیاں / Jahanian",
-    "عبدالحکیم / Abdul Hakeem"
-  ],
-  "ملتان / Multan": [
-    "ملتان سٹی / Multan City",
-    "ملتان کینٹ / Multan Cantt",
-    "شجاع آباد / Shujabad",
-    "جلال پور پیروالا / Jalalpur Pirwala"
-  ],
-  "لاہور / Lahore": [
-    "گلبرگ / Gulberg",
-    "ماڈل ٹاؤن / Model Town",
-    "ڈی ایچ اے / DHA",
-    "جوہر ٹاؤن / Johar Town",
     "علامہ اقبال ٹاؤن / Allama Iqbal Town",
     "شاہدرہ / Shahdara",
     "کینٹ / Cantt",
@@ -273,7 +229,6 @@ export const cityTehsils: Record<string, string[]> = {
     "بحریہ ٹاؤن / Bahria Town",
     "ڈی ایچ اے / DHA"
   ]
-};
 };
 
 export const nearbyCities: Record<string, string[]> = {
