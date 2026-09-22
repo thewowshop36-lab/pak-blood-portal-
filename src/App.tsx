@@ -124,7 +124,8 @@ export default function App() {
   const filteredCurrentCityDonors = useMemo(() => {
     return donors.filter((d) => {
       const matchCity = true;
-      const matchBlood = selectedBlood ? d.blood_group === selectedBlood : true;
+      const donorBg = d.bloodgroup || d.bloodGroup || d.blood_group;
+      const matchBlood = selectedBlood ? donorBg === selectedBlood : true;
       let matchSearch = true;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -132,7 +133,7 @@ export default function App() {
           (d.name || '').toLowerCase().includes(q) ||
           (d.tehsil || '').toLowerCase().includes(q) ||
           (d.area || '').toLowerCase().includes(q) ||
-          (d.blood_group || '').toLowerCase().includes(q);
+          (donorBg || '').toLowerCase().includes(q);
       }
       return matchCity && matchBlood && matchSearch;
     });
@@ -142,14 +143,16 @@ export default function App() {
     const list = nearbyCities[selectedCity] || [];
     return donors.filter((d) => {
       const isNearby = list.includes(d.city);
-      const matchBlood = selectedBlood ? d.blood_group === selectedBlood : true;
+      const donorBg = d.bloodgroup || d.bloodGroup || d.blood_group;
+      const matchBlood = selectedBlood ? donorBg === selectedBlood : true;
       return isNearby && matchBlood;
     });
   }, [donors, selectedCity, selectedBlood]);
 
   const allFilteredDonors = useMemo(() => {
     return donors.filter((d) => {
-      const matchBlood = selectedBlood ? d.blood_group === selectedBlood : true;
+      const donorBg = d.bloodgroup || d.bloodGroup || d.blood_group;
+      const matchBlood = selectedBlood ? donorBg === selectedBlood : true;
       const matchProvince = selectedProvince ? d.province === selectedProvince : true;
       const matchCity = selectedCity ? d.city === selectedCity : true;
       let matchSearch = true;
@@ -160,7 +163,7 @@ export default function App() {
           (d.tehsil || '').toLowerCase().includes(q) ||
           (d.area || '').toLowerCase().includes(q) ||
           (d.city || '').toLowerCase().includes(q) ||
-          (d.blood_group || '').toLowerCase().includes(q);
+          (donorBg || '').toLowerCase().includes(q);
       }
       return matchBlood && matchProvince && matchCity && matchSearch;
     });
@@ -168,7 +171,8 @@ export default function App() {
 
   const filteredRequests = useMemo(() => {
     return requests.filter((r) => {
-      const matchBlood = selectedBlood ? r.blood_group === selectedBlood : true;
+      const reqBg = r.blood_group || r.bloodgroup;
+      const matchBlood = selectedBlood ? reqBg === selectedBlood : true;
       let matchSearch = true;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -176,7 +180,7 @@ export default function App() {
           (r.patient_name || '').toLowerCase().includes(q) ||
           (r.hospital || '').toLowerCase().includes(q) ||
           (r.city || '').toLowerCase().includes(q) ||
-          (r.blood_group || '').toLowerCase().includes(q);
+          (reqBg || '').toLowerCase().includes(q);
       }
       return matchBlood && matchSearch;
     });
@@ -775,7 +779,7 @@ export default function App() {
                         </span>
 
                         <span className="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center font-black text-base shadow-md">
-                          {req.blood_group}
+                          {req.blood_group || req.bloodgroup}
                         </span>
                       </div>
 
