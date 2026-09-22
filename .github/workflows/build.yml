@@ -20,12 +20,16 @@ jobs:
 
     - name: Build Release App Bundle (AAB)
       run: |
-        cd "$(ls -d pak-blood-portal-* | head -n 1)"
+        PROJECT_DIR=$(dirname $(find . -name "build.gradle" | head -n 1))
+        echo "Found project directory: $PROJECT_DIR"
+        cd "$PROJECT_DIR"
         if [ -f "gradlew" ]; then
           chmod +x gradlew
           ./gradlew bundleRelease
         else
+          cd ..
           gradle wrapper
+          cd "$PROJECT_DIR"
           chmod +x gradlew
           ./gradlew bundleRelease
         fi
