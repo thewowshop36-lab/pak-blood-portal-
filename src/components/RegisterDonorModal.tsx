@@ -120,11 +120,12 @@ export const RegisterDonorModal: React.FC<RegisterDonorModalProps> = (props) => 
       } else {
         const added = data && data[0] ? data[0] : donorPayload;
         
-        // Safely trigger callback if passed by parent (App.tsx)
+        // Safely call callbacks without ever crashing
         if (typeof onDonorRegistered === 'function') {
-          onDonorRegistered(added);
-        } else if (typeof onSuccess === 'function') {
-          onSuccess(added);
+          try { onDonorRegistered(added); } catch (_) {}
+        }
+        if (typeof onSuccess === 'function') {
+          try { onSuccess(added); } catch (_) {}
         }
 
         onClose();
