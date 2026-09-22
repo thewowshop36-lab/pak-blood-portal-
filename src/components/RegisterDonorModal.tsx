@@ -8,22 +8,26 @@ interface RegisterDonorModalProps {
   onClose: () => void;
   defaultProvince?: string;
   defaultCity?: string;
-  onDonorRegistered: (newDonor: Donor) => void;
+  onDonorRegistered?: (newDonor: Donor) => void;
+  onSuccess?: (newDonor: Donor) => void;
   lang: 'ur' | 'en';
   theme?: 'light' | 'dark';
 }
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
-export const RegisterDonorModal: React.FC<RegisterDonorModalProps> = ({
-  isOpen,
-  onClose,
-  defaultProvince,
-  defaultCity,
-  onDonorRegistered,
-  lang,
-  theme = 'light',
-}) => {
+export const RegisterDonorModal: React.FC<RegisterDonorModalProps> = (props) => {
+  const {
+    isOpen,
+    onClose,
+    defaultProvince,
+    defaultCity,
+    onDonorRegistered,
+    onSuccess,
+    lang,
+    theme = 'light',
+  } = props;
+
   const isDark = theme === 'dark';
 
   const provinceList = useMemo(() => Object.keys(pakistanProvinces), []);
@@ -100,7 +104,7 @@ export const RegisterDonorModal: React.FC<RegisterDonorModalProps> = ({
       const chosenArea = (tehsil || customArea).trim();
       const finalCityField = chosenArea ? `${city} (${chosenArea})` : city;
 
-      // Supabase donors table schema: name, bloodgroup, province, city, phone
+      // Exact Supabase donors table schema: name, bloodgroup, province, city, phone
       const donorPayload = {
         name: name.trim(),
         bloodgroup: bloodGroup,
@@ -115,7 +119,14 @@ export const RegisterDonorModal: React.FC<RegisterDonorModalProps> = ({
         setErrorMsg(error.message);
       } else {
         const added = data && data[0] ? data[0] : donorPayload;
-        onDonorRegistered(added);
+        
+        // Safely trigger callback if passed by parent (App.tsx)
+        if (typeof onDonorRegistered === 'function') {
+          onDonorRegistered(added);
+        } else if (typeof onSuccess === 'function') {
+          onSuccess(added);
+        }
+
         onClose();
         alert(lang === 'ur' ? 'بطور ڈونر آپ کا اندراج کامیابی سے ہو گیا ہے!' : 'Successfully registered as donor!');
       }
