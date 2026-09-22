@@ -18,8 +18,11 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android SDK and Gradle
+    - name: Setup Android SDK
       uses: android-actions/setup-android@v3
+      with:
+        sdk-version: '34'
+        build-tools-version: '34.0.0'
 
     - name: Generate Debug Keystore
       run: |
@@ -43,4 +46,3 @@ jobs:
       with:
         name: app-release-aab
         path: app/build/outputs/bundle/release/app-release.aab
-
