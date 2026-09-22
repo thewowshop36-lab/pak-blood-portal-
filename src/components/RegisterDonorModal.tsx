@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { pakistanProvinces, cityTehsils } from '../data/pakistanLocations';
 import { supabase } from '../lib/supabase';
 import { Donor } from '../types';
@@ -25,21 +25,62 @@ export const RegisterDonorModal: React.FC<RegisterDonorModalProps> = ({
   theme = 'light',
 }) => {
   const isDark = theme === 'dark';
-  const initialProvince = defaultProvince || Object.keys(pakistanProvinces)[0];
-  const initialCity = defaultCity || pakistanProvinces[initialProvince][0];
 
-  const [province, setProvince] = useState(initialProvince);
-  const [city, setCity] = useState(initialCity);
+  const provinceList = useMemo(() => Object.keys(pakistanProvinces), []);
+
+  const [province, setProvince] = useState<string>(() => {
+    return defaultProvince && pakistanProvinces[defaultProvince]
+      ? defaultProvince
+      : Object.keys(pakistanProvinces)[0];
+  });
+
+  const availableCities = useMemo(() => {
+    return pakistanProvinces[province] || [];
+  }, [province]);
+
+  const [city, setCity] = useState<string>(() => {
+    const list = pakistanProvinces[province] || [];
+    if (defaultCity && list.includes(defaultCity)) return defaultCity;
+    const match = list.find((c) => defaultCity && (c.includes(defaultCity) || defaultCity.includes(c.split('/')[1]?.trim() || '')));
+    return match || list[0] || 'خانیوال / Khanewal';
+  });
+
   const [tehsil, setTehsil] = useState('');
+  const [customArea, setCustomArea] = useState('');
   const [name, setName] = useState('');
   const [bloodGroup, setBloodGroup] = useState('O+');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  if (!isOpen) return null;
+  // Sync properly on open
+  useEffect(() => {
+    if (isOpen) {
+      const validProv = defaultProvince && pakistanProvinces[defaultProvince]
+        ? defaultProvince
+        : Object.keys(pakistanProvinces)[0];
+      setProvince(validProv);
 
-  const currentTehsils = cityTehsils[city] || [];
+      const list = pakistanProvinces[validProv] || [];
+      const matchCity = list.find((c) => defaultCity && (c === defaultCity || c.includes(defaultCity) || defaultCity.includes(c.split('/')[1]?.trim() || '')));
+      setCity(matchCity || list[0] || 'خانیوال / Khanewal');
+      setTehsil('');
+      setCustomArea('');
+      setErrorMsg('');
+    }
+  }, [isOpen, defaultProvince, defaultCity]);
+
+  // Tehsils matching selected city
+  const currentTehsils = useMemo(() => {
+    if (!city) return [];
+    if (cityTehsils[city]) return cityTehsils[city];
+    const key = Object.keys(cityTehsils).find((k) =>
+      k === city || k.includes(city) || (city && city.includes(k.split('/')[0]?.trim())) || (city && city.includes(k.split('/')[1]?.trim()))
+    );
+    return key ? cityTehsils[key] : [];
+  }, [city]);
+
+  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,12 +97,15 @@ export const RegisterDonorModal: React.FC<RegisterDonorModalProps> = ({
 
     setLoading(true);
     try {
+      const chosenArea = (tehsil || customArea).trim();
+      const finalCityField = chosenArea ? `${city} (${chosenArea})` : city;
+
       // Supabase donors table schema: name, bloodgroup, province, city, phone
       const donorPayload = {
         name: name.trim(),
         bloodgroup: bloodGroup,
         province,
-        city,
+        city: finalCityField,
         phone: phone.trim(),
       };
 
@@ -114,7 +158,7 @@ export const RegisterDonorModal: React.FC<RegisterDonorModalProps> = ({
         </div>
 
         {errorMsg && (
-          <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 text-red-600 text-xs rounded-xl">
+          <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 text-red-600 text-xs rounded-xl font-medium">
             {errorMsg}
           </div>
         )}
@@ -174,92 +218,126 @@ export const RegisterDonorModal: React.FC<RegisterDonorModalProps> = ({
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="03001234567"
-              className={`w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-rose-500 ${
+              className={`w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-rose-500 font-mono text-left dir-ltr ${
                 isDark ? 'bg-slate-950 border-slate-700 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'
               }`}
             />
-            <span className="text-[11px] text-slate-500 mt-1 block">
+            <span className={`text-[11px] mt-1 block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
               {lang === 'ur' ? 'اسی نمبر پر مریض کے لواحقین کال اور واٹس ایپ کریں گے۔' : 'Patients will contact you on this number.'}
             </span>
           </div>
 
-          {/* Province */}
-          <div>
-            <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-              {lang === 'ur' ? 'صوبہ *' : 'Province *'}
-            </label>
-            <select
-              value={province}
-              onChange={(e) => {
-                const newP = e.target.value;
-                setProvince(newP);
-                setCity(pakistanProvinces[newP][0]);
-                setTehsil('');
-              }}
-              className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none ${
-                isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
-              }`}
-            >
-              {Object.keys(pakistanProvinces).map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* City */}
-          <div>
-            <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-              {lang === 'ur' ? 'شہر / ضلع *' : 'City / District *'}
-            </label>
-            <select
-              value={city}
-              onChange={(e) => {
-                setCity(e.target.value);
-                setTehsil('');
-              }}
-              className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none ${
-                isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
-              }`}
-            >
-              {(pakistanProvinces[province] || []).map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Tehsil */}
-          {currentTehsils.length > 0 && (
+          {/* Province & City */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Province */}
             <div>
               <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                {lang === 'ur' ? 'تحصیل (اختیاری لیکن مفید)' : 'Tehsil (Optional)'}
+                {lang === 'ur' ? 'صوبہ *' : 'Province *'}
               </label>
               <select
-                value={tehsil}
-                onChange={(e) => setTehsil(e.target.value)}
-                className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none ${
+                value={province}
+                onChange={(e) => {
+                  const newProv = e.target.value;
+                  setProvince(newProv);
+                  const newCities = pakistanProvinces[newProv] || [];
+                  setCity(newCities[0] || '');
+                  setTehsil('');
+                  setCustomArea('');
+                }}
+                className={`w-full border rounded-xl px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-rose-500 ${
                   isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
                 }`}
               >
-                <option value="">{lang === 'ur' ? '-- تحصیل منتخب کریں --' : '-- Select Tehsil --'}</option>
-                {currentTehsils.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
+                {provinceList.map((p) => (
+                  <option key={p} value={p} className={isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}>
+                    {p}
                   </option>
                 ))}
               </select>
             </div>
-          )}
 
-          {/* Submit Button */}
+            {/* City */}
+            <div>
+              <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                {lang === 'ur' ? 'شہر / ضلع *' : 'City / District *'}
+              </label>
+              <select
+                value={city}
+                onChange={(e) => {
+                  setCity(e.target.value);
+                  setTehsil('');
+                  setCustomArea('');
+                }}
+                className={`w-full border rounded-xl px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-rose-500 ${
+                  isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
+                }`}
+              >
+                {availableCities.map((c) => (
+                  <option key={c} value={c} className={isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Tehsil Selection */}
+          <div>
+            <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+              {lang === 'ur' ? 'تحصیل یا علاقہ (اختیاری)' : 'Tehsil or Area (Optional)'}
+            </label>
+
+            {currentTehsils.length > 0 ? (
+              <div className="space-y-2">
+                <select
+                  value={tehsil}
+                  onChange={(e) => setTehsil(e.target.value)}
+                  className={`w-full border rounded-xl px-3 py-2.5 text-xs font-medium focus:outline-none focus:border-rose-500 ${
+                    isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
+                  }`}
+                >
+                  <option value="" className={isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}>
+                    {lang === 'ur' ? '-- تحصیل منتخب کریں --' : '-- Select Tehsil --'}
+                  </option>
+                  {currentTehsils.map((t) => (
+                    <option key={t} value={t} className={isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+
+                <input
+                  type="text"
+                  value={customArea}
+                  onChange={(e) => setCustomArea(e.target.value)}
+                  placeholder={lang === 'ur' ? 'یا اپنے محلے / گاؤں کا نام لکھیں (اختیاری)' : 'Or type specific village/colony name'}
+                  className={`w-full border rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-rose-500 ${
+                    isDark ? 'bg-slate-950 border-slate-700 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'
+                  }`}
+                />
+              </div>
+            ) : (
+              <input
+                type="text"
+                value={customArea}
+                onChange={(e) => {
+                  setCustomArea(e.target.value);
+                  setTehsil(e.target.value);
+                }}
+                placeholder={lang === 'ur' ? 'تحصیل یا محلے کا نام لکھیں (مثال: ماڈل ٹاؤن، کینٹ)' : 'Type Tehsil or Area (e.g. Model Town)'}
+                className={`w-full border rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-rose-500 ${
+                  isDark ? 'bg-slate-950 border-slate-700 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'
+                }`}
+              />
+            )}
+          </div>
+
+          {/* Submit */}
           <div className="pt-2">
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white py-3 rounded-2xl font-black text-sm shadow-lg shadow-rose-600/30 transition cursor-pointer flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white py-3.5 rounded-2xl font-black text-sm shadow-lg shadow-rose-600/30 transition cursor-pointer flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
             >
               {loading ? (
                 <>
