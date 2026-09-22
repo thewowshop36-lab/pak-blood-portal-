@@ -20,18 +20,13 @@ jobs:
 
     - name: Build Release App Bundle (AAB)
       run: |
-        PROJECT_DIR=$(dirname $(find . -name "build.gradle" | head -n 1))
-        echo "Found project directory: $PROJECT_DIR"
-        cd "$PROJECT_DIR"
         if [ -f "gradlew" ]; then
           chmod +x gradlew
-          ./gradlew bundleRelease
+          ./gradlew :app:bundleRelease
         else
-          cd ..
           gradle wrapper
-          cd "$PROJECT_DIR"
           chmod +x gradlew
-          ./gradlew bundleRelease
+          ./gradlew :app:bundleRelease
         fi
 
     - name: Upload AAB Artifact
