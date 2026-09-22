@@ -1,200 +1,330 @@
-import React, { useState } from 'react';
-import { Donor } from '../types';
+import React, { useState, useEffect, useMemo } from 'react';
+import { supabase } from './lib/supabase';
+import { Donor, BloodRequest } from './types';
+import { pakistanProvinces, nearbyCities, bloodCompatibility } from './data/pakistanLocations';
+import { BloodGroupGrid } from './components/BloodGroupGrid';
+import { DonorCard } from './components/DonorCard';
+import { EmergencyBanner } from './components/EmergencyBanner';
+import { RegisterDonorModal } from './components/RegisterDonorModal';
+import { PostRequestModal } from './components/PostRequestModal';
+import { BloodGuideModal } from './components/BloodGuideModal';
+import { HelplinesModal } from './components/HelplinesModal';
+import { VisualCampaignSlider } from './components/VisualCampaignSlider';
+import { CommunityPollVote } from './components/CommunityPollVote';
+import { BloodDonationVideos } from './components/BloodDonationVideos';
+import { BloodDonationSteps } from './components/BloodDonationSteps';
+import { DonorEligibilityGuidelines } from './components/DonorEligibilityGuidelines';
+import { MythsVsFacts } from './components/MythsVsFacts';
+import { CampsPhotoGallery } from './components/CampsPhotoGallery';
+import { HomeFAQ } from './components/HomeFAQ';
 
-interface DonorCardProps {
-  donor: Donor;
-  lang: 'ur' | 'en';
-  theme?: 'light' | 'dark';
-}
+export type TabType = 'home' | 'donors' | 'requests' | 'helplines' | 'guide';
 
-const avatarImages = [
-  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
-  "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=150&q=80",
-  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80"
+const helplinesList = [
+  { nameUrdu: "ریسکیو 1122", nameEn: "Rescue 1122 Emergency", phone: "1122", descUrdu: "طبی ایمرجنسی، فرسٹ ایڈ اور ایمبولینس سروس", icon: "🚑" },
+  { nameUrdu: "ایدھی فاؤنڈیشن", nameEn: "Edhi Foundation Ambulance", phone: "115", descUrdu: "ملک گیر ہنگامی ایمبولینس اور ریلیف نیٹ ورک", icon: "🚨" },
+  { nameUrdu: "فاطمید فاؤنڈیشن", nameEn: "Fatimid Foundation Blood Bank", phone: "02132225284", descUrdu: "تھیلیسیمیا اور ہیموفیلیا کے مریضوں کے لیے بلڈ سنٹر", icon: "🩸" },
+  { nameUrdu: "سندس فاؤنڈیشن", nameEn: "Sundas Foundation", phone: "04237422141", descUrdu: "لاہور، گوجرانوالہ، سیالکوٹ، فیصل آباد سنٹرز", icon: "🏥" },
+  { nameUrdu: "انڈس ہسپتال بلڈ سنٹر", nameEn: "Indus Hospital Blood Services", phone: "021111111880", descUrdu: "۱۰۰ فیصد محفوظ، مفت اور سکرین شدہ خون کی فراہمی", icon: "💉" },
+  { nameUrdu: "ہلال احمر پاکستان", nameEn: "Pakistan Red Crescent", phone: "0519250404", descUrdu: "نیشنل بلڈ ڈونر اور ایمرجنسی رسپانس پروگرام", icon: "⛑️" },
 ];
 
-export const DonorCard: React.FC<DonorCardProps> = ({ donor, lang, theme = 'light' }) => {
+export default function App() {
+  const [lang, setLang] = useState<'ur' | 'en'>('ur');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('portal_theme') as 'light' | 'dark') || 'light';
+  });
   const isDark = theme === 'dark';
-  const blood = donor.bloodgroup || donor.bloodGroup || donor.blood_group || 'O+';
-  const phoneVal = donor.phone || donor.contact || '';
-  const cleanPhone = phoneVal.replace(/[^0-9]/g, '');
-  
-  let waNumber = cleanPhone;
-  if (waNumber.startsWith('03')) {
-    waNumber = '92' + waNumber.slice(1);
-  } else if (!waNumber.startsWith('92') && waNumber.length === 10) {
-    waNumber = '92' + waNumber;
-  }
 
-  const storageKey = `donor_votes_${donor.id || donor.name}`;
-  const [votes, setVotes] = useState<number>(() => {
-    const saved = localStorage.getItem(storageKey);
-    return saved ? parseInt(saved, 10) : (Math.floor((donor.name.length * 7) % 35) + 12);
-  });
-  const [hasVoted, setHasVoted] = useState<boolean>(() => {
-    return localStorage.getItem(`${storageKey}_voted`) === 'true';
-  });
-  const [voteAnimation, setVoteAnimation] = useState(false);
+  const [donors, setDonors] = useState<Donor[]>([]);
+  const [requests, setRequests] = useState<BloodRequest[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const avatarUrl = donor.photo_url || avatarImages[Math.abs(donor.name.charCodeAt(0)) % avatarImages.length];
+  useEffect(() => {
+    localStorage.setItem('portal_theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
-  const handleVoteForDonor = () => {
-    if (hasVoted) return;
-    const newVotes = votes + 1;
-    setVotes(newVotes);
-    setHasVoted(true);
-    setVoteAnimation(true);
-    localStorage.setItem(storageKey, newVotes.toString());
-    localStorage.setItem(`${storageKey}_voted`, 'true');
-    setTimeout(() => setVoteAnimation(false), 2000);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showPostReqModal, setShowPostReqModal] = useState(false);
+  const [showGuideModal, setShowGuideModal] = useState(false);
+  const [showHelplinesModal, setShowHelplinesModal] = useState(false);
+
+  const [activeTab, setActiveTab] = useState<TabType>('home');
+
+  const [selectedProvince, setSelectedProvince] = useState('پنجاب (Punjab)');
+  const [selectedCity, setSelectedCity] = useState('خانیوال (Khanewal)');
+  const [selectedBlood, setSelectedBlood] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [guideSelectedBlood, setGuideSelectedBlood] = useState('O+');
+
+  const fetchPortalData = async () => {
+    setLoading(true);
+    try {
+      const { data: dData, error: dError } = await supabase
+        .from('donors')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!dError && dData) {
+        setDonors(dData);
+      }
+
+      const { data: rData, error: rError } = await supabase
+        .from('blood_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!rError && rData) {
+        setRequests(rData);
+      }
+    } catch (err) {
+      console.error('Error fetching data from Supabase:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const waMessage = encodeURIComponent(
-    `السلام علیکم ${donor.name} بھائی! مجھے پاکستان بلڈ پورٹل سے آپ کا رابطہ ملا ہے۔ ہمیں مریض کے لیے فوری بلڈ گروپ (${blood}) کی اشد ضرورت ہے۔ کیا آپ اس وقت خون کا عطیہ دینے کے لیے دستیاب ہیں؟ مقام: ${donor.city}۔ جزاک اللہ!`
-  );
+  useEffect(() => {
+    fetchPortalData();
+  }, []);
 
-  const handleShare = () => {
-    const shareText = encodeURIComponent(
-      `🩸 *دستیاب بلڈ ڈونر معلومات*\n👤 نام: ${donor.name}\n💉 بلڈ گروپ: ${blood}\n📍 شہر/علاقہ: ${donor.city} ${donor.tehsil ? '(' + donor.tehsil + ')' : ''}\n📞 رابطہ: ${phoneVal}\n\nپاکستان بلڈ پورٹل کے ذریعے تصدیق شدہ۔`
-    );
-    window.open(`https://wa.me/?text=${shareText}`, '_blank');
-  };
+  const currentCitiesInProvince = useMemo(() => {
+    return pakistanProvinces[selectedProvince] || [];
+  }, [selectedProvince]);
+
+  const filteredCurrentCityDonors = useMemo(() => {
+    return donors.filter((d) => {
+      const matchCity = d.city === selectedCity;
+      const matchBlood = selectedBlood ? (d.bloodgroup || d.bloodGroup || d.blood_group) === selectedBlood : true;
+      let matchSearch = true;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        matchSearch =
+          (d.name || '').toLowerCase().includes(q) ||
+          (d.tehsil || '').toLowerCase().includes(q) ||
+          (d.area || '').toLowerCase().includes(q) ||
+          (d.bloodgroup || d.bloodGroup || d.blood_group || '').toLowerCase().includes(q);
+      }
+      return matchCity && matchBlood && matchSearch;
+    });
+  }, [donors, selectedCity, selectedBlood, searchQuery]);
+
+  const guideInfo = bloodCompatibility[guideSelectedBlood] || bloodCompatibility['O+'] || { give: [], receive: [] };
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl border p-5 transition-all duration-200 hover:-translate-y-1 flex flex-col justify-between group ${
-      isDark
-        ? 'bg-slate-900/90 border-slate-800 hover:border-rose-500/50 shadow-xl'
-        : 'bg-white border-slate-200/90 hover:border-rose-400 shadow-sm hover:shadow-md'
-    }`}>
-      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-rose-500/40 to-transparent" />
-
-      <div>
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <div className="flex items-center gap-3">
-            <div className="relative shrink-0">
-              <img
-                src={avatarUrl}
-                alt={donor.name}
-                referrerPolicy="no-referrer"
-                className={`w-13 h-13 rounded-2xl object-cover border-2 shadow-md group-hover:border-rose-500 transition ${
-                  isDark ? 'border-slate-700' : 'border-slate-200'
-                }`}
-              />
-              <span className="absolute -bottom-1 -right-1 bg-rose-600 text-white font-black text-[11px] px-1.5 py-0.5 rounded-lg border border-white shadow">
-                {blood}
-              </span>
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2">
-                <h4 className={`font-extrabold text-base transition ${
-                  isDark ? 'text-white group-hover:text-rose-300' : 'text-slate-900 group-hover:text-rose-600'
-                }`}>
-                  {donor.name}
-                </h4>
-                <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                  isDark
-                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                }`}>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  {lang === 'ur' ? 'دستیاب' : 'Available'}
-                </span>
-              </div>
-
-              <div className={`flex flex-wrap items-center gap-1.5 text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                <span className="text-rose-600 font-bold">📍 {donor.city}</span>
-                {donor.tehsil && (
-                  <span className={`px-2 py-0.5 rounded-md text-[11px] ${
-                    isDark ? 'bg-slate-800/80 text-slate-300' : 'bg-slate-100 text-slate-700'
-                  }`}>
-                    {donor.tehsil}
-                  </span>
-                )}
-                {donor.area && (
-                  <span className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    • {donor.area}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={handleShare}
-            title={lang === 'ur' ? 'شیئر کریں' : 'Share'}
-            className={`p-1.5 rounded-lg transition cursor-pointer ${
-              isDark ? 'text-slate-500 hover:text-rose-400 hover:bg-slate-800' : 'text-slate-400 hover:text-rose-600 hover:bg-slate-100'
-            }`}
-          >
-            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-              <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
-            </svg>
-          </button>
-        </div>
-
-        <div className={`flex items-center justify-between rounded-xl px-3 py-2 mb-3 border ${
-          isDark ? 'bg-slate-950/60 border-slate-800/80' : 'bg-slate-50 border-slate-200/80'
+    <div
+      className={`min-h-screen flex flex-col justify-between selection:bg-rose-600 selection:text-white transition-colors duration-200 overflow-x-hidden max-w-full pt-[115px] sm:pt-[98px] pb-24 sm:pb-28 ${
+        isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+      }`}
+      dir={lang === 'ur' ? 'rtl' : 'ltr'}
+    >
+      <div className="fixed top-0 inset-x-0 z-50 shadow-md">
+        <header className={`backdrop-blur-md border-b shadow-xs transition-colors ${
+          isDark ? 'bg-slate-900/95 border-slate-800 text-white' : 'bg-white/95 border-slate-200 text-slate-900'
         }`}>
-          <div className="flex items-center gap-1.5 text-xs">
-            <span>❤️</span>
-            <span className="font-bold text-rose-600">{votes}</span>
-            <span className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              {lang === 'ur' ? 'دعائیں اور ووٹ' : 'Prayers & Votes'}
-            </span>
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-2">
+            <div
+              onClick={() => {
+                setActiveTab('home');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="flex items-center gap-2.5 cursor-pointer group shrink-0"
+            >
+              <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-rose-600 via-rose-700 to-red-900 flex items-center justify-center shadow-md shadow-rose-600/30">
+                <span className="text-lg sm:text-xl animate-pulse">🩸</span>
+              </div>
+              <div className="leading-tight">
+                <h1 className="text-sm sm:text-base md:text-lg font-black tracking-tight">
+                  <span>{lang === 'ur' ? 'پاکستان بلڈ پورٹل' : 'Pakistan Blood Portal'}</span>
+                </h1>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                className={`p-2 rounded-xl text-xs font-black border ${
+                  isDark ? 'bg-slate-800 text-amber-300 border-slate-700' : 'bg-slate-100 text-slate-800 border-slate-200'
+                }`}
+              >
+                {isDark ? '☀️' : '🌙'}
+              </button>
+              <button
+                onClick={() => setLang(lang === 'ur' ? 'en' : 'ur')}
+                className={`px-2.5 py-2 rounded-xl text-xs font-black border ${
+                  isDark ? 'bg-slate-800 text-rose-400 border-slate-700' : 'bg-rose-50 text-rose-700 border-rose-200'
+                }`}
+              >
+                {lang === 'ur' ? 'EN' : 'اردو'}
+              </button>
+            </div>
           </div>
+        </header>
+      </div>
 
-          <button
-            onClick={handleVoteForDonor}
-            disabled={hasVoted}
-            className={`text-xs font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer ${
-              hasVoted
-                ? isDark ? 'bg-rose-500/20 text-rose-300 cursor-default' : 'bg-rose-100 text-rose-700 cursor-default'
-                : isDark
-                ? 'bg-slate-800 hover:bg-rose-600 hover:text-white text-slate-300 active:scale-95'
-                : 'bg-white hover:bg-rose-600 hover:text-white text-slate-700 border border-slate-200 active:scale-95 shadow-2xs'
-            }`}
-          >
-            <span>{hasVoted ? '✓ دعا دی گئی' : '🤲 دعا / ووٹ دیں'}</span>
-            {voteAnimation && <span className="animate-ping text-rose-500">❤️</span>}
-          </button>
-        </div>
-
-        {donor.hospital_near && (
-          <div className={`mb-3 text-xs px-3 py-1.5 rounded-xl flex items-center gap-2 border ${
-            isDark ? 'bg-slate-950/60 border-slate-800/60 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
-          }`}>
-            <span>🏥</span>
-            <span className="truncate">{donor.hospital_near}</span>
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 py-6 w-full flex-1">
+        {activeTab === 'home' && (
+          <div className="space-y-8">
+            <EmergencyBanner requests={requests} onViewAll={() => setActiveTab('requests')} lang={lang} />
+            <VisualCampaignSlider lang={lang} onPledgeClick={() => setShowRegisterModal(true)} theme={theme} />
+            <BloodDonationSteps lang={lang} theme={theme} onRegisterClick={() => setShowRegisterModal(true)} />
+            <BloodDonationVideos lang={lang} theme={theme} />
+            <DonorEligibilityGuidelines lang={lang} theme={theme} />
+            <MythsVsFacts lang={lang} theme={theme} />
+            <CampsPhotoGallery lang={lang} theme={theme} />
+            <CommunityPollVote lang={lang} theme={theme} />
+            <HomeFAQ lang={lang} theme={theme} />
           </div>
         )}
-      </div>
 
-      <div className={`pt-3 border-t grid grid-cols-2 gap-2 mt-2 ${isDark ? 'border-slate-800/80' : 'border-slate-100'}`}>
-        <a
-          href={`https://wa.me/${waNumber}?text=${waMessage}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 border ${
-            isDark
-              ? 'bg-emerald-600/15 hover:bg-emerald-600 text-emerald-400 hover:text-white border-emerald-500/30'
-              : 'bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border-emerald-300'
-          }`}
-        >
-          <span className="text-sm">💬</span>
-          <span>{lang === 'ur' ? 'واٹس ایپ رابطہ' : 'WhatsApp'}</span>
-        </a>
+        {/* ڈونرز کا صفحہ */}
+        {activeTab === 'donors' && (
+          <div className={`space-y-6 p-4 sm:p-6 rounded-3xl ${isDark ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
+            <div className={`p-5 rounded-3xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+              <h3 className="text-base font-black mb-3">
+                {lang === 'ur' ? 'بلڈ گروپ منتخب کریں:' : 'Filter by Blood Group:'}
+              </h3>
+              <BloodGroupGrid
+                selected={selectedBlood}
+                onSelect={(b) => setSelectedBlood(b === selectedBlood ? null : b)}
+                lang={lang}
+                theme={theme}
+              />
+            </div>
 
-        <a
-          href={`tel:${phoneVal}`}
-          className="bg-rose-600 hover:bg-rose-500 text-white px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 shadow-md shadow-rose-600/20"
-        >
-          <span className="text-sm">📞</span>
-          <span>{lang === 'ur' ? 'کال کریں' : 'Call'}</span>
-        </a>
-      </div>
+            <h3 className="text-base sm:text-lg font-black">
+              {selectedCity} {lang === 'ur' ? 'کے تصدیق شدہ ڈونرز' : 'Verified Donors'} ({filteredCurrentCityDonors.length})
+            </h3>
+
+            {loading ? (
+              <div className="p-12 text-center text-rose-500 font-bold">⏳ ڈونرز لوڈ ہو رہے ہیں...</div>
+            ) : filteredCurrentCityDonors.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredCurrentCityDonors.map((donor, idx) => (
+                  <DonorCard key={donor.id || idx} donor={donor} lang={lang} theme={theme} />
+                ))}
+              </div>
+            ) : (
+              <div className={`p-8 rounded-3xl border text-center ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                <p className="text-sm font-bold">اس شہر میں ابھی کوئی ڈونر موجود نہیں۔</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'requests' && (
+          <div className="space-y-6">
+            <h3 className="text-lg sm:text-xl font-black">خون کی ہنگامی اپیلیں</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {requests.map((req) => (
+                <div key={req.id} className={`p-5 rounded-3xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+                  <h4 className="font-black text-base">{req.patient_name}</h4>
+                  <p className="text-xs">{req.hospital} - {req.city}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'helplines' && (
+          <div className="space-y-6">
+            <h3 className="text-lg sm:text-xl font-black">ہیلپ لائنز</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {helplinesList.map((hl, idx) => (
+                <div key={idx} className={`p-5 rounded-3xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+                  <h4 className="font-black">{hl.nameUrdu}</h4>
+                  <span className="text-rose-600 font-bold">{hl.phone}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* گائیڈ کا صفحہ */}
+        {activeTab === 'guide' && (
+          <div className={`space-y-6 p-4 sm:p-6 rounded-3xl ${isDark ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
+            <h3 className="text-lg sm:text-xl font-black">
+              {lang === 'ur' ? 'بلڈ گروپ مطابقت چارٹ' : 'Blood Group Compatibility Guide'}
+            </h3>
+
+            <div className={`p-6 rounded-3xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+              <span className="text-xs font-bold block mb-3">بلڈ گروپ منتخب کریں:</span>
+
+              <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 mb-6">
+                {Object.keys(bloodCompatibility).map((bg) => (
+                  <button
+                    key={bg}
+                    onClick={() => setGuideSelectedBlood(bg)}
+                    className={`py-2 rounded-xl text-xs font-black transition cursor-pointer ${
+                      guideSelectedBlood === bg
+                        ? 'bg-rose-600 text-white shadow-md'
+                        : isDark ? 'bg-slate-800 text-slate-200' : 'bg-slate-100 text-slate-700'
+                    }`}
+                  >
+                    {bg}
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-950 border-slate-800' : 'bg-emerald-50 border-emerald-200 text-slate-900'}`}>
+                  <h4 className="text-sm font-black text-emerald-600 mb-2">خون دے سکتا ہے (Give To):</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {guideInfo.give?.map((g) => (
+                      <span key={g} className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-xs font-black">{g}</span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-950 border-slate-800' : 'bg-rose-50 border-rose-200 text-slate-900'}`}>
+                  <h4 className="text-sm font-black text-rose-600 mb-2">خون لے سکتا ہے (Receive From):</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {guideInfo.receive?.map((r) => (
+                      <span key={r} className="px-3 py-1 bg-rose-600 text-white rounded-lg text-xs font-black">{r}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* نیچے والا نیویگیشن بار */}
+      <nav className={`lg:hidden fixed bottom-0 inset-x-0 z-50 border-t backdrop-blur-xl shadow-2xl flex items-center justify-around py-2 px-2 ${
+        isDark ? 'bg-slate-950 border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-600'
+      }`}>
+        <button onClick={() => { setActiveTab('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl ${activeTab === 'home' ? 'text-rose-600 font-black bg-rose-500/10' : ''}`}>
+          <span>🏠</span>
+          <span className="text-[11px]">ہوم</span>
+        </button>
+        <button onClick={() => { setActiveTab('donors'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl ${activeTab === 'donors' ? 'text-rose-600 font-black bg-rose-500/10' : ''}`}>
+          <span>🩸</span>
+          <span className="text-[11px]">ڈونرز</span>
+        </button>
+        <button onClick={() => { setActiveTab('requests'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl ${activeTab === 'requests' ? 'text-amber-500 font-black bg-amber-500/15' : ''}`}>
+          <span>🚨</span>
+          <span className="text-[11px]">خون چاہیے</span>
+        </button>
+        <button onClick={() => { setActiveTab('helplines'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl ${activeTab === 'helplines' ? 'text-rose-600 font-black bg-rose-500/10' : ''}`}>
+          <span>📞</span>
+          <span className="text-[11px]">کالز</span>
+        </button>
+        <button onClick={() => { setActiveTab('guide'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl ${activeTab === 'guide' ? 'text-rose-600 font-black bg-rose-500/10' : ''}`}>
+          <span>📖</span>
+          <span className="text-[11px]">گائیڈ</span>
+        </button>
+      </nav>
+
+      <RegisterDonorModal isOpen={showRegisterModal} onClose={() => setShowRegisterModal(false)} defaultProvince={selectedProvince} defaultCity={selectedCity} onSuccess={fetchPortalData} lang={lang} />
+      <PostRequestModal isOpen={showPostReqModal} onClose={() => setShowPostReqModal(false)} defaultProvince={selectedProvince} defaultCity={selectedCity} onSuccess={fetchPortalData} lang={lang} />
+      <BloodGuideModal isOpen={showGuideModal} onClose={() => setShowGuideModal(false)} lang={lang} />
+      <HelplinesModal isOpen={showHelplinesModal} onClose={() => setShowHelplinesModal(false)} lang={lang} />
     </div>
   );
-};
+}
