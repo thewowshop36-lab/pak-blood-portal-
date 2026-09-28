@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { pakistanProvinces } from '../data/pakistanLocations';
-import { supabase } from '../lib/supabase';
+import { insertRequestSafe } from '../lib/supabase';
 import { BloodRequest } from '../types';
 
 interface PostRequestModalProps {
@@ -70,7 +70,7 @@ export const PostRequestModal: React.FC<PostRequestModalProps> = ({
         urgency,
       };
 
-      const { data, error } = await supabase.from('requests').insert([requestPayload]).select();
+      const { data, error } = await insertRequestSafe(requestPayload);
 
       if (error) {
         console.error("Supabase insert request error:", error);
