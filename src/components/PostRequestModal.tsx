@@ -77,10 +77,17 @@ export const PostRequestModal: React.FC<PostRequestModalProps> = ({
         setErrorMsg(error.message);
       } else {
         const added = data && data[0] ? data[0] : requestPayload;
-        onRequestPosted(added);
-        onClose();
-        alert(lang === 'ur' ? 'خون کی ضرورت کی اپیل کامیابی سے پوسٹ ہو گئی ہے!' : 'Blood request posted successfully!');
+        try {
+          if (typeof onRequestPosted === 'function') onRequestPosted(added);
+        } catch (e) {}
+        try {
+          if (typeof onClose === 'function') onClose();
+        } catch (e) {}
+        alert(lang === 'ur' ? '!خون کی ضرورت کی اپیل کامیابی سے پوسٹ ہو گئی ہے' : 'Blood request posted successfully!');
       }
+        
+       
+      
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || 'Error occurred');
