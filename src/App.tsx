@@ -377,23 +377,9 @@ export default function App() {
             </div>
           </div>
 
-          {/* Mobile Quick Action Bar */}
-          <div className="sm:hidden px-3 pb-2 pt-1 grid grid-cols-2 gap-2 border-t border-slate-100 dark:border-slate-800/60">
-            <button
-              onClick={() => setActiveTab('requests')}
-              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 text-slate-950 py-2 px-3 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition cursor-pointer"
-            >
-              <span className="text-sm">🚨</span>
-              <span>{lang === 'ur' ? 'خون چاہیے' : 'Need Blood'}</span>
-            </button>
-            <button
-              onClick={() => setShowRegisterModal(true)}
-              className="bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 text-white py-2 px-3 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition cursor-pointer"
-            >
-              <span className="text-sm">➕</span>
-              <span>{lang === 'ur' ? 'بلڈ ڈونر بنیں' : 'Register Donor'}</span>
-            </button>
-          </div>
+          
+  
+     
         </header>
       </div>
 
