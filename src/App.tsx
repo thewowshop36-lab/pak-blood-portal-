@@ -80,7 +80,7 @@ export default function App() {
       }
 
       const { data: rData, error: rError } = await supabase
-        .from('blood_requests')
+        .from('requests')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -106,7 +106,7 @@ export default function App() {
 
     const requestsSub = supabase
       .channel('public:blood_requests')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'blood_requests' }, () => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, () => {
         fetchPortalData();
       })
       .subscribe();
