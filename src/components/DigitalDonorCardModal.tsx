@@ -16,14 +16,18 @@ export const DigitalDonorCardModal: React.FC<DigitalDonorCardModalProps> = ({
 
   const cardRef = useRef<HTMLDivElement>(null);
   const bg = donor.blood_group || donor.bloodgroup || donor.bloodGroup || 'O+';
-  const name = donor.name || 'محترم ڈونر';
-  const city = donor.city || 'پاکستان';
-  const tehsil = donor.tehsil || '';
-  const phone = donor.phone || donor.contact || donor.whatsapp_number || '03XX-XXXXXXX';
-  const regId = `PK-BD-${(donor.id || Math.floor(1000 + Math.random() * 9000)).toString().slice(-4)}`;
-  const issueDate = new Date().toLocaleDateString('en-GB');
+  const name = donor.name || 'ALLAH DITTA RABNAWAZ';
+  const city = donor.city || 'Khanewal';
+  const tehsil = donor.tehsil || 'Jahanian';
+  const regId = `PK-BD-${(donor.id || Math.floor(100 + Math.random() * 900)).toString().slice(-3)}`;
+  
+  const today = new Date();
+  const issueDate = today.toLocaleDateString('en-GB').replace(/\//g, '.');
+  const expiryDate = new Date(today.getFullYear() + 10, today.getMonth(), today.getDate())
+    .toLocaleDateString('en-GB')
+    .replace(/\//g, '.');
 
-  const shareText = `🪪 *سرکاری لائف سیور شناختی کارڈ (تصدیق شدہ)* 🇵🇰\n\n👤 *نام:* ${name}\n🩸 *بلڈ گروپ:* ${bg}\n📍 *شہر:* ${city} ${tehsil ? `(${tehsil})` : ''}\n🆔 *کارڈ نمبر:* ${regId}\n✅ *حیثیت:* تصدیق شدہ بلڈ ڈونر\n\nمیں نے پاکستان بلڈ پورٹل پر بطور تصدیق شدہ ڈونر رجسٹریشن کروا لی ہے۔ آپ بھی رجسٹر ہوں:\n🔗 https://pak-blood-portal.vercel.app`;
+  const shareText = `🪪 *لائف سیور بلڈ ڈونر کارڈ (تصدیق شدہ)* 🇵🇰\n\n👤 *نام:* ${name}\n🩸 *بلڈ گروپ:* ${bg}\n📍 *شہر:* ${city} / ${tehsil}\n🆔 *کارڈ نمبر:* ${regId}\n✅ *حیثیت:* تصدیق شدہ لائف سیور (VERIFIED LIFE SAVER)\n\nخون کا عطیہ دیں، زندگیاں بچائیں۔ آپ بھی پاکستان بلڈ پورٹل پر اپنا کارڈ بنائیں:\n🔗 https://pak-blood-portal.vercel.app`;
 
   const handleWhatsAppShare = () => {
     window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
@@ -31,146 +35,174 @@ export const DigitalDonorCardModal: React.FC<DigitalDonorCardModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-md bg-slate-900 border border-slate-700 rounded-3xl overflow-hidden shadow-2xl text-white my-auto">
+      <div className="relative w-full max-w-sm sm:max-w-md bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl text-white my-auto">
         
-        {/* Top Header */}
-        <div className="p-4 bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 flex items-center justify-between border-b border-emerald-600/40">
+        {/* Top Dialog Bar */}
+        <div className="p-3 px-4 bg-slate-800 flex items-center justify-between border-b border-slate-700">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🇵🇰</span>
-            <div>
-              <h3 className="text-sm font-black tracking-tight text-emerald-100">
-                {lang === 'ur' ? 'قومی لائف سیور اسمارٹ شناختی کارڈ' : 'National Life-Saver Smart ID'}
-              </h3>
-              <p className="text-[10px] text-emerald-300">
-                {lang === 'ur' ? 'تصدیق شدہ رضاکار بلڈ ڈونر نیٹ ورک' : 'Certified Voluntary Blood Donor'}
-              </p>
-            </div>
+            <span className="text-xl">🪪</span>
+            <span className="text-xs font-black tracking-tight text-emerald-400">
+              {lang === 'ur' ? 'قومی لائف سیور اسمارٹ کارڈ' : 'Official Life Saver Donor Card'}
+            </span>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-sm font-bold text-white transition-colors"
+            className="w-7 h-7 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center text-xs font-bold text-white transition-colors"
           >
             ✕
           </button>
         </div>
 
-        {/* ================= PHYSICAL SMART CARD DESIGN ================= */}
-        <div className="p-4 sm:p-5 flex justify-center">
+        {/* ================= VERTICAL NADRA STYLE SMART CARD ================= */}
+        <div className="p-4 sm:p-5 flex justify-center bg-slate-950">
           <div
             ref={cardRef}
-            className="relative w-full aspect-[1.58/1] rounded-2xl p-4 sm:p-5 text-slate-900 overflow-hidden shadow-2xl border-2 border-emerald-600/50 flex flex-col justify-between"
+            className="relative w-full max-w-[320px] rounded-3xl p-5 text-slate-900 overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.6)] border border-emerald-600/40 flex flex-col justify-between select-none"
             style={{
-              background: 'linear-gradient(135deg, #f0fdf4 0%, #e2e8f0 40%, #dcfce7 70%, #f8fafc 100%)',
-              boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.8)'
+              minHeight: '500px',
+              background: 'linear-gradient(175deg, #cbeedb 0%, #bce7ce 18%, #d8f1e3 45%, #caebd7 75%, #b6e2c9 100%)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 2px 4px rgba(255,255,255,0.8)'
             }}
           >
-            {/* Subtle Guilloche Security Pattern / Watermark */}
-            <div className="absolute inset-0 opacity-[0.04] pointer-events-none flex items-center justify-center select-none text-9xl font-black">
+            {/* Guilloche fine security background patterns */}
+            <div 
+              className="absolute inset-0 pointer-events-none opacity-20"
+              style={{
+                backgroundImage: 'radial-gradient(circle at 50% 30%, #059669 1px, transparent 1px), radial-gradient(circle at 20% 80%, #047857 1px, transparent 1px)',
+                backgroundSize: '16px 16px'
+              }}
+            />
+
+            {/* Subtle national crescent watermark in middle */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none text-9xl font-black">
               🇵🇰
             </div>
-            
-            {/* CARD TOP BAR */}
-            <div className="flex items-center justify-between border-b border-emerald-700/30 pb-2 relative z-10">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-800 to-emerald-600 flex items-center justify-center text-white text-sm shadow-md font-bold">
-                  🇵🇰
+
+            {/* CARD HEADER SECTION */}
+            <div className="relative z-10 text-center">
+              <div className="flex items-center justify-center gap-3">
+                {/* Pakistan State Emblem Coat of Arms */}
+                <div className="w-11 h-11 rounded-full border border-emerald-900/40 bg-emerald-900/10 flex flex-col items-center justify-center p-1 shadow-sm">
+                  <span className="text-[9px] leading-none">🇵🇰</span>
+                  <div className="text-[7px] font-black text-emerald-950 tracking-tighter mt-0.5">
+                    حکومت پاکستان
+                  </div>
                 </div>
+
+                {/* Urdu Main Title */}
                 <div>
-                  <h4 className="text-[11px] font-black uppercase tracking-wider text-emerald-900 leading-tight">
-                    PAKISTAN BLOOD DONOR PORTAL
+                  <h3 className="text-xl sm:text-2xl font-black text-emerald-950 font-serif leading-none tracking-tight">
+                    حکومتِ پاکستان
+                  </h3>
+                  <h4 className="text-base sm:text-lg font-black text-emerald-900 font-serif leading-tight mt-0.5">
+                    لائف سیور بلڈ ڈونر کارڈ
                   </h4>
-                  <p className="text-[9px] font-bold text-emerald-700">
-                    پاکستان رضاکار لائف سیور شناختی کارڈ
-                  </p>
                 </div>
               </div>
-              <div className="text-right">
-                <span className="text-[9px] font-mono font-bold bg-emerald-900 text-white px-2 py-0.5 rounded-md shadow-sm">
+
+              {/* Sub-ribbon Banner */}
+              <div className="mt-2.5 mx-auto max-w-[240px] py-0.5 px-2 rounded-full bg-emerald-900 text-white text-[9px] font-black tracking-widest uppercase shadow-sm">
+                LIFE SAVER BLOOD DONOR CARD
+              </div>
+            </div>
+
+            {/* MIDDLE SECTION: PHOTO REPLACED BY BLOOD GROUP EMBLEM + HOLOGRAM */}
+            <div className="relative z-10 my-4 flex items-center justify-center gap-4">
+              
+              {/* PHOTO FRAME REPLACED WITH PROMINENT BLOOD GROUP EMBLEM */}
+              <div className="relative w-28 h-32 rounded-2xl bg-gradient-to-b from-white to-slate-100 border-2 border-emerald-900/40 shadow-md p-2 flex flex-col items-center justify-center overflow-hidden">
+                {/* Background Blood Drops pattern */}
+                <div className="absolute top-1 right-2 text-rose-300/40 text-xl font-black">🩸</div>
+                <div className="absolute bottom-1 left-2 text-rose-300/40 text-lg font-black">🩸</div>
+                
+                {/* Blood Drop Icon */}
+                <div className="w-10 h-10 rounded-full bg-rose-600 text-white flex items-center justify-center text-xl shadow-inner mb-1">
+                  🩸
+                </div>
+                
+                {/* Blood Group Large */}
+                <span className="text-3xl font-black text-rose-700 tracking-tighter leading-none">
+                  {bg}
+                </span>
+                <span className="text-[8px] font-extrabold uppercase tracking-wider text-rose-950 mt-1">
+                  BLOOD GROUP
+                </span>
+              </div>
+
+              {/* SECURITY HOLOGRAM STICKER (Like CNIC) */}
+              <div className="relative w-14 h-14 rounded-xl border border-emerald-500/60 shadow-md overflow-hidden flex flex-col items-center justify-center p-1 text-center"
+                   style={{
+                     background: 'linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 30%, #34d399 50%, #93c5fd 80%, #c4b5fd 100%)'
+                   }}>
+                <span className="text-sm">🇵🇰</span>
+                <span className="text-[6px] font-black text-emerald-950 uppercase tracking-tighter leading-none mt-0.5">
+                  LIFE SAVER
+                </span>
+                <span className="text-[5px] font-extrabold text-emerald-900 leading-none">
+                  OFFICIAL SEAL
+                </span>
+              </div>
+
+            </div>
+
+            {/* CARD DETAILS LIST (Matches the exact layout of the reference photo) */}
+            <div className="relative z-10 space-y-1.5 text-[11px] font-bold text-emerald-950 px-1">
+              
+              {/* Name */}
+              <div className="flex items-center justify-between border-b border-emerald-900/15 pb-0.5">
+                <span className="text-[10px] text-emerald-900/70 font-semibold">نام :</span>
+                <span className="text-xs font-black uppercase text-emerald-950 tracking-tight text-right">
+                  {name}
+                </span>
+              </div>
+
+              {/* Blood Group */}
+              <div className="flex items-center justify-between border-b border-emerald-900/15 pb-0.5">
+                <span className="text-[10px] text-emerald-900/70 font-semibold">بلڈ گروپ :</span>
+                <span className="text-xs font-black text-rose-700 font-mono tracking-wide text-right">
+                  {bg}
+                </span>
+              </div>
+
+              {/* Card Number */}
+              <div className="flex items-center justify-between border-b border-emerald-900/15 pb-0.5">
+                <span className="text-[10px] text-emerald-900/70 font-semibold">کارڈ نمبر :</span>
+                <span className="font-mono text-xs font-black text-emerald-950 text-right">
                   {regId}
                 </span>
               </div>
-            </div>
 
-            {/* CARD MIDDLE BODY */}
-            <div className="grid grid-cols-12 gap-3 items-center my-auto py-2 relative z-10">
-              
-              {/* Left Column: Chip & Donor Photo */}
-              <div className="col-span-4 flex flex-col items-center gap-1.5">
-                {/* Gold Smart Chip */}
-                <div className="w-10 h-7 rounded-md bg-gradient-to-tr from-amber-400 via-amber-200 to-amber-500 border border-amber-600/60 shadow-inner flex flex-col justify-around p-1">
-                  <div className="w-full h-[1px] bg-amber-700/40"></div>
-                  <div className="w-full h-[1px] bg-amber-700/40"></div>
-                </div>
-
-                {/* Donor Photo Frame */}
-                <div className="w-16 h-18 sm:w-18 sm:h-20 rounded-xl bg-white border-2 border-emerald-800/40 shadow-md overflow-hidden flex items-center justify-center text-3xl">
-                  {donor.photo_url ? (
-                    <img src={donor.photo_url} alt={name} className="w-full h-full object-cover" />
-                  ) : (
-                    <span>👤</span>
-                  )}
-                </div>
+              {/* City / Tehsil */}
+              <div className="flex items-center justify-between border-b border-emerald-900/15 pb-0.5">
+                <span className="text-[10px] text-emerald-900/70 font-semibold">شہر / تحصیل :</span>
+                <span className="text-[11px] font-black text-emerald-950 text-right">
+                  {city} {tehsil ? ` / ${tehsil}` : ''}
+                </span>
               </div>
 
-              {/* Middle Column: Details */}
-              <div className="col-span-5 flex flex-col justify-center space-y-1 text-left pl-1">
-                <div>
-                  <span className="text-[8px] font-bold text-slate-500 block uppercase">Name / نام</span>
-                  <span className="text-sm font-black text-slate-900 tracking-tight leading-none block truncate">
-                    {name}
-                  </span>
-                </div>
-
-                <div>
-                  <span className="text-[8px] font-bold text-slate-500 block uppercase">City / ضلع و تحصیل</span>
-                  <span className="text-[11px] font-bold text-slate-800 block truncate">
-                    {city} {tehsil ? `• ${tehsil}` : ''}
-                  </span>
-                </div>
-
-                <div>
-                  <span className="text-[8px] font-bold text-slate-500 block uppercase">Emergency Contact / رابطہ</span>
-                  <span className="text-[10px] font-mono font-bold text-slate-700 block">
-                    {phone.slice(0, 4)} - {phone.slice(4)}
-                  </span>
-                </div>
+              {/* Date of Issue */}
+              <div className="flex items-center justify-between border-b border-emerald-900/15 pb-0.5">
+                <span className="text-[10px] text-emerald-900/70 font-semibold">اجراء کی تاریخ :</span>
+                <span className="font-mono text-[11px] font-bold text-emerald-950 text-right">
+                  {issueDate}
+                </span>
               </div>
 
-              {/* Right Column: Blood Group Badge & Stamp */}
-              <div className="col-span-3 flex flex-col items-center justify-center relative">
-                {/* Blood Group Shield */}
-                <div className="w-14 h-16 rounded-xl bg-gradient-to-br from-rose-600 via-rose-700 to-red-800 text-white flex flex-col items-center justify-center shadow-lg border border-rose-400">
-                  <span className="text-[8px] font-bold tracking-wider uppercase text-rose-200">Group</span>
-                  <span className="text-2xl font-black tracking-tight leading-none my-0.5">{bg}</span>
-                  <span className="text-[7px] font-semibold text-rose-200">POSITIVE</span>
+              {/* Expiry / Validity */}
+              <div className="flex items-center justify-between border-b border-emerald-900/15 pb-0.5">
+                <span className="text-[10px] text-emerald-900/70 font-semibold">میعاد :</span>
+                <span className="font-mono text-[11px] font-bold text-emerald-950 text-right">
+                  {expiryDate}
+                </span>
+              </div>
+
+              {/* Status */}
+              <div className="pt-1 text-center">
+                <div className="text-[10px] text-emerald-900/80 font-bold">
+                  حیثیت: <span className="text-xs font-black text-emerald-950">تصدیق شدہ لائف سیور</span>
                 </div>
-              </div>
-
-            </div>
-
-            {/* CARD BOTTOM BAR WITH OFFICIAL RED STAMP */}
-            <div className="border-t border-emerald-700/20 pt-1.5 flex items-center justify-between text-[8px] relative z-10">
-              <div>
-                <span className="font-semibold text-slate-600">Issue: </span>
-                <span className="font-mono font-bold text-slate-800">{issueDate}</span>
-                <span className="mx-1 text-slate-400">|</span>
-                <span className="font-bold text-emerald-700">100% رضاکارانہ</span>
-              </div>
-
-              {/* ================= REALISTIC CIRCULAR RED STAMP ================= */}
-              <div className="absolute right-2 bottom-0 transform -rotate-12 pointer-events-none select-none">
-                <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full border-2 border-dashed border-red-600/90 flex flex-col items-center justify-center p-1 text-center bg-red-500/5 backdrop-blur-[0.5px] shadow-sm">
-                  <div className="w-full h-full rounded-full border border-red-600/80 flex flex-col items-center justify-center">
-                    <span className="text-[6px] font-black uppercase tracking-tighter text-red-700 leading-none">
-                      PAK BLOOD PORTAL
-                    </span>
-                    <span className="text-[9px] font-black text-red-800 my-0.5">
-                      ★ تصدیق شدہ ★
-                    </span>
-                    <span className="text-[6px] font-bold uppercase tracking-tight text-red-700 leading-none">
-                      VERIFIED DONOR
-                    </span>
-                  </div>
+                <div className="text-[9px] font-black tracking-widest uppercase text-emerald-900">
+                  VERIFIED LIFE SAVER
                 </div>
               </div>
 
@@ -179,24 +211,24 @@ export const DigitalDonorCardModal: React.FC<DigitalDonorCardModalProps> = ({
           </div>
         </div>
 
-        {/* Actions Bottom Bar */}
-        <div className="p-4 bg-slate-850 border-t border-slate-800 space-y-2">
+        {/* BOTTOM ACTION BUTTONS */}
+        <div className="p-3 bg-slate-900 border-t border-slate-800 space-y-2">
           <button
             onClick={handleWhatsAppShare}
-            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/40 transition-all active:scale-[0.98]"
+            className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/40 transition-all active:scale-[0.98]"
           >
             <span>💬</span>
             <span>
               {lang === 'ur'
-                ? 'واٹس ایپ پر یہ کارڈ شیئر کریں'
-                : 'Share Verified Card on WhatsApp'}
+                ? 'واٹس ایپ اسٹیٹس پر شیئر کریں'
+                : 'Share Card on WhatsApp'}
             </span>
           </button>
 
           <p className="text-center text-[10px] text-slate-400">
             {lang === 'ur'
-              ? '💡 موبائل پر کارڈ کا اسکرین شاٹ لے کر اسٹیٹس پر بھی لگا سکتے ہیں!'
-              : 'Take a screenshot of this card to share on social media!'}
+              ? '📸 اسکرین شاٹ لے کر محفوظ کر لیں یا واٹس ایپ پر لگائیں!'
+              : 'Take a screenshot to save as your verified card!'}
           </p>
         </div>
 
