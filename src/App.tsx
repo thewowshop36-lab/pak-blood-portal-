@@ -810,14 +810,14 @@ export default function App() {
 
                     <div className="pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2">
                       <a
-                        href={`tel:${req.contact_number}`}
+                        href={`tel:${req.contact || req.contact_number || ''}`}
                         className="bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl font-black text-xs text-center flex items-center justify-center gap-1 transition cursor-pointer"
                       >
                         <span>📞</span>
                         <span>{lang === 'ur' ? 'کال کریں' : 'Call'}</span>
                       </a>
                       <a
-                        href={`https://wa.me/${req.contact_number.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                        href={`https://wa.me/${(req.contact || req.contact_number || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
                           `السلام علیکم! میں پاکستان بلڈ پورٹل سے آپ کے مریض ${req.patient_name} کے لیے خون کا عطیہ دینا چاہتا ہوں۔`
                         )}`}
                         target="_blank"
@@ -839,7 +839,7 @@ export default function App() {
               </div>
             )}
           </div>
-        )}
+       )} 
 
         {/* PAGE 4: HELPLINES (ایمرجنسی ہیلپ لائنز) */}
         {activeTab === 'helplines' && (
