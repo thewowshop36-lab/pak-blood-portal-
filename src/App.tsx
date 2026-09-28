@@ -394,6 +394,7 @@ const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
       </div>
 
       {/* Hero Section */}
+      {activeTab === 'home' && !showThalassemiaPage && (
       <section className={`relative overflow-hidden py-8 sm:py-10 px-4 border-b text-center transition-colors ${
         isDark ? 'bg-slate-950 border-slate-800 text-white' : 'bg-gradient-to-b from-rose-50/80 via-white to-slate-50 border-slate-200 text-slate-900'
       }`}>
@@ -461,7 +462,7 @@ const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
           </div>
         </div>
       </section>
-
+)}
       {/* Main Multi-Page Container */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 py-6 w-full flex-1">
         {/* PAGE 1: HOME (ہوم پیج) */}
