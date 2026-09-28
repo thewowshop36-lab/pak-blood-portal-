@@ -17,7 +17,8 @@ import { DonorEligibilityGuidelines } from './components/DonorEligibilityGuideli
 import { MythsVsFacts } from './components/MythsVsFacts';
 import { CampsPhotoGallery } from './components/CampsPhotoGallery';
 import { HomeFAQ } from './components/HomeFAQ';
-
+import { DigitalDonorCardModal } from './components/DigitalDonorCardModal';
+import { PAKISTAN_BLOOD_BANKS } from './data/bloodBanks';
 export type TabType = 'home' | 'donors' | 'requests' | 'helplines' | 'guide';
 
 const helplinesList = [
@@ -54,7 +55,14 @@ export default function App() {
   const [showPostReqModal, setShowPostReqModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [showHelplinesModal, setShowHelplinesModal] = useState(false);
-
+const [selectedDonorForCard, setSelectedDonorForCard] = useState<Donor | null>(null);
+const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
+  try {
+    return JSON.parse(localStorage.getItem('fulfilled_reqs') || '[]');
+  } catch {
+    return [];
+  }
+});
   // Active Tab
   const [activeTab, setActiveTab] = useState<TabType>('home');
 
@@ -813,6 +821,48 @@ export default function App() {
                         <span>💬</span>
                         <span>{lang === 'ur' ? 'واٹس ایپ' : 'WhatsApp'}</span>
                       </a>
+                      {/* ون کلک واٹس ایپ براڈکاسٹ اور حل شدہ بٹن */}
+                    <div className="mt-2 grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const pName = req.patient_name || 'مریض';
+                          const bGrp = req.blood_group || req.bloodgroup || '';
+                          const hosp = req.hospital || '';
+                          const cty = req.city || '';
+                          const ph = req.contact || req.contact_number || '';
+                          const shareMsg = `🚨 *خون کی فوری ضرورت ہے (ایمرجنسی اپیل)* 🚨\n\n👤 *مریض:* ${pName}\n🩸 *بلڈ گروپ:* ${bGrp}\n🏥 *ہسپتال:* ${hosp}\n📍 *شہر:* ${cty}\n📞 *رابطہ نمبر:* ${ph}\n\nبرائے مہربانی اس میسج کو فوری فارورڈ کریں تاکہ بروقت جان بچائی جا سکے!\n🔗 پاکستان بلڈ پورٹل: https://pak-blood-portal.vercel.app`;
+                          window.open(`https://wa.me/?text=${encodeURIComponent(shareMsg)}`, '_blank');
+                        }}
+                        className="py-1.5 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-sm transition-all"
+                      >
+                        <span>📢</span>
+                        <span>{lang === 'ur' ? 'شیئر کریں' : 'Share Appeal'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const idStr = String(req.id || req.patient_name);
+                          const updated = fulfilledReqIds.includes(idStr)
+                            ? fulfilledReqIds.filter(i => i !== idStr)
+                            : [...fulfilledReqIds, idStr];
+                          setFulfilledReqIds(updated);
+                          localStorage.setItem('fulfilled_reqs', JSON.stringify(updated));
+                        }}
+                        className={`py-1.5 px-2 rounded-xl text-[11px] font-bold border transition-colors flex items-center justify-center gap-1 ${
+                          fulfilledReqIds.includes(String(req.id || req.patient_name))
+                            ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                        }`}
+                      >
+                        <span>
+                          {fulfilledReqIds.includes(String(req.id || req.patient_name))
+                            ? (lang === 'ur' ? '✅ حل شدہ' : '✅ Fulfilled')
+                            : (lang === 'ur' ? '🤝 خون مل گیا؟' : '🤝 Fulfilled?')}
+                        </span>
+                      </button>
+                    </div>
                     </div>
                   </div>
                 ))}
@@ -1048,7 +1098,10 @@ export default function App() {
         onClose={() => setShowRegisterModal(false)}
         defaultProvince={selectedProvince}
         defaultCity={selectedCity}
-        onSuccess={fetchPortalData}
+        onSuccess={(newDonor) => {
+  fetchPortalData();
+  if (newDonor) setSelectedDonorForCard(newDonor);
+}}
         lang={lang}
       />
 
@@ -1072,6 +1125,13 @@ export default function App() {
         onClose={() => setShowHelplinesModal(false)}
         lang={lang}
       />
+      {selectedDonorForCard && (
+        <DigitalDonorCardModal
+          donor={selectedDonorForCard}
+          onClose={() => setSelectedDonorForCard(null)}
+          lang={lang}
+        />
+      )}
     </div>
   );
 }
