@@ -38,3 +38,16 @@ export interface BloodRequest {
   is_fulfilled?: boolean;
   created_at?: string;
 }
+export interface NearbyCityMapping {
+  [city: string]: string[];
+}
+
+export interface BloodBankHospital {
+  nameUrdu: string;
+  nameEn: string;
+  city: string;
+  phone: string;
+  address: string;
+  timing: string;
+  mapQuery: string;
+}
