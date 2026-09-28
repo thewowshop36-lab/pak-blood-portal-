@@ -19,6 +19,7 @@ import { CampsPhotoGallery } from './components/CampsPhotoGallery';
 import { HomeFAQ } from './components/HomeFAQ';
 import { DigitalDonorCardModal } from './components/DigitalDonorCardModal';
 import { PAKISTAN_BLOOD_BANKS } from './data/bloodBanks';
+import { ThalassemiaPage } from './components/ThalassemiaPage';
 export type TabType = 'home' | 'donors' | 'requests' | 'helplines' | 'guide';
 
 const helplinesList = [
@@ -55,6 +56,7 @@ export default function App() {
   const [showPostReqModal, setShowPostReqModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [showHelplinesModal, setShowHelplinesModal] = useState(false);
+  const [showThalassemiaPage, setShowThalassemiaPage] = useState(false);
 const [selectedDonorForCard, setSelectedDonorForCard] = useState<Donor | null>(null);
 const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
   try {
@@ -445,6 +447,17 @@ const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
               <span>🚨</span>
               <span>{lang === 'ur' ? 'خون کی ایمرجنسی اپیل کریں' : 'Post Urgent Blood Appeal'}</span>
             </button>
+            <button
+                  type="button"
+                  onClick={() => {
+                    setShowThalassemiaPage(true);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="bg-gradient-to-r from-purple-700 to-indigo-800 hover:from-purple-600 hover:to-indigo-700 text-white px-5 py-3 rounded-2xl font-black text-xs sm:text-sm shadow-lg shadow-purple-950/40 flex items-center justify-center gap-2 border border-purple-400/30 transition-all active:scale-95"
+                >
+                  <span>🎗️</span>
+                  <span>{lang === 'ur' ? 'تھیلیسیمیا و مستقل مریض رجسٹر' : 'Thalassemia & Dialysis Center'}</span>
+                </button>
           </div>
         </div>
       </section>
@@ -453,6 +466,12 @@ const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
       <main className="max-w-7xl mx-auto px-3 sm:px-4 py-6 w-full flex-1">
         {/* PAGE 1: HOME (ہوم پیج) */}
         {activeTab === 'home' && (
+            showThalassemiaPage ? (
+              <ThalassemiaPage
+                onBack={() => setShowThalassemiaPage(false)}
+                lang={lang}
+              />
+            ) : (
           <div className="space-y-8">
             <EmergencyBanner requests={requests} onViewAll={() => setActiveTab('requests')} lang={lang} />
 
@@ -607,7 +626,7 @@ const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
             {/* Frequently Asked Questions */}
             <HomeFAQ lang={lang} theme={theme} />
           </div>
-        )}
+        ))}
 
         {/* PAGE 2: DONORS (ڈونرز لسٹ) */}
         {activeTab === 'donors' && (
