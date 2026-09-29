@@ -23,6 +23,7 @@ import { ThalassemiaPage } from './components/ThalassemiaPage';
 import { BloodFlowAnimation } from './components/BloodFlowAnimation';
 import { BloodDonationVisualGuide } from './components/BloodDonationVisualGuide';
 import { InstallAppBanner } from './components/InstallAppBanner';
+import { AppSplashScreen } from './components/AppSplashScreen';
 export type TabType = 'home' | 'donors' | 'requests' | 'helplines' | 'guide';
 
 const helplinesList = [
@@ -61,6 +62,7 @@ export default function App() {
   const [showHelplinesModal, setShowHelplinesModal] = useState(false);
   const [showThalassemiaPage, setShowThalassemiaPage] = useState(false);
 const [selectedDonorForCard, setSelectedDonorForCard] = useState<Donor | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
 const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
   try {
     return JSON.parse(localStorage.getItem('fulfilled_reqs') || '[]');
@@ -219,6 +221,7 @@ const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
       }`}
       dir={lang === 'ur' ? 'rtl' : 'ltr'}
     >
+      {showSplash && <AppSplashScreen lang={lang} onFinish={() => setShowSplash(false)} />}
       {/* FIXED TOP HEADER WRAPPER - REMAINS STATIONARY DURING SCROLL */}
       <div className="fixed top-0 inset-x-0 z-50 shadow-md">
         {/* Top Ticker */}
