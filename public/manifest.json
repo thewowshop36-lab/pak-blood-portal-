@@ -4,21 +4,15 @@
   "name": "Pak Blood Network",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23064e3b'/%3E%3Cstop offset='60%25' stop-color='%23022c22'/%3E%3Cstop offset='100%25' stop-color='%234c0519'/%3E%3C/linearGradient%3E%3ClinearGradient id='redGrad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23ff4b72'/%3E%3Cstop offset='50%25' stop-color='%23e11d48'/%3E%3Cstop offset='100%25' stop-color='%23881337'/%3E%3C/linearGradient%3E%3Cfilter id='glow'%3E%3CfeGaussianBlur stdDeviation='8' result='coloredBlur'/%3E%3CfeMerge%3E%3CfeMergeNode in='coloredBlur'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Crect width='512' height='512' rx='110' fill='url(%23bg)'/%3E%3C!-- Molecules / Network Nodes --%3E%3Cg stroke='%23f43f5e' stroke-width='4' opacity='0.7'%3E%3Cline x1='160' y1='230' x2='210' y2='200'/%3E%3Cline x1='160' y1='230' x2='170' y2='290'/%3E%3Cline x1='350' y1='230' x2='300' y2='200'/%3E%3Cline x1='350' y1='230' x2='340' y2='290'/%3E%3C/g%3E%3Ccircle cx='160' cy='230' r='14' fill='%23f43f5e'/%3E%3Ccircle cx='210' cy='200' r='11' fill='%23f43f5e'/%3E%3Ccircle cx='170' cy='290' r='12' fill='%23f43f5e'/%3E%3Ccircle cx='350' cy='230' r='14' fill='%23f43f5e'/%3E%3Ccircle cx='300' cy='200' r='11' fill='%23f43f5e'/%3E%3Ccircle cx='340' cy='290' r='12' fill='%23f43f5e'/%3E%3C!-- Main Glowing Blood Drop --%3E%3Cpath d='M 256,90 C 256,90 150,225 150,300 C 150,360 195,405 256,405 C 317,405 362,360 362,300 C 362,225 256,90 256,90 Z' fill='url(%23redGrad)' filter='url(%23glow)'/%3E%3C!-- Medical Cross --%3E%3Cg fill='%23ffffff' opacity='0.95'%3E%3Crect x='243' y='250' width='26' height='75' rx='6'/%3E%3Crect x='218' y='275' width='76' height='26' rx='6'/%3E%3C/g%3E%3C/svg%3E",
-      "type": "image/svg+xml",
-      "sizes": "192x192 512x512",
+      "src": "/1790673319934.jpg",
+      "type": "image/jpeg",
+      "sizes": "192x192 512x512 1024x1024",
       "purpose": "any maskable"
-    },
-    {
-      "src": "https://img.icons8.com/color/512/drop-of-blood.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any"
     }
   ],
   "start_url": "/?source=pwa",
-  "background_color": "#022c22",
-  "theme_color": "#064e3b",
+  "background_color": "#0d3b23",
+  "theme_color": "#0d3b23",
   "display": "standalone",
   "orientation": "portrait"
 }
