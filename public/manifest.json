@@ -1,24 +1,18 @@
 {
   "id": "/?source=pwa",
-  "short_name": "Blood Network",
-  "name": "Pakistan Blood Network",
+  "short_name": "Pak Blood",
+  "name": "Pak Blood Network",
   "icons": [
     {
-      "src": "https://img.icons8.com/color/192/drop-of-blood.png",
-      "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any"
-    },
-    {
-      "src": "https://img.icons8.com/color/512/drop-of-blood.png",
-      "type": "image/png",
-      "sizes": "512x512",
+      "src": "/1790671671785.jpg",
+      "type": "image/jpeg",
+      "sizes": "192x192 512x512",
       "purpose": "any maskable"
     }
   ],
   "start_url": "/?source=pwa",
-  "background_color": "#0f172a",
-  "theme_color": "#e11d48",
+  "background_color": "#043911",
+  "theme_color": "#0b6623",
   "display": "standalone",
   "orientation": "portrait"
 }
