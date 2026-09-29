@@ -20,6 +20,7 @@ import { HomeFAQ } from './components/HomeFAQ';
 import { DigitalDonorCardModal } from './components/DigitalDonorCardModal';
 import { PAKISTAN_BLOOD_BANKS } from './data/bloodBanks';
 import { ThalassemiaPage } from './components/ThalassemiaPage';
+import { BloodFlowAnimation } from './components/BloodFlowAnimation';
 export type TabType = 'home' | 'donors' | 'requests' | 'helplines' | 'guide';
 
 const helplinesList = [
@@ -409,7 +410,7 @@ const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
         <div className={`absolute inset-0 ${
           isDark ? 'bg-gradient-to-b from-slate-950/80 via-slate-950/95 to-slate-950' : 'bg-gradient-to-b from-white/70 via-white/90 to-slate-50'
         }`} />
-
+<BloodFlowAnimation />
         <div className="max-w-4xl mx-auto relative z-10">
           <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-black mb-3 shadow-2xs border ${
             isDark ? 'bg-rose-500/10 text-rose-400 border-rose-500/25' : 'bg-rose-100/90 text-rose-900 border-rose-200'
