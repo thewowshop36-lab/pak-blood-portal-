@@ -24,6 +24,7 @@ import { BloodFlowAnimation } from './components/BloodFlowAnimation';
 import { BloodDonationVisualGuide } from './components/BloodDonationVisualGuide';
 import { InstallAppBanner } from './components/InstallAppBanner';
 import { AppSplashScreen } from './components/AppSplashScreen';
+import { FloatingShareButton } from './components/FloatingShareButton';
 export type TabType = 'home' | 'donors' | 'requests' | 'helplines' | 'guide';
 
 const helplinesList = [
@@ -222,6 +223,7 @@ const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
       dir={lang === 'ur' ? 'rtl' : 'ltr'}
     >
       {showSplash && <AppSplashScreen lang={lang} onFinish={() => setShowSplash(false)} />}
+      <FloatingShareButton lang={lang} />
       {/* FIXED TOP HEADER WRAPPER - REMAINS STATIONARY DURING SCROLL */}
       <div className="fixed top-0 inset-x-0 z-50 shadow-md">
         {/* Top Ticker */}
