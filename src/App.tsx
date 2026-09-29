@@ -22,6 +22,7 @@ import { PAKISTAN_BLOOD_BANKS } from './data/bloodBanks';
 import { ThalassemiaPage } from './components/ThalassemiaPage';
 import { BloodFlowAnimation } from './components/BloodFlowAnimation';
 import { BloodDonationVisualGuide } from './components/BloodDonationVisualGuide';
+import { InstallAppBanner } from './components/InstallAppBanner';
 export type TabType = 'home' | 'donors' | 'requests' | 'helplines' | 'guide';
 
 const helplinesList = [
@@ -1046,7 +1047,7 @@ const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
           </p>
         </div>
       </footer>
-
+<InstallAppBanner lang={lang} />
       {/* Mobile & Tablet Bottom Navigation Bar - FIRMLY FIXED AT BOTTOM */}
       <nav
         className={`lg:hidden fixed bottom-0 inset-x-0 z-50 border-t backdrop-blur-xl shadow-2xl flex items-center justify-around py-1.5 px-2 pb-[max(env(safe-area-inset-bottom,0px),8px)] transition-colors ${
