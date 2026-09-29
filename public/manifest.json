@@ -1,17 +1,11 @@
 {
-  "short_name": "بلڈ پورٹل",
-  "name": "پاکستان لائیو بلڈ پورٹل - Pakistan Blood Portal",
+  "short_name": "Blood Network",
+  "name": "Pakistan Blood Network",
   "icons": [
     {
-      "src": "/blood-icon-192.png",
-      "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/blood-icon-512.png",
-      "type": "image/png",
-      "sizes": "512x512",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23e11d48'/%3E%3Cpath d='M256 80 C256 80 140 230 140 330 C140 400 192 450 256 450 C320 450 372 400 372 330 C372 230 256 80 256 80 Z' fill='white'/%3E%3Cpath d='M240 270 h32 v40 h-32 z M220 286 h72 v8 h-72 z' fill='%23e11d48'/%3E%3C/svg%3E",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512",
       "purpose": "any maskable"
     }
   ],
