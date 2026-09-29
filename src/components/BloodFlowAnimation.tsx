@@ -2,30 +2,30 @@ import React from 'react';
 
 export const BloodFlowAnimation: React.FC = () => {
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0 opacity-40 dark:opacity-30 transition-opacity">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0 opacity-45 dark:opacity-35 transition-opacity">
       <svg
         className="w-full h-full"
-        viewBox="0 0 1200 450"
-        preserveAspectRatio="xMidYMid slice"
+        viewBox="0 0 500 380"
+        preserveAspectRatio="xMidYMid meet"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
           {/* Blood Gradient */}
-          <linearGradient id="bloodPulse" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id="bloodPulseMob" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#e11d48" />
             <stop offset="50%" stopColor="#f43f5e" />
             <stop offset="100%" stopColor="#be123c" />
           </linearGradient>
 
           {/* Blood Glow Filter */}
-          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="4" result="blur" />
+          <filter id="glowMob" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
 
           {/* Liquid Bag Gradient */}
-          <linearGradient id="liquidGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <linearGradient id="liquidGradMob" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#fb7185" />
             <stop offset="60%" stopColor="#e11d48" />
             <stop offset="100%" stopColor="#881337" />
@@ -33,189 +33,173 @@ export const BloodFlowAnimation: React.FC = () => {
         </defs>
 
         <style>{`
-          /* خون کے بہاؤ کی حرکت */
-          @keyframes bloodStream {
-            0% { stroke-dashoffset: 600; }
+          @keyframes bloodStreamMob {
+            0% { stroke-dashoffset: 400; }
             100% { stroke-dashoffset: 0; }
           }
-          /* دل کی دھڑکن */
-          @keyframes heartbeat {
+          @keyframes heartbeatMob {
             0%, 100% { transform: scale(1); }
-            14% { transform: scale(1.18); }
-            28% { transform: scale(1.05); }
-            42% { transform: scale(1.22); }
+            14% { transform: scale(1.15); }
+            28% { transform: scale(1.04); }
+            42% { transform: scale(1.18); }
             70% { transform: scale(1); }
           }
-          /* خون کے قطرے گرنا */
-          @keyframes dropFalling {
+          @keyframes dropFallingMob {
             0% { transform: translateY(0); opacity: 0; }
             30% { opacity: 1; }
-            80% { transform: translateY(50px); opacity: 1; }
-            100% { transform: translateY(60px); opacity: 0; }
+            80% { transform: translateY(35px); opacity: 1; }
+            100% { transform: translateY(42px); opacity: 0; }
           }
-          /* بلڈ بیگ میں ہلکورے */
-          @keyframes liquidWave {
+          @keyframes liquidWaveMob {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
+            50% { transform: translateY(-2px); }
           }
-          /* ای سی جی نبض */
-          @keyframes ecgPulse {
-            0% { stroke-dashoffset: 400; opacity: 0.2; }
-            50% { opacity: 0.9; }
-            100% { stroke-dashoffset: 0; opacity: 0.2; }
+          @keyframes ecgPulseMob {
+            0% { stroke-dashoffset: 300; opacity: 0.15; }
+            50% { opacity: 0.6; }
+            100% { stroke-dashoffset: 0; opacity: 0.15; }
           }
 
-          .animate-stream {
-            stroke-dasharray: 24 16;
-            animation: bloodStream 2.5s linear infinite;
+          .animate-stream-mob {
+            stroke-dasharray: 18 12;
+            animation: bloodStreamMob 2s linear infinite;
           }
-          .animate-heart {
-            transform-origin: 1040px 220px;
-            animation: heartbeat 1.4s ease-in-out infinite;
+          .animate-heart-mob {
+            transform-origin: 435px 285px;
+            animation: heartbeatMob 1.3s ease-in-out infinite;
           }
-          .animate-drop-1 {
-            animation: dropFalling 1.8s ease-in infinite;
+          .animate-drop-mob {
+            animation: dropFallingMob 1.6s ease-in infinite;
           }
-          .animate-drop-2 {
-            animation: dropFalling 1.8s ease-in 0.9s infinite;
+          .animate-wave-mob {
+            animation: liquidWaveMob 2.5s ease-in-out infinite;
           }
-          .animate-wave {
-            animation: liquidWave 3s ease-in-out infinite;
-          }
-          .animate-ecg {
-            stroke-dasharray: 80 120;
-            animation: ecgPulse 3s linear infinite;
+          .animate-ecg-mob {
+            stroke-dasharray: 60 90;
+            animation: ecgPulseMob 2.5s linear infinite;
           }
         `}</style>
 
-        {/* ================= 1. BACKGROUND ECG LIFELINE ================= */}
+        {/* 1. BACKGROUND ECG LIFELINE */}
         <path
-          d="M 50,340 L 300,340 L 330,310 L 350,370 L 380,290 L 410,360 L 430,340 L 750,340 L 780,310 L 800,380 L 830,280 L 860,360 L 880,340 L 1150,340"
+          d="M 10,340 L 120,340 L 140,315 L 155,365 L 175,295 L 195,355 L 210,340 L 320,340 L 335,315 L 350,365 L 370,295 L 390,355 L 405,340 L 490,340"
           stroke="#f43f5e"
-          strokeWidth="1.5"
-          opacity="0.25"
-          className="animate-ecg"
+          strokeWidth="1.2"
+          opacity="0.2"
+          className="animate-ecg-mob"
         />
 
-        {/* ================= 2. LEFT: DONOR ARM & VEIN (ڈونر کا بازو اور رگ) ================= */}
-        <g id="donor-arm" transform="translate(60, 160)">
-          {/* بازو کا خوبصورت سلہوٹ */}
+        {/* 2. LEFT: DONOR ARM & NEEDLE (ڈونر کا بازو اور نیڈل) */}
+        <g id="donor-arm-mob" transform="translate(15, 140)">
+          {/* بازو */}
           <path
-            d="M 0,90 Q 60,85 100,75 Q 140,65 170,45 Q 185,35 195,15"
+            d="M 5,60 Q 30,55 50,45 Q 65,35 75,20"
             stroke="#94a3b8"
-            strokeWidth="24"
+            strokeWidth="14"
             strokeLinecap="round"
-            opacity="0.15"
+            opacity="0.25"
           />
-          {/* نیڈل پورٹ */}
-          <circle cx="180" cy="38" r="10" fill="#38bdf8" opacity="0.8" />
-          <circle cx="180" cy="38" r="5" fill="#ffffff" />
-          {/* لیبل */}
-          <text x="50" y="45" fill="#f43f5e" fontSize="13" fontWeight="900" letterSpacing="1">
-            عطیہ خون (DONOR)
+          {/* کینولا / نیڈل */}
+          <circle cx="70" cy="25" r="6" fill="#38bdf8" />
+          <circle cx="70" cy="25" r="3" fill="#ffffff" />
+          {/* ڈونر لیبل */}
+          <text x="5" y="15" fill="#f43f5e" fontSize="10" fontWeight="900">
+            DONOR (ڈونر)
           </text>
         </g>
 
-        {/* ٹیوب 1: ڈونر سے بلڈ بیگ تک شفاف نالی */}
+        {/* ٹیوب 1: ڈونر سے بیگ تک */}
         <path
-          d="M 240,198 C 320,198 380,240 480,180"
+          d="M 90,165 C 140,165 170,200 215,160"
           stroke="#cbd5e1"
-          strokeWidth="8"
+          strokeWidth="5"
           strokeLinecap="round"
           opacity="0.3"
         />
-        {/* ٹیوب 1 کے اندر خون کا بہاؤ */}
         <path
-          d="M 240,198 C 320,198 380,240 480,180"
-          stroke="url(#bloodPulse)"
-          strokeWidth="5"
+          d="M 90,165 C 140,165 170,200 215,160"
+          stroke="url(#bloodPulseMob)"
+          strokeWidth="3.5"
           strokeLinecap="round"
-          filter="url(#glow)"
-          className="animate-stream"
+          filter="url(#glowMob)"
+          className="animate-stream-mob"
         />
 
-        {/* ================= 3. CENTER: BLOOD BAG (بلڈ بیگ) ================= */}
-        <g id="blood-bag" transform="translate(480, 100)">
-          {/* بیگ کا اوپر والا ہینگر */}
-          <rect x="55" y="0" width="30" height="15" rx="5" fill="#64748b" opacity="0.4" />
-          <line x1="70" y1="15" x2="70" y2="40" stroke="#64748b" strokeWidth="4" opacity="0.4" />
+        {/* 3. CENTER: COMPACT BLOOD BAG (درمیان میں پرفیکٹ بلڈ بیگ) */}
+        <g id="blood-bag-mob" transform="translate(215, 105)">
+          {/* بیگ ہینگر */}
+          <rect x="28" y="0" width="18" height="10" rx="3" fill="#64748b" opacity="0.5" />
+          <line x1="37" y1="10" x2="37" y2="25" stroke="#64748b" strokeWidth="3" opacity="0.5" />
 
-          {/* ٹرانسپیرنٹ بیگ کی باڈی */}
+          {/* ٹرانسپیرنٹ باڈی */}
           <rect
-            x="20"
-            y="40"
-            width="100"
-            height="150"
-            rx="18"
+            x="10"
+            y="25"
+            width="55"
+            height="85"
+            rx="12"
             fill="#ffffff"
-            fillOpacity="0.07"
+            fillOpacity="0.1"
             stroke="#e2e8f0"
-            strokeWidth="3"
-            strokeOpacity="0.4"
+            strokeWidth="2"
+            strokeOpacity="0.5"
           />
 
-          {/* بیگ کے اندر بھرا ہوا خون */}
+          {/* بیگ کا خون */}
           <path
-            d="M 23,110 Q 50,105 70,110 T 117,110 L 117,175 Q 117,187 104,187 L 36,187 Q 23,187 23,175 Z"
-            fill="url(#liquidGrad)"
-            filter="url(#glow)"
-            className="animate-wave"
+            d="M 12,65 Q 27,62 37,65 T 63,65 L 63,98 Q 63,108 55,108 L 20,108 Q 12,108 12,98 Z"
+            fill="url(#liquidGradMob)"
+            filter="url(#glowMob)"
+            className="animate-wave-mob"
           />
 
-          {/* خون کے گرتے ہوئے قطرے */}
-          <circle cx="70" cy="55" r="4" fill="#f43f5e" className="animate-drop-1" />
-          <circle cx="70" cy="55" r="3.5" fill="#e11d48" className="animate-drop-2" />
+          {/* گرتا ہوا قطرہ */}
+          <circle cx="37" cy="35" r="2.8" fill="#f43f5e" className="animate-drop-mob" />
 
-          {/* بلڈ بیگ پر میڈیکل لیبل */}
-          <rect x="35" y="65" width="70" height="35" rx="4" fill="#ffffff" fillOpacity="0.85" />
-          <line x1="42" y1="75" x2="98" y2="75" stroke="#e11d48" strokeWidth="2.5" />
-          <line x1="42" y1="84" x2="85" y2="84" stroke="#64748b" strokeWidth="2" />
-          <line x1="42" y1="91" x2="75" y2="91" stroke="#94a3b8" strokeWidth="1.5" />
-          
-          {/* بلڈ گروپ سمبل */}
-          <circle cx="92" cy="85" r="8" fill="#e11d48" />
-          <text x="89" y="88" fill="#ffffff" fontSize="9" fontWeight="900">+</text>
+          {/* بلڈ لیبل */}
+          <rect x="18" y="40" width="38" height="20" rx="3" fill="#ffffff" fillOpacity="0.8" />
+          <line x1="22" y1="46" x2="52" y2="46" stroke="#e11d48" strokeWidth="1.5" />
+          <line x1="22" y1="52" x2="45" y2="52" stroke="#64748b" strokeWidth="1.2" />
+          <circle cx="48" cy="52" r="4.5" fill="#e11d48" />
+          <text x="46" y="54" fill="#ffffff" fontSize="6" fontWeight="900">+</text>
         </g>
 
-        {/* ٹیوب 2: بلڈ بیگ سے دھڑکتے دل تک نالی */}
+        {/* ٹیوب 2: بلڈ بیگ سے دل تک */}
         <path
-          d="M 550,290 C 650,330 800,260 980,225"
+          d="M 252,215 C 300,240 360,200 405,275"
           stroke="#cbd5e1"
-          strokeWidth="8"
+          strokeWidth="5"
           strokeLinecap="round"
           opacity="0.3"
         />
-        {/* ٹیوب 2 کے اندر خون کا بہاؤ */}
         <path
-          d="M 550,290 C 650,330 800,260 980,225"
-          stroke="url(#bloodPulse)"
-          strokeWidth="5"
+          d="M 252,215 C 300,240 360,200 405,275"
+          stroke="url(#bloodPulseMob)"
+          strokeWidth="3.5"
           strokeLinecap="round"
-          filter="url(#glow)"
-          className="animate-stream"
+          filter="url(#glowMob)"
+          className="animate-stream-mob"
         />
 
-        {/* ================= 4. RIGHT: PULSING HEART (زندگی کا دھڑکتا دل) ================= */}
-        <g id="beating-heart" className="animate-heart">
-          {/* دل کا سرخ گھیرا اور گلو */}
+        {/* 4. RIGHT: PULSING HEART (دائیں طرف دھڑکتا ہوا دل) */}
+        <g id="beating-heart-mob" className="animate-heart-mob">
+          {/* دل */}
           <path
-            d="M 1040,185 C 1040,165 1015,150 995,170 C 970,195 970,225 1040,285 C 1110,225 1110,195 1085,170 C 1065,150 1040,165 1040,185 Z"
-            fill="url(#liquidGrad)"
-            filter="url(#glow)"
+            d="M 435,265 C 435,250 417,238 402,253 C 384,272 384,295 435,340 C 486,295 486,272 468,253 C 453,238 435,250 435,265 Z"
+            fill="url(#liquidGradMob)"
+            filter="url(#glowMob)"
           />
-
-          {/* دل کی چمک (Shine/Reflection) */}
+          {/* دل کی چمک */}
           <path
-            d="M 1005,175 C 995,185 995,200 1010,210"
+            d="M 410,257 C 402,265 402,276 414,284"
             stroke="#ffffff"
-            strokeWidth="3"
+            strokeWidth="2.2"
             strokeLinecap="round"
             opacity="0.6"
           />
-
-          {/* زندگی بخش نبض کا متن */}
-          <text x="1000" y="325" fill="#f43f5e" fontSize="13" fontWeight="900" letterSpacing="1">
-            نئی زندگی (SAVED LIFE)
+          {/* لائف لیبل */}
+          <text x="390" y="360" fill="#f43f5e" fontSize="10" fontWeight="900">
+            SAVED LIFE (زندگی)
           </text>
         </g>
       </svg>
