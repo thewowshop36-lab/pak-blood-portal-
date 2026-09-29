@@ -21,6 +21,7 @@ import { DigitalDonorCardModal } from './components/DigitalDonorCardModal';
 import { PAKISTAN_BLOOD_BANKS } from './data/bloodBanks';
 import { ThalassemiaPage } from './components/ThalassemiaPage';
 import { BloodFlowAnimation } from './components/BloodFlowAnimation';
+import { BloodDonationVisualGuide } from './components/BloodDonationVisualGuide';
 export type TabType = 'home' | 'donors' | 'requests' | 'helplines' | 'guide';
 
 const helplinesList = [
@@ -1021,6 +1022,8 @@ const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
                   : 'O-Negative is the universal donor suitable for anyone in emergencies. AB-Positive is the universal recipient.'}
               </div>
             </div>
+            {/* تصویری اور اینیمیٹڈ بلڈ ڈونیشن جرنی گائیڈ */}
+        <BloodDonationVisualGuide lang={lang} theme={theme} />
           </div>
         )}
       </main>
