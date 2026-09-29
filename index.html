@@ -3,28 +3,135 @@
   <head>
     <script src="https://pl31440622.profitableratecpmnetwork.com/f4/d3/75/f4d375b95788239df95a32094b290308.js"></script>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pakistan Blood Donor Network</title>
-        <!-- PWA Web App Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Pakistan Blood Network</title>
+    <!-- PWA Web App Meta Tags -->
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#e11d48" />
+    <meta name="theme-color" content="#020617" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="بلڈ پورٹل" />
-    <meta name="keywords" content="Pakistan Blood Donor Network, پاکستان بلڈ ڈونر نیٹ ورک, Emergency Blood Donors, بلڈ ڈونرز, Online Blood Bank Pakistan, خون کا عطیہ">
+    <meta name="apple-mobile-web-app-title" content="Blood Network" />
 
-    <meta name="description" content="پاکستان بلڈ ڈونر نیٹ ورک - لائیو بلڈ ڈونرز، ایمرجنسی الرٹس اور فوری واٹس ایپ رابطہ" />
+    <meta name="keywords" content="Pakistan Blood Donor Network, پاکستان بلڈ ڈونر نیٹ ورک, Emergency Blood Donors, بلڈ ڈونرز" />
+    <meta name="description" content="پاکستان بلڈ ڈونر نیٹ ورک - لائیو بلڈ ڈونرز ایمرجنسی الرٹس اور فوری واٹس ایپ رابطہ" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      /* فوری اور ڈائریکٹ اینیمیشن اسٹائلز */
+      #pbn-direct-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 999999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: 32px 20px;
+        background: radial-gradient(circle at center, #881337 0%, #1e050f 55%, #020617 100%);
+        color: #ffffff;
+        font-family: 'Noto Sans Arabic', system-ui, sans-serif;
+        transition: opacity 0.5s ease-out, visibility 0.5s;
+      }
+      @keyframes pbnHeartbeat {
+        0%, 100% { transform: scale(1); }
+        14% { transform: scale(1.15); }
+        28% { transform: scale(1.05); }
+        42% { transform: scale(1.2); }
+        70% { transform: scale(1); }
+      }
+      @keyframes pbnGlow {
+        0%, 100% { filter: drop-shadow(0 0 15px rgba(225,29,72,0.4)); }
+        50% { filter: drop-shadow(0 0 35px rgba(225,29,72,0.9)); }
+      }
+      @keyframes pbnEcg {
+        0% { stroke-dashoffset: 200; }
+        100% { stroke-dashoffset: 0; }
+      }
+      .pbn-heart {
+        animation: pbnHeartbeat 1.3s infinite ease-in-out;
+        transform-origin: center;
+      }
+      .pbn-glow-box {
+        animation: pbnGlow 2s infinite ease-in-out;
+      }
+      .pbn-ecg-line {
+        stroke-dasharray: 25 15;
+        animation: pbnEcg 1.8s linear infinite;
+      }
+    </style>
   </head>
-  <body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-rose-600 selection:text-white antialiased">
+  <body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-rose-600 selection:text-white antialiased m-0 p-0 overflow-x-hidden">
+    
+    <!-- فوری ڈائریکٹ ایموشنل اسپلش اسکرین (ایپ کھلتے ہی 0 سیکنڈ میں آئے گی) -->
+    <div id="pbn-direct-splash">
+      <div style="padding-top: 15px;">
+        <span style="background: rgba(225,29,72,0.2); color: #fda4af; border: 1px solid rgba(225,29,72,0.4); padding: 5px 14px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 1px;">
+          🇵🇰 PAKISTAN BLOOD NETWORK
+        </span>
+      </div>
+
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center; margin: auto 0;">
+        <!-- بڑا سرخ متحرک قطرہ اور میڈیکل پلس -->
+        <div class="pbn-glow-box" style="margin-bottom: 20px;">
+          <svg class="pbn-heart" width="115" height="115" viewBox="0 0 200 200">
+            <defs>
+              <linearGradient id="dropRedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff3366" />
+                <stop offset="60%" stop-color="#e11d48" />
+                <stop offset="100%" stop-color="#881337" />
+              </linearGradient>
+            </defs>
+            <path d="M 100,15 C 100,15 30,105 30,145 C 30,182 62,200 100,200 C 138,200 170,182 170,145 C 170,105 100,15 100,15 Z" fill="url(#dropRedGrad)" />
+            <rect x="92" y="118" width="16" height="46" rx="4" fill="#ffffff" />
+            <rect x="77" y="133" width="46" height="16" rx="4" fill="#ffffff" />
+          </svg>
+        </div>
+
+        <!-- ای سی جی لائف لائن -->
+        <svg width="180" height="28" viewBox="0 0 160 28" style="margin-bottom: 16px;">
+          <path d="M 0,14 L 35,14 L 45,4 L 55,24 L 70,0 L 85,26 L 95,14 L 160,14" fill="none" stroke="#fb7185" stroke-width="3" stroke-linecap="round" class="pbn-ecg-line" />
+        </svg>
+
+        <h1 style="font-size: 24px; font-weight: 900; margin: 0 0 6px 0; color: #ffffff;">
+          پاکستان بلڈ نیٹ ورک
+        </h1>
+        <p style="color: #fbbf24; font-size: 15px; font-weight: 700; margin: 0 0 8px 0;">
+          "وَمَنْ أَحْيَاهَا فَكَأَنَّمَا أَحْيَا النَّاسَ جَمِيعًا"
+        </p>
+        <p style="color: #fecdd3; font-size: 12px; margin: 0; max-width: 280px; line-height: 1.6;">
+          ایک بوتل خون، کسی کے گھر کا بجھتا ہوا چراغ جلا سکتی ہے
+        </p>
+      </div>
+
+      <div style="padding-bottom: 20px; font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 6px;">
+        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+        <span>مفت اور فی سبیل اللہ انسانیت کی خدمت...</span>
+      </div>
+    </div>
+
+    <!-- ری ایکٹ روٹ -->
     <div id="root"></div>
+
     <script type="module" src="/src/main.tsx"></script>
+
     <script>
+      // جیسے ہی پیج لوڈ ہوگا 2 سیکنڈ بعد سموتھ فیڈ آؤٹ
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var splash = document.getElementById('pbn-direct-splash');
+          if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(function() {
+              splash.style.display = 'none';
+            }, 500);
+          }
+        }, 2200);
+      });
+
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
+        navigator.serviceWorker.register('/sw.js').catch(function() {});
       }
     </script>
   </body>
