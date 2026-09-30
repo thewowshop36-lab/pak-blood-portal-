@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.vercel.pak_blood_portal.twa",
+      "sha256_cert_fingerprints": [
+        "11:3A:84:1B:C3:18:D7:0C:73:EA:E1:A2:43:21:B0:7C:7E:AC:50:D5:6F:22:54:71:C3:20:7C:79:64:5A:D3:07"
+      ]
+    }
+  }
+]
