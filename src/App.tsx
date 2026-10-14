@@ -25,6 +25,7 @@ import { BloodDonationVisualGuide } from './components/BloodDonationVisualGuide'
 import { InstallAppBanner } from './components/InstallAppBanner';
 import { AppSplashScreen } from './components/AppSplashScreen';
 import { FloatingShareButton } from './components/FloatingShareButton';
+import { GuideAnimatedVideos } from './components/GuideAnimatedVideos';
 export type TabType = 'home' | 'donors' | 'requests' | 'helplines' | 'guide';
 
 const helplinesList = [
@@ -958,32 +959,33 @@ const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
           </div>
         )}
 
-        {/* PAGE 5: GUIDE (بلڈ گائیڈ و مطابقت) */}
+        {/* PAGE 5: GUIDE (بلڈ گائیڈ) */}
         {activeTab === 'guide' && (
-          <div className="space-y-6">
-            <div>
-              <h3 className={`text-lg sm:text-xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {lang === 'ur' ? 'بلڈ گروپ مطابقت چارٹ (Blood Compatibility Chart)' : 'Blood Group Compatibility Guide'}
-              </h3>
-              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                {lang === 'ur' ? 'معلوم کریں کہ آپ کا بلڈ گروپ کس کو خون دے سکتا ہے اور کس سے لے سکتا ہے' : 'Discover who you can safely donate blood to and receive from'}
-              </p>
-            </div>
+          <div className="space-y-8">
+            {/* Professional Video Academy & Admin Video Manager */}
+            <GuideAnimatedVideos
+              lang={lang}
+              theme={theme}
+            />
 
             <div className={`p-6 rounded-3xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-              <span className="text-xs font-bold text-slate-400 block mb-3">
-                {lang === 'ur' ? 'بلڈ گروپ منتخب کریں:' : 'Select Blood Group:'}
-              </span>
+              <h3 className={`text-lg sm:text-xl font-black mb-2 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                <span>📖</span>
+                <span>{lang === 'ur' ? 'خون کی مطابقت کا چارٹ اور مکمل میڈیکل گائیڈ' : 'Blood Compatibility & Comprehensive Medical Guide'}</span>
+              </h3>
+              <p className={`text-xs mb-5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                {lang === 'ur' ? 'اپنا بلڈ گروپ منتخب کریں اور معلوم کریں کہ آپ کس کس کو خون دے سکتے ہیں اور کس سے لے سکتے ہیں۔' : 'Select blood group to view compatibility matrix.'}
+              </p>
 
               <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 mb-6">
                 {Object.keys(bloodCompatibility).map((bg) => (
                   <button
                     key={bg}
                     onClick={() => setGuideSelectedBlood(bg)}
-                    className={`py-2 rounded-xl text-xs font-black transition cursor-pointer ${
+                    className={`py-2.5 rounded-xl font-black text-sm transition cursor-pointer ${
                       guideSelectedBlood === bg
-                        ? 'bg-rose-600 text-white shadow-md'
-                        : isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
+                        : isDark ? 'bg-slate-950 text-slate-300 hover:bg-slate-800' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
                     {bg}
@@ -991,45 +993,60 @@ const [fulfilledReqIds, setFulfilledReqIds] = useState<string[]>(() => {
                 ))}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-950 border-slate-800' : 'bg-emerald-50/50 border-emerald-200'}`}>
-                  <h4 className="text-sm font-black text-emerald-600 mb-2 flex items-center gap-1.5">
-                    <span>🩸</span>
-                    <span>{guideSelectedBlood} {lang === 'ur' ? 'ان گروپس کو خون دے سکتا ہے (Give To):' : 'Can Give Blood To:'}</span>
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {giveList.map((g) => (
-                      <span key={g} className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-xs font-black shadow-xs">
+              <div className={`p-5 rounded-2xl border space-y-4 ${isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-black text-rose-500">{guideSelectedBlood}</span>
+                  <span className="text-xs bg-rose-500/10 text-rose-500 px-3 py-1 rounded-full font-bold">
+                    {guideInfo.tagUrdu}
+                  </span>
+                </div>
+
+                <div>
+                  <span className="text-xs font-bold text-emerald-500 block mb-1.5">
+                    ✓ {lang === 'ur' ? `${guideSelectedBlood} کس کس کو خون دے سکتا ہے:` : 'Can Donate To:'}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {guideInfo.canGiveTo.map((g) => (
+                      <span key={g} className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-xl text-xs font-bold">
                         {g}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-950 border-slate-800' : 'bg-rose-50/50 border-rose-200'}`}>
-                  <h4 className="text-sm font-black text-rose-600 mb-2 flex items-center gap-1.5">
-                    <span>🤲</span>
-                    <span>{guideSelectedBlood} {lang === 'ur' ? 'ان گروپس سے خون لے سکتا ہے (Receive From):' : 'Can Receive Blood From:'}</span>
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {receiveList.map((r) => (
-                      <span key={r} className="px-3 py-1 bg-rose-600 text-white rounded-lg text-xs font-black shadow-xs">
-                        {r}
+                <div>
+                  <span className="text-xs font-bold text-sky-500 block mb-1.5">
+                    ✓ {lang === 'ur' ? `${guideSelectedBlood} کس کس سے خون لے سکتا ہے:` : 'Can Receive From:'}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {guideInfo.canReceiveFrom.map((g) => (
+                      <span key={g} className="bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30 px-3 py-1 rounded-xl text-xs font-bold">
+                        {g}
                       </span>
                     ))}
                   </div>
                 </div>
               </div>
-
-              <div className="mt-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs leading-relaxed text-amber-500 font-medium">
-                💡 <strong>{lang === 'ur' ? 'اہم سائنسی معلومات:' : 'Key Scientific Fact:'}</strong>{' '}
-                {lang === 'ur'
-                  ? 'او نیگیٹو (O-) یونیورسل ڈونر کہلاتا ہے کیونکہ اس کا خون ہر بلڈ گروپ کے مریض کو لگایا جا سکتا ہے۔ جبکہ اے بی پوزیٹو (AB+) یونیورسل ریسیور ہے جو ہر گروپ سے خون حاصل کر سکتا ہے۔'
-                  : 'O-Negative is the universal donor suitable for anyone in emergencies. AB-Positive is the universal recipient.'}
-              </div>
             </div>
-            {/* تصویری اور اینیمیٹڈ بلڈ ڈونیشن جرنی گائیڈ */}
-        <BloodDonationVisualGuide lang={lang} theme={theme} />
+
+            {/* 4 Steps of Blood Donation */}
+            <BloodDonationSteps
+              lang={lang}
+              theme={theme}
+              onRegisterClick={() => setShowRegisterModal(true)}
+            />
+
+            {/* Donor Eligibility & Medical Guidelines */}
+            <DonorEligibilityGuidelines
+              lang={lang}
+              theme={theme}
+            />
+
+            {/* Myths vs Scientific Facts */}
+            <MythsVsFacts
+              lang={lang}
+              theme={theme}
+            />
           </div>
         )}
       </main>
