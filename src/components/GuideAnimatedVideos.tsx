@@ -89,19 +89,16 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
   const isDark = theme === 'dark';
   const [activeVideo, setActiveVideo] = useState<GuideVideoItem | null>(null);
 
-  // Admin state
   const [isAdminMode, setIsAdminMode] = useState<boolean>(() => {
     return localStorage.getItem('portal_admin_active') === 'true';
   });
   const [adminPassInput, setAdminPassInput] = useState('');
   const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
 
-  // Form state for adding video
   const [videoTitle, setVideoTitle] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [formError, setFormError] = useState('');
 
-  // Loaded videos (default + admin saved in localStorage)
   const [videosList, setVideosList] = useState<GuideVideoItem[]>(() => {
     try {
       const saved = localStorage.getItem(CUSTOM_VIDEOS_KEY);
@@ -192,7 +189,6 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
 
   return (
     <div className="w-full space-y-6">
-      {/* Animated Moving Header Banner */}
       <div className="relative overflow-hidden bg-gradient-to-r from-rose-900 via-red-800 to-rose-950 rounded-3xl p-6 md:p-8 text-white shadow-xl border border-rose-600/45">
         <div className="absolute -right-10 -top-10 w-48 h-48 bg-rose-500/20 rounded-full blur-3xl animate-pulse" />
         <div className="absolute -left-10 -bottom-10 w-48 h-48 bg-amber-500/20 rounded-full blur-3xl animate-ping" />
@@ -240,7 +236,6 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
         </div>
       </div>
 
-      {/* Admin Video Addition Panel (ONLY visible to Admin) */}
       {isAdminMode && (
         <div className={`p-6 rounded-3xl border-2 border-dashed border-emerald-500/60 shadow-xl ${isDark ? 'bg-slate-900/90' : 'bg-emerald-50/50'}`}>
           <div className="flex items-center justify-between mb-3 pb-3 border-b border-emerald-500/30">
@@ -300,7 +295,6 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
         </div>
       )}
 
-      {/* Videos Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {videosList.map((video) => (
           <div
@@ -375,7 +369,6 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
         ))}
       </div>
 
-      {/* Admin Login Modal */}
       {showAdminLoginModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
           <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl text-slate-100">
@@ -394,7 +387,7 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
             <form onSubmit={handleAdminLogin} className="mt-5 space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-1">
-                  {lang === 'ur' ? 'پاسورڈ (ڈیفالٹ: Allahditta1$)' : 'Password (Default: Allahditta1$)'}
+                  {lang === 'ur' ? 'پاسورڈ (ڈیفالٹ: 1122)' : 'Password (Default: 1122)'}
                 </label>
                 <input
                   type="password"
@@ -426,7 +419,6 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
         </div>
       )}
 
-      {/* Video Modal Player Popup */}
       {activeVideo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
           <div className="relative w-full max-w-3xl bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl text-white">
