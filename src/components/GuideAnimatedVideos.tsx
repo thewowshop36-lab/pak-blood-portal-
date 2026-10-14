@@ -394,7 +394,7 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
             <form onSubmit={handleAdminLogin} className="mt-5 space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-1">
-                  {lang === 'ur' ? 'پاسورڈ (ڈیفالٹ: 1122)' : 'Password (Default: 1122)'}
+                  {lang === 'ur' ? 'پاسورڈ (ڈیفالٹ: Allahditta1$)' : 'Password (Default: Allahditta1$)'}
                 </label>
                 <input
                   type="password"
