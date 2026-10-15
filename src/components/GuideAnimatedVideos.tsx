@@ -99,6 +99,7 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
   const [videoTitle, setVideoTitle] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [formError, setFormError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   // Videos list (Default + Supabase cloud custom videos)
@@ -123,15 +124,15 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
             id: row.id,
             titleUrdu: row.patient_name || 'معلوماتی ویڈیو',
             titleEn: row.patient_name || 'Guide Video',
-            descUrdu: row.notes || 'ایڈمن کی طرف سے شامل کی گئی معلوماتی ویڈیو',
-            descEn: row.notes || 'Admin added guide video',
+            descUrdu: 'ایڈمن کی طرف سے تصدیق شدہ معلوماتی ویڈیو',
+            descEn: 'Admin verified medical guide video',
             duration: '05:00',
             specialistUrdu: row.contact || 'پاکستان بلڈ پورٹل ایڈمن',
             specialistEn: row.contact || 'Pakistan Blood Portal Admin',
             thumbnail: `https://img.youtube.com/vi/${yId}/hqdefault.jpg`,
             youtubeId: yId,
-            categoryUrdu: row.city || 'خصوصی گائیڈ',
-            categoryEn: row.city || 'Special Guide',
+            categoryUrdu: 'خصوصی گائیڈ',
+            categoryEn: 'Special Guide',
             isAdminAdded: true,
           };
         });
@@ -144,9 +145,14 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
   };
 
   const extractYoutubeId = (url: string): string | null => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null;
+    if (!url) return null;
+    const cleanUrl = url.trim();
+    // Direct 11-char ID
+    if (/^[a-zA-Z0-9_-]{11}$/.test(cleanUrl)) return cleanUrl;
+    // Standard, shorts, embed, live, mobile URLs
+    const regExp = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/|live\/))([a-zA-Z0-9_-]{11})/i;
+    const match = cleanUrl.match(regExp);
+    return match ? match[1] : null;
   };
 
   const handleAdminLogin = (e: React.FormEvent) => {
@@ -157,21 +163,22 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
       localStorage.setItem('portal_admin_active', 'true');
       setShowAdminLoginModal(false);
       setAdminPassInput('');
-      alert(lang === 'ur' ? 'ایڈمن موڈ کامیابی سے فعال ہو گیا ہے!' : 'Admin mode activated successfully!');
+      setSuccessMsg(lang === 'ur' ? 'ایڈمن موڈ کامیابی سے فعال ہو گیا ہے!' : 'Admin mode activated successfully!');
     } else {
-      alert(lang === 'ur' ? 'غلط پاسورڈ! برائے مہربانی درست ایڈمن پاسورڈ درج کریں۔' : 'Incorrect password! Please enter valid admin password.');
+      setFormError(lang === 'ur' ? 'غلط پاسورڈ! برائے مہربانی درست ایڈمن پاسورڈ درج کریں۔' : 'Incorrect password! Please enter valid admin password.');
     }
   };
 
   const handleLogoutAdmin = () => {
     setIsAdminMode(false);
     localStorage.removeItem('portal_admin_active');
-    alert(lang === 'ur' ? 'ایڈمن موڈ بند کر دیا گیا ہے۔' : 'Admin mode logged out.');
+    setSuccessMsg(lang === 'ur' ? 'ایڈمن موڈ بند کر دیا گیا ہے۔' : 'Admin mode logged out.');
   };
 
   const handleAddVideo = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
+    setSuccessMsg('');
 
     if (!videoTitle.trim()) {
       setFormError(lang === 'ur' ? 'براہ کرم ویڈیو کا عنوان درج کریں۔' : 'Please enter video title.');
@@ -180,35 +187,39 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
 
     const yId = extractYoutubeId(youtubeUrl.trim());
     if (!yId) {
-      setFormError(lang === 'ur' ? 'براہ کرم یوٹیوب کا درست لنک (URL) درج کریں۔' : 'Please enter a valid YouTube video URL.');
+      setFormError(
+        lang === 'ur'
+          ? 'براہ کرم یوٹیوب کا درست لنک (URL) یا ویڈیو آئی ڈی درج کریں۔ (مثال: https://www.youtube.com/watch?v=... یا Shorts لنک)'
+          : 'Please enter a valid YouTube video URL or 11-digit video ID.'
+      );
       return;
     }
 
     setSubmitting(true);
 
     try {
-      // Save to Supabase requests table so all users globally can see it
+      // Save to Supabase requests table using only existing columns
       const payload = {
         patient_name: videoTitle.trim(),
         blood_group: 'O+',
-        province: 'Punjab',
-        city: 'مخصوص گائیڈ / Guide',
+        province: 'پنجاب / Punjab',
+        city: 'معلوماتی گائیڈ / Guide',
         hospital: yId, // storing youtubeId in hospital column
         contact: 'پاکستان بلڈ پورٹل ایڈمن',
-        urgency: 'ADMIN_VIDEO',
-        notes: 'ایڈمن کی طرف سے شامل کی گئی معلوماتی ویڈیو'
+        urgency: 'ADMIN_VIDEO'
       };
 
       const { data, error } = await supabase.from('requests').insert([payload]).select();
 
       if (error) {
         console.error("Supabase video insert error:", error);
-        setFormError(error.message);
+        setFormError(lang === 'ur' ? `پبلش کرنے میں خرابی پیش آئی: ${error.message}` : `Publish error: ${error.message}`);
       } else {
-        alert(lang === 'ur' ? 'ویڈیو کامیابی سے تمام یوزرز کے لیے پبلش کر دی گئی ہے!' : 'Video published successfully for all users!');
+        setSuccessMsg(lang === 'ur' ? '🎉 مبارک ہو! ویڈیو کامیابی سے تمام یوزرز کے لیے پبلش ہو چکی ہے اور نیچے لسٹ میں شامل ہو گئی ہے۔' : 'Video published successfully for all users!');
         setVideoTitle('');
         setYoutubeUrl('');
-        fetchCloudAdminVideos();
+        setFormError('');
+        await fetchCloudAdminVideos();
       }
     } catch (err: any) {
       console.error(err);
@@ -224,7 +235,7 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
       try {
         await supabase.from('requests').delete().eq('id', id);
         setVideosList((prev) => prev.filter((v) => v.id !== id));
-        alert(lang === 'ur' ? 'ویڈیو حذف کر دی گئی ہے۔' : 'Video deleted successfully.');
+        setSuccessMsg(lang === 'ur' ? 'ویڈیو حذف کر دی گئی ہے۔' : 'Video deleted successfully.');
       } catch (err) {
         console.error(err);
       }
@@ -248,33 +259,22 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
 
               {isAdminMode ? (
                 <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => {
-                      const newPass = prompt(lang === 'ur' ? 'نیا ایڈمن پاسورڈ درج کریں:' : 'Enter new admin password:');
-                      if (newPass && newPass.trim().length >= 4) {
-                        localStorage.setItem('portal_admin_password', newPass.trim());
-                        alert(lang === 'ur' ? 'ایڈمن پاسورڈ کامیابی سے تبدیل کر دیا گیا ہے!' : 'Admin password successfully updated!');
-                      } else if (newPass) {
-                        alert(lang === 'ur' ? 'پاسورڈ کم از کم 4 ہندسوں یا حروف کا ہونا چاہیے۔' : 'Password must be at least 4 characters.');
-                      }
-                    }}
-                    className="bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-md transition cursor-pointer"
-                  >
-                    {lang === 'ur' ? '🔑 پاسورڈ تبدیل کریں' : '🔑 Change Password'}
-                  </button>
+                  <span className="px-3 py-1 rounded-full text-[11px] font-black bg-emerald-500 text-white shadow-md">
+                    {lang === 'ur' ? 'ایڈمن کنٹرول ایکٹو' : 'Admin Control Active'}
+                  </span>
                   <button
                     onClick={handleLogoutAdmin}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-black px-3 py-1 rounded-full shadow-md transition cursor-pointer"
+                    className="text-[11px] bg-red-600 hover:bg-red-700 text-white font-bold px-2.5 py-1 rounded-full transition shadow cursor-pointer"
                   >
-                    {lang === 'ur' ? '🛡️ لاگ آؤٹ' : '🛡️ Logout'}
+                    {lang === 'ur' ? 'لاگ آؤٹ' : 'Logout'}
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setShowAdminLoginModal(true)}
-                  className="bg-white/10 hover:bg-white/20 text-rose-200 text-[11px] font-bold px-3 py-1 rounded-full border border-white/20 transition cursor-pointer"
+                  className="text-[11px] bg-white/10 hover:bg-white/20 text-white font-bold px-3 py-1 rounded-full border border-white/20 transition cursor-pointer"
                 >
-                  {lang === 'ur' ? '⚙️ ایڈمن لاگ ان' : '⚙️ Admin Login'}
+                  🔒 {lang === 'ur' ? 'ایڈمن لاگ ان' : 'Admin Login'}
                 </button>
               )}
             </div>
@@ -336,13 +336,41 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
                 required
                 value={youtubeUrl}
                 onChange={(e) => setYoutubeUrl(e.target.value)}
-                placeholder="https://www.youtube.com/watch?v=..."
+                placeholder="https://www.youtube.com/watch?v=... یا https://youtu.be/..."
                 className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
               />
             </div>
 
             {formError && (
-              <p className="text-xs text-red-400 font-bold">{formError}</p>
+              <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-300 text-xs font-bold flex items-center justify-between gap-2">
+                <span className="flex items-center gap-2">
+                  <span>⚠️</span>
+                  <span>{formError}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setFormError('')}
+                  className="text-red-300 hover:text-white text-sm px-1"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {successMsg && (
+              <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center justify-between gap-2">
+                <span className="flex items-center gap-2">
+                  <span>✅</span>
+                  <span>{successMsg}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSuccessMsg('')}
+                  className="text-emerald-300 hover:text-white text-sm px-1"
+                >
+                  ✕
+                </button>
+              </div>
             )}
 
             <div className="flex justify-end pt-1">
@@ -389,20 +417,17 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-
                 <div className="absolute top-3 right-3">
                   <span className="bg-rose-600 text-white font-black text-[10px] px-3 py-1 rounded-full shadow-md">
                     {lang === 'ur' ? video.categoryUrdu : video.categoryEn}
                   </span>
                 </div>
-
                 <div className="absolute bottom-3 left-3">
                   <span className="bg-black/70 backdrop-blur-md text-white font-bold text-[11px] px-2.5 py-1 rounded-xl flex items-center gap-1 border border-white/20">
                     <span>⏱️</span>
                     <span>{video.duration}</span>
                   </span>
                 </div>
-
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="w-14 h-14 rounded-full bg-rose-600/90 text-white flex items-center justify-center text-xl shadow-2xl group-hover:scale-110 transition-transform shadow-rose-600/50">
                     ▶
@@ -516,7 +541,7 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
                 </span>
               </div>
               <button
-                onClick={() => setActiveVideo.call(null, null) || setActiveVideo(null)}
+                onClick={() => setActiveVideo(null)}
                 className="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl font-bold transition cursor-pointer self-end sm:self-auto"
               >
                 {lang === 'ur' ? 'بند کریں' : 'Close Player'}
