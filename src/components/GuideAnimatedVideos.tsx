@@ -125,7 +125,7 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
       setAdminPassInput('');
       alert(lang === 'ur' ? 'ایڈمن موڈ کامیابی سے فعال ہو گیا ہے!' : 'Admin mode activated successfully!');
     } else {
-      alert(lang === 'ur' ? 'غلط پاسورڈ! (ڈیفالٹ پاسورڈ: 1122)' : 'Incorrect password! (Default password: 1122)');
+      alert(lang === 'ur' ? 'غلط پاسورڈ! (ڈیفالٹ پاسورڈ: Allahditta1$)' : 'Incorrect password! (Default password: Allahditta1$)');
     }
   };
 
