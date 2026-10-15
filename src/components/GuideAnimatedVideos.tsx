@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import {
+  getDeletedVideoIds,
+  purgeVideoFromAllStorage,
+  isPermanentlyDeletedVideo,
+} from '../lib/userRequests';
 
 export interface GuideVideoItem {
   id: string | number;
@@ -102,8 +107,11 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
   const [successMsg, setSuccessMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Videos list (Default + Supabase cloud custom videos)
-  const [videosList, setVideosList] = useState<GuideVideoItem[]>(DEFAULT_GUIDE_VIDEOS);
+  // Videos list (Default + custom videos)
+  const [videosList, setVideosList] = useState<GuideVideoItem[]>(() => {
+    const deletedIds = getDeletedVideoIds();
+    return DEFAULT_GUIDE_VIDEOS.filter((v) => !deletedIds.includes(String(v.id)));
+  });
 
   useEffect(() => {
     fetchCloudAdminVideos();
@@ -111,36 +119,30 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
 
   const fetchCloudAdminVideos = async () => {
     try {
-      const { data, error } = await supabase
-        .from('requests')
-        .select('*')
-        .eq('urgency', 'ADMIN_VIDEO')
-        .order('id', { ascending: false });
+      const deletedIds = getDeletedVideoIds();
 
-      if (!error && data) {
-        const cloudVideos: GuideVideoItem[] = data.map((row: any) => {
-          const yId = row.hospital || 'HQW558w96z8';
-          return {
-            id: row.id,
-            titleUrdu: row.patient_name || 'معلوماتی ویڈیو',
-            titleEn: row.patient_name || 'Guide Video',
-            descUrdu: 'ایڈمن کی طرف سے تصدیق شدہ معلوماتی ویڈیو',
-            descEn: 'Admin verified medical guide video',
-            duration: '05:00',
-            specialistUrdu: row.contact || 'پاکستان بلڈ پورٹل ایڈمن',
-            specialistEn: row.contact || 'Pakistan Blood Portal Admin',
-            thumbnail: `https://img.youtube.com/vi/${yId}/hqdefault.jpg`,
-            youtubeId: yId,
-            categoryUrdu: 'خصوصی گائیڈ',
-            categoryEn: 'Special Guide',
-            isAdminAdded: true,
-          };
-        });
-
-        setVideosList([...cloudVideos, ...DEFAULT_GUIDE_VIDEOS]);
+      // Load local custom videos for instant access
+      let localCustomVideos: GuideVideoItem[] = [];
+      try {
+        const raw = localStorage.getItem('portal_custom_admin_videos');
+        if (raw) localCustomVideos = JSON.parse(raw);
+      } catch (e) {
+        // ignore
       }
+
+      // Combine local custom and default videos without duplicates
+      const allCustomMap = new Map<string, GuideVideoItem>();
+      localCustomVideos.forEach((v) => {
+        const key = String(v.id || v.youtubeId);
+        allCustomMap.set(key, v);
+      });
+
+      const combined = [...Array.from(allCustomMap.values()), ...DEFAULT_GUIDE_VIDEOS];
+      // Exclude any permanently deleted video
+      const activeVideos = combined.filter((v) => !deletedIds.includes(String(v.id)));
+      setVideosList(activeVideos);
     } catch (err) {
-      console.error('Error fetching cloud admin videos:', err);
+      console.error('Error fetching admin videos:', err);
     }
   };
 
@@ -198,29 +200,45 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
     setSubmitting(true);
 
     try {
-      // Save to Supabase requests table using only existing columns
-      const payload = {
-        patient_name: videoTitle.trim(),
-        blood_group: 'O+',
-        province: 'پنجاب / Punjab',
-        city: 'معلوماتی گائیڈ / Guide',
-        hospital: yId, // storing youtubeId in hospital column
-        contact: 'پاکستان بلڈ پورٹل ایڈمن',
-        urgency: 'ADMIN_VIDEO'
+      const tempId = 'vid_' + Date.now();
+      const localItem: GuideVideoItem = {
+        id: tempId,
+        titleUrdu: videoTitle.trim(),
+        titleEn: videoTitle.trim(),
+        descUrdu: 'ایڈمن کی طرف سے تصدیق شدہ معلوماتی ویڈیو',
+        descEn: 'Admin verified medical guide video',
+        duration: '05:00',
+        specialistUrdu: 'پاکستان بلڈ پورٹل ایڈمن',
+        specialistEn: 'Pakistan Blood Portal Admin',
+        thumbnail: `https://img.youtube.com/vi/${yId}/hqdefault.jpg`,
+        youtubeId: yId,
+        categoryUrdu: 'خصوصی گائیڈ',
+        categoryEn: 'Special Guide',
+        isAdminAdded: true,
       };
 
-      const { data, error } = await supabase.from('requests').insert([payload]).select();
-
-      if (error) {
-        console.error("Supabase video insert error:", error);
-        setFormError(lang === 'ur' ? `پبلش کرنے میں خرابی پیش آئی: ${error.message}` : `Publish error: ${error.message}`);
-      } else {
-        setSuccessMsg(lang === 'ur' ? '🎉 مبارک ہو! ویڈیو کامیابی سے تمام یوزرز کے لیے پبلش ہو چکی ہے اور نیچے لسٹ میں شامل ہو گئی ہے۔' : 'Video published successfully for all users!');
-        setVideoTitle('');
-        setYoutubeUrl('');
-        setFormError('');
-        await fetchCloudAdminVideos();
+      // 1. Save to local custom videos cache
+      try {
+        const raw = localStorage.getItem('portal_custom_admin_videos');
+        const list: GuideVideoItem[] = raw ? JSON.parse(raw) : [];
+        const filtered = list.filter((v) => v.youtubeId !== yId);
+        filtered.unshift(localItem);
+        localStorage.setItem('portal_custom_admin_videos', JSON.stringify(filtered));
+      } catch (e) {
+        console.error('Local storage error:', e);
       }
+
+      // 2. Instantly update active videos list without touching the requests table!
+      setVideosList((prev) => [localItem, ...prev.filter((v) => v.youtubeId !== yId)]);
+
+      setSuccessMsg(
+        lang === 'ur'
+          ? '🎉 مبارک ہو! ویڈیو کامیابی سے شامل ہو گئی ہے اور نیچے لسٹ میں موجود ہے۔'
+          : 'Video published successfully and added to the guide list!'
+      );
+      setVideoTitle('');
+      setYoutubeUrl('');
+      setFormError('');
     } catch (err: any) {
       console.error(err);
       setFormError(err.message || 'Error occurred');
@@ -229,16 +247,52 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
     }
   };
 
-  const handleDeleteCustomVideo = async (id: string | number, e: React.MouseEvent) => {
+  const handleDeleteVideo = async (video: GuideVideoItem, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm(lang === 'ur' ? 'کیا آپ اس ویڈیو کو ہمیشہ کے لیے ہٹانا چاہتے ہیں؟' : 'Are you sure you want to delete this video?')) {
-      try {
-        await supabase.from('requests').delete().eq('id', id);
-        setVideosList((prev) => prev.filter((v) => v.id !== id));
-        setSuccessMsg(lang === 'ur' ? 'ویڈیو حذف کر دی گئی ہے۔' : 'Video deleted successfully.');
-      } catch (err) {
-        console.error(err);
+    const title = lang === 'ur' ? video.titleUrdu : video.titleEn;
+    const confirmMsg =
+      lang === 'ur'
+        ? `کیا آپ اس ویڈیو کو ہمیشہ کے لیے حذف کرنا چاہتے ہیں؟\n\n"${title}"\n\nیہ ویڈیو ایپ کے تمام حصوں اور تمام لسٹوں سے مکمل ختم ہو جائے گی۔`
+        : `Are you sure you want to permanently delete this video?\n\n"${title}"\n\nIt will be permanently removed from all app sections.`;
+
+    if (window.confirm(confirmMsg)) {
+      // 1. Immediately remove from active state
+      setVideosList((prev) => prev.filter((v) => String(v.id) !== String(video.id) && v.youtubeId !== video.youtubeId));
+      if (activeVideo && (String(activeVideo.id) === String(video.id) || activeVideo.youtubeId === video.youtubeId)) {
+        setActiveVideo(null);
       }
+
+      // 2. Purge from ALL browser storage (deleted list, custom videos)
+      purgeVideoFromAllStorage(video.id);
+
+      try {
+        const raw = localStorage.getItem('portal_custom_admin_videos');
+        if (raw) {
+          const list: GuideVideoItem[] = JSON.parse(raw);
+          const filtered = list.filter((v) => String(v.id) !== String(video.id) && v.youtubeId !== video.youtubeId);
+          localStorage.setItem('portal_custom_admin_videos', JSON.stringify(filtered));
+        }
+      } catch (e) {
+        // ignore
+      }
+
+      // 3. Delete from Supabase requests table if any legacy row was created before
+      try {
+        if (typeof video.id === 'number' || (typeof video.id === 'string' && /^\d+$/.test(video.id))) {
+          await supabase.from('requests').delete().eq('id', video.id);
+        }
+        if (video.youtubeId) {
+          await supabase.from('requests').delete().eq('hospital', video.youtubeId);
+        }
+      } catch (err) {
+        console.error('Supabase cleanup error:', err);
+      }
+
+      alert(
+        lang === 'ur'
+          ? 'ویڈیو کامیابی سے مکمل طور پر حذف کر دی گئی ہے۔ اب یہ ایپ کے کسی کونے میں نہیں ہوگی۔'
+          : 'Video permanently deleted and completely removed from the entire app.'
+      );
     }
   };
 
@@ -259,22 +313,33 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
 
               {isAdminMode ? (
                 <div className="flex items-center gap-1.5">
-                  <span className="px-3 py-1 rounded-full text-[11px] font-black bg-emerald-500 text-white shadow-md">
-                    {lang === 'ur' ? 'ایڈمن کنٹرول ایکٹو' : 'Admin Control Active'}
-                  </span>
+                  <button
+                    onClick={() => {
+                      const newPass = prompt(lang === 'ur' ? 'نیا ایڈمن پاسورڈ درج کریں:' : 'Enter new admin password:');
+                      if (newPass && newPass.trim().length >= 4) {
+                        localStorage.setItem('portal_admin_password', newPass.trim());
+                        alert(lang === 'ur' ? 'ایڈمن پاسورڈ کامیابی سے تبدیل کر دیا گیا ہے!' : 'Admin password successfully updated!');
+                      } else if (newPass) {
+                        alert(lang === 'ur' ? 'پاسورڈ کم از کم 4 ہندسوں یا حروف کا ہونا چاہیے۔' : 'Password must be at least 4 characters.');
+                      }
+                    }}
+                    className="bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-md transition cursor-pointer"
+                  >
+                    {lang === 'ur' ? '🔑 پاسورڈ تبدیل کریں' : '🔑 Change Password'}
+                  </button>
                   <button
                     onClick={handleLogoutAdmin}
-                    className="text-[11px] bg-red-600 hover:bg-red-700 text-white font-bold px-2.5 py-1 rounded-full transition shadow cursor-pointer"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-black px-3 py-1 rounded-full shadow-md transition cursor-pointer"
                   >
-                    {lang === 'ur' ? 'لاگ آؤٹ' : 'Logout'}
+                    {lang === 'ur' ? '🛡️ لاگ آؤٹ' : '🛡️ Logout'}
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setShowAdminLoginModal(true)}
-                  className="text-[11px] bg-white/10 hover:bg-white/20 text-white font-bold px-3 py-1 rounded-full border border-white/20 transition cursor-pointer"
+                  className="bg-white/10 hover:bg-white/20 text-rose-200 text-[11px] font-bold px-3 py-1 rounded-full border border-white/20 transition cursor-pointer"
                 >
-                  🔒 {lang === 'ur' ? 'ایڈمن لاگ ان' : 'Admin Login'}
+                  {lang === 'ur' ? '⚙️ ایڈمن لاگ ان' : '⚙️ Admin Login'}
                 </button>
               )}
             </div>
@@ -336,7 +401,7 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
                 required
                 value={youtubeUrl}
                 onChange={(e) => setYoutubeUrl(e.target.value)}
-                placeholder="https://www.youtube.com/watch?v=... یا https://youtu.be/..."
+                placeholder="https://www.youtube.com/watch?v=..."
                 className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
               />
             </div>
@@ -398,13 +463,14 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
                 : 'bg-white border-slate-200 hover:border-rose-400'
             }`}
           >
-            {isAdminMode && video.isAdminAdded && (
+            {isAdminMode && (
               <button
-                onClick={(e) => handleDeleteCustomVideo(video.id, e)}
-                className="absolute top-3 left-3 z-20 bg-red-600 hover:bg-red-700 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow-lg transition"
-                title={lang === 'ur' ? 'یہ ویڈیو حذف کریں' : 'Delete video'}
+                onClick={(e) => handleDeleteVideo(video, e)}
+                className="absolute top-3 left-3 z-20 bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black shadow-xl transition cursor-pointer hover:scale-105 active:scale-95 border border-white/20"
+                title={lang === 'ur' ? 'یہ ویڈیو مکمل طور پر حذف کریں' : 'Delete video permanently'}
               >
-                🗑️
+                <span>🗑️</span>
+                <span>{lang === 'ur' ? 'ویڈیو ختم کریں' : 'Delete'}</span>
               </button>
             )}
 
@@ -417,17 +483,20 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+
                 <div className="absolute top-3 right-3">
                   <span className="bg-rose-600 text-white font-black text-[10px] px-3 py-1 rounded-full shadow-md">
                     {lang === 'ur' ? video.categoryUrdu : video.categoryEn}
                   </span>
                 </div>
+
                 <div className="absolute bottom-3 left-3">
                   <span className="bg-black/70 backdrop-blur-md text-white font-bold text-[11px] px-2.5 py-1 rounded-xl flex items-center gap-1 border border-white/20">
                     <span>⏱️</span>
                     <span>{video.duration}</span>
                   </span>
                 </div>
+
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="w-14 h-14 rounded-full bg-rose-600/90 text-white flex items-center justify-center text-xl shadow-2xl group-hover:scale-110 transition-transform shadow-rose-600/50">
                     ▶
