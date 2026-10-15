@@ -1,10 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import {
-  getDeletedVideoIds,
-  purgeVideoFromAllStorage,
-  isPermanentlyDeletedVideo,
-} from '../lib/userRequests';
+
+const DELETED_VIDEOS_KEY = 'portal_deleted_video_ids';
+const CUSTOM_VIDEOS_KEY = 'portal_custom_admin_videos';
+
+function getDeletedVideoIds(): string[] {
+  try {
+    const data = localStorage.getItem(DELETED_VIDEOS_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function purgeVideoFromAllStorage(id: string | number) {
+  try {
+    const idStr = String(id);
+    const ids = getDeletedVideoIds();
+    if (!ids.includes(idStr)) {
+      ids.push(idStr);
+      localStorage.setItem(DELETED_VIDEOS_KEY, JSON.stringify(ids));
+    }
+    const raw = localStorage.getItem(CUSTOM_VIDEOS_KEY);
+    if (raw) {
+      const list = JSON.parse(raw);
+      const filtered = list.filter((v: any) => String(v.id) !== idStr);
+      localStorage.setItem(CUSTOM_VIDEOS_KEY, JSON.stringify(filtered));
+    }
+  } catch (e) {
+    console.error('Storage purge error:', e);
+  }
+}
 
 export interface GuideVideoItem {
   id: string | number;
@@ -107,7 +133,7 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
   const [successMsg, setSuccessMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Videos list (Default + custom videos)
+  // Videos list (Default + Supabase cloud custom videos)
   const [videosList, setVideosList] = useState<GuideVideoItem[]>(() => {
     const deletedIds = getDeletedVideoIds();
     return DEFAULT_GUIDE_VIDEOS.filter((v) => !deletedIds.includes(String(v.id)));
@@ -217,7 +243,7 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
         isAdminAdded: true,
       };
 
-      // 1. Save to local custom videos cache
+      // 1. Save to local custom videos cache (بغیر کسی بلڈ ریکویسٹ کے)
       try {
         const raw = localStorage.getItem('portal_custom_admin_videos');
         const list: GuideVideoItem[] = raw ? JSON.parse(raw) : [];
@@ -228,7 +254,7 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
         console.error('Local storage error:', e);
       }
 
-      // 2. Instantly update active videos list without touching the requests table!
+      // 2. Instantly update active videos list
       setVideosList((prev) => [localItem, ...prev.filter((v) => v.youtubeId !== yId)]);
 
       setSuccessMsg(
@@ -262,7 +288,7 @@ export const GuideAnimatedVideos: React.FC<GuideAnimatedVideosProps> = ({
         setActiveVideo(null);
       }
 
-      // 2. Purge from ALL browser storage (deleted list, custom videos)
+      // 2. Purge from storage
       purgeVideoFromAllStorage(video.id);
 
       try {
